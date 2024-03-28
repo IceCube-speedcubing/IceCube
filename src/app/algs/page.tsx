@@ -19,17 +19,37 @@ const AlgsPage = () => {
             </h1>
           </div>
         </div>
-        <Card className="w-[350px] bg-[#002945] border-[#00406C] border-4 m-5">
+
+        <div className="grid grid-cols-4 ml-10 mr-10 mt-5 mb-5">
+
+        <Card className="w-[350px] bg-[#002945] border-[#00406C] border-4 min-w-250">
           <CardHeader className="bg-[003A61]">
-            <CardTitle className="text-gray-100 font-bold">Ua</CardTitle>
+            <CardTitle className="text-gray-100 font-bold">Alg Name</CardTitle>
             <CardDescription>
-              <img src="/assets/PLL/Ua.png"></img>
+              <h3>Alg Image</h3>
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-300">( R U R' U R' ) U' R2 U' ( R' U R' U R )</p>
+            <p className="text-gray-300">Alg</p>
           </CardContent>
         </Card>
+
+        <Card className="w-[350px] bg-[#002945] border-[#00406C] border-4 min-w-250">
+          <CardHeader className="bg-[003A61]">
+            <CardTitle className="text-gray-100 font-bold">Alg Name</CardTitle>
+            <CardDescription>
+              <h3>Alg Image</h3>
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-300">Alg</p>
+          </CardContent>
+        </Card>
+
+        </div>
+
+        
+
       </div>
     </>
   );
