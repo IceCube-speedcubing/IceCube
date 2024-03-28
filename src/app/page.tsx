@@ -1,25 +1,26 @@
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { ArrowDownToLine, CheckCircle, Leaf } from "lucide-react";
+import { Crown, School, Percent } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+
 
 const perks = [
   {
     name: "The Best Algs",
-    Icon: ArrowDownToLine,
+    Icon: Crown,
     description:
       "We have all the best algorithms for you to use for all events",
   },
   {
     name: "Courses",
-    Icon: CheckCircle,
+    Icon: School,
     description:
       "Cuding courses are available for all events",
   },
   {
     name: '100% Improve Rate',
-    Icon: Leaf,
+    Icon: Percent,
     description:
       "We have the best changes for you to improve in all events",
   },
