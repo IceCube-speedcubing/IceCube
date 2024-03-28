@@ -30,7 +30,7 @@ const AlgsPage = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-300">Alg</p>
+            <p className="text-gray-300 break-words">Alg</p>
           </CardContent>
         </Card>
 
@@ -42,7 +42,7 @@ const AlgsPage = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-300">Alg</p>
+            <p className="text-gray-300 break-words">Alg</p>
           </CardContent>
         </Card>
 
