@@ -34,7 +34,7 @@ export default function Home() {
               <span className="text-[#00406C]">speedcubing</span>.
             </h1>
             <p className="mt-6 text-lg max-w-prose text-gray-400">
-              Welcome to (Name). The only website you need to improve at
+              Welcome to IceCube. The only website you need to improve at
               speedcubing.
             </p>
           </div>
