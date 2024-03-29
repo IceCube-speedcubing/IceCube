@@ -1,81 +1,88 @@
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
+import ProductReel from "@/components/ProductReel";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Crown, School, Percent } from "lucide-react";
-import Image from "next/image";
+import { ArrowDownToLine, CheckCircle, Leaf } from "lucide-react";
 import Link from "next/link";
 
 const perks = [
   {
-    name: "The Best Algs",
-    Icon: Crown,
+    name: "Instan Delivery",
+    Icon: ArrowDownToLine,
     description:
-      "We have all the best algorithms for you to use for all events",
+      "Get your assets delivered to your email in seconds and download them right away.",
   },
   {
-    name: "Courses",
-    Icon: School,
-    description: "Cuding courses are available for all events",
+    name: "Guaranteed Quality",
+    Icon: CheckCircle,
+    description:
+      "Every assets on our platform is veryfied by our team to ensure our highest quality standards.",
   },
   {
-    name: "100% Improve Rate",
-    Icon: Percent,
-    description: "We have the best changes for you to improve in all events",
+    name: 'For the Planet',
+    Icon: Leaf,
+    description:
+      "We've pledged 1% of sales to the preservation and restoration of the natural environment.",
   },
 ];
 
 export default function Home() {
   return (
-    <>
-      <div className="bg-[#001A2C]">
-        <MaxWidthWrapper>
-          <div className="py-20 mx-auto text-center flex flex-col items-center max-w-3xl">
-            <h1 className="text-4xl font-bold tracking-tight text-gray-300  sm:text-6xl">
-              Your all in one website for{" "}
-              <span className="text-[#00406C]">speedcubing</span>.
-            </h1>
-            <p className="mt-6 text-lg max-w-prose text-gray-400">
-              Welcome to IceCube. The only website you need to improve at
-              speedcubing.
-            </p>
+  <>
+     <MaxWidthWrapper>
+        <div className='py-20 mx-auto text-center flex flex-col items-center max-w-3xl'>
+          <h1 className='text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl'>
+            Your marketplace for high-quality{' '}
+            <span className='text-blue-600'>
+              digital assets
+            </span>
+            .
+          </h1>
+          <p className='mt-6 text-lg max-w-prose text-muted-foreground'>
+            Welcome to (Name). Every asset on our
+            platform is verified by our team to ensure our
+            highest quality standards.
+          </p>
+          <div className='flex flex-col sm:flex-row gap-4 mt-6'>
+            <Link
+              href='/products'
+              className={buttonVariants()}>
+              Browse Trending
+            </Link>
+            <Button variant='ghost'>
+              Our quality promise &rarr;
+            </Button>
           </div>
-        </MaxWidthWrapper>
-        <MaxWidthWrapper>
-          <div>
-            {/* add image */}
-            <h3 className="text-gray-100 font-bold text-3xl">
-              
-              </h3>
-          </div>
-        </MaxWidthWrapper>
-        <section className="border-t-4 border-[#00253E] bg-[#001A2C]">
-          <MaxWidthWrapper className="py-20">
-            <div className="grid grid-cols-1 gap-y-12 sm:grid-cols-2 sm:gap-x-6 lg:grid-cols-3 lg:gap-x-8 lg:gap-y-0">
-              {perks.map((perk) => (
-                <div
-                  key={perk.name}
-                  className="text-center md:flex md:items-start md:text-left lg:block lg:text-center"
-                >
-                  <div className="md:flex-shrink-0 flex justify-center">
-                    <div className="h-16 w-16 flex items-center justify-center rounded-full bg-[#003A61] text-[#fff]">
-                      {<perk.Icon className="w-1/3 h-1/3" />}
-                    </div>
-                  </div>
+        </div>
 
-                  <div className="mt-6 md:ml-4 md:mt-0 lg:ml-0 lg:mt-6">
-                    <h3 className="text-base font-bold text-gray-400">
-                      {perk.name}
-                    </h3>
-                    <p className="mt-3 text-sm text-gray-400">
-                      {perk.description}
-                    </p>
+      <ProductReel query={{sort: "desc", limit: 4}} href='/products' title='Brand new'/>
+    </MaxWidthWrapper>
+
+    <section className='border-t border-gray-200 bg-gray-50'>
+        <MaxWidthWrapper className='py-20'>
+          <div className='grid grid-cols-1 gap-y-12 sm:grid-cols-2 sm:gap-x-6 lg:grid-cols-3 lg:gap-x-8 lg:gap-y-0'>
+            {perks.map((perk) => (
+              <div
+                key={perk.name}
+                className='text-center md:flex md:items-start md:text-left lg:block lg:text-center'>
+                <div className='md:flex-shrink-0 flex justify-center'>
+                  <div className='h-16 w-16 flex items-center justify-center rounded-full bg-blue-100 text-blue-900'>
+                    {<perk.Icon className='w-1/3 h-1/3' />}
                   </div>
                 </div>
-              ))}
-            </div>
-          </MaxWidthWrapper>
-        </section>
-        /
-      </div>
+
+                <div className='mt-6 md:ml-4 md:mt-0 lg:ml-0 lg:mt-6'>
+                  <h3 className='text-base font-medium text-gray-900'>
+                    {perk.name}
+                  </h3>
+                  <p className='mt-3 text-sm text-muted-foreground'>
+                    {perk.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </MaxWidthWrapper>
+      </section>
     </>
-  );
+  )
 }
