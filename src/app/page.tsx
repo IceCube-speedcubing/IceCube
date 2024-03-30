@@ -1,27 +1,24 @@
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-import ProductReel from "@/components/ProductReel";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { ArrowDownToLine, CheckCircle, Leaf } from "lucide-react";
+import { Crown, School, Percent } from "lucide-react";
 import Link from "next/link";
 
 const perks = [
   {
-    name: "Instan Delivery",
-    Icon: ArrowDownToLine,
+    name: "The Best Algs",
+    Icon: Crown,
     description:
-      "Get your assets delivered to your email in seconds and download them right away.",
+      "We have all the best algorithms for you to use for all events",
   },
   {
-    name: "Guaranteed Quality",
-    Icon: CheckCircle,
-    description:
-      "Every assets on our platform is veryfied by our team to ensure our highest quality standards.",
+    name: "Courses",
+    Icon: School,
+    description: "Cuding courses are available for all events",
   },
   {
-    name: 'For the Planet',
-    Icon: Leaf,
-    description:
-      "We've pledged 1% of sales to the preservation and restoration of the natural environment.",
+    name: "100% Improve Rate",
+    Icon: Percent,
+    description: "We have the best changes for you to improve in all events",
   },
 ];
 
@@ -31,30 +28,17 @@ export default function Home() {
      <MaxWidthWrapper>
         <div className='py-20 mx-auto text-center flex flex-col items-center max-w-3xl'>
           <h1 className='text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl'>
-            Your marketplace for high-quality{' '}
-            <span className='text-blue-600'>
-              digital assets
+          Your all in one website for{' '}
+            <span className='text-[#00406C]'>
+            speedcubing
             </span>
             .
           </h1>
           <p className='mt-6 text-lg max-w-prose text-muted-foreground'>
-            Welcome to (Name). Every asset on our
-            platform is verified by our team to ensure our
-            highest quality standards.
+          Welcome to IceCube. The only website you need to improve at
+              speedcubing.
           </p>
-          <div className='flex flex-col sm:flex-row gap-4 mt-6'>
-            <Link
-              href='/products'
-              className={buttonVariants()}>
-              Browse Trending
-            </Link>
-            <Button variant='ghost'>
-              Our quality promise &rarr;
-            </Button>
-          </div>
         </div>
-
-      <ProductReel query={{sort: "desc", limit: 4}} href='/products' title='Brand new'/>
     </MaxWidthWrapper>
 
     <section className='border-t border-gray-200 bg-gray-50'>
