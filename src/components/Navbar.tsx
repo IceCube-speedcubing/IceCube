@@ -28,6 +28,18 @@ const Navbar = async () => {
               <div className="hidden z-50 lg:ml-8 lg:block lg:self-stretch">
               <NavItems />
               </div>
+              <Link href="/timer">
+              <Button
+              variant="ghost">
+                Timer
+              </Button>
+              </Link>
+              <Link href="/about">
+              <Button
+              variant="ghost">
+                About
+              </Button>
+              </Link>
 
               <div className='ml-auto flex items-center'>
                 <div className='hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6'>

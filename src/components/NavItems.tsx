@@ -4,6 +4,8 @@ import { useState, useRef, useEffect } from "react";
 import { NAV_CATEGORY } from "@/config";
 import NavItem from "./NavItem";
 import { useOnClickOutside } from "@/hooks/use-on-click-outside";
+import { Button } from "./ui/button";
+import Link from "next/link";
 
 const NavItems = () => {
   const [activeIndex, setActiveIndex] = useState<null | Number>(null);
