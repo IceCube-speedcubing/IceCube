@@ -72,6 +72,7 @@ const Navbar = async () => {
                     </Link>
                   )}
                 </div>
+                <ModeToggle />
               </div>
             </div>
           </div>

@@ -11,6 +11,9 @@ import UserAvatar from "./UserAvatar"
 
 
 const UserAccountNav = () => {
+
+    const user = "admin"
+    const admin = user === "admin" 
  
     return (<DropdownMenu>
         <DropdownMenuTrigger asChild className="overflow-visible">
@@ -27,15 +30,16 @@ const UserAccountNav = () => {
                     </p>
                 </div>
             </div>
+            
 
             <DropdownMenuSeparator className="h-0.5 bg-gray-300" />
 
             <DropdownMenuItem asChild>
                 <Link href="/general">Settings</Link>
             </DropdownMenuItem>
-
+            
             <DropdownMenuSeparator />
-
+            <Link href="/admin">Dashbord</Link>
             <DropdownMenuSeparator />
 
             <DropdownMenuItem  className="cursor-pointer">
