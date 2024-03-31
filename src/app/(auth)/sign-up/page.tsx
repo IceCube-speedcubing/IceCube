@@ -13,25 +13,23 @@ import { Label } from "@/components/ui/label"
 
 const SignUpPage = () => {
   return (
-    <div className="bg-[#001A2C] pt-5 pb-10 h-screen flex items-center justify-center">
-        <Card className="mx-auto max-w-sm min-w-[400px] bg-[#003356] border-0">
+    <>
+    <div className="h-screen flex items-center justify-center">
+    <Card className="mx-auto max-w-sm">
       <CardHeader>
-        <CardTitle className="text-2xl text-[#fff]">Sign up</CardTitle>
-        <CardDescription className="text-gray-300">
-          Create an account below to get started.
+        <CardTitle className="text-xl">Sign Up</CardTitle>
+        <CardDescription>
+          Enter your information to create an account
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid gap-4">
+            <div className="grid gap-2">
+              <Label htmlFor="username">Username</Label>
+              <Input id="username" placeholder="username" required />
+            </div>
           <div className="grid gap-2">
-          <Label htmlFor="text" className="text-[#fff]">Username</Label>
-            <Input
-              id="username"
-              type="text"
-              placeholder="username"
-              required
-            />
-            <Label htmlFor="email" className="text-[#fff]">Email</Label>
+            <Label htmlFor="email">Email</Label>
             <Input
               id="email"
               type="email"
@@ -40,19 +38,17 @@ const SignUpPage = () => {
             />
           </div>
           <div className="grid gap-2">
-            <div className="flex items-center">
-              <Label htmlFor="password" className="text-[#fff]">Password</Label>
-            </div>
-            <Input id="password" type="password" required />
+            <Label htmlFor="password">Password</Label>
+            <Input id="password" type="password" />
           </div>
           <Button type="submit" className="w-full">
-            Sign up
+            Create an account
           </Button>
           <Button variant="outline" className="w-full">
-            Sing up with WCA
+            Sign up with WCA
           </Button>
         </div>
-        <div className="mt-4 text-center text-sm text-gray-200">
+        <div className="mt-4 text-center text-sm">
           Already have an account?{" "}
           <Link href="/sign-in" className="underline">
             Sign in
@@ -61,7 +57,7 @@ const SignUpPage = () => {
       </CardContent>
     </Card>
     </div>
+    </> 
   )
 }
-
 export default SignUpPage
