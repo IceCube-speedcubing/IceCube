@@ -8,12 +8,19 @@ const user = require('./models/user.js');
 // Make user
 router.post('/', async (req, res) => {
     try {
-        const name = req.body.name;
+        const name = req.body.username;
         const password = req.body.password;
         const email = req.body.email;
+	
+	if(name === undefined || password === undefined || email === undefined) {
+		console.log(name);
+		console.log(password);
+		console.log(email);
+		return res.status(400).send("Name/Password/Email not defined in body!");
+	}
 
-        const securePassword = await bcrypt.hash(password, 10);
-        const secureEmail = await bcrypt.hash(email, 10);
+	const passwordSalt = await bcrypt.genSalt(10);
+        const securePassword = await bcrypt.hash(password, passwordSalt);
 
         if(await user.findOne({email: email}) !== null) {
             res.status(400).json({
@@ -25,7 +32,7 @@ router.post('/', async (req, res) => {
         const newUser = new user({
             name: name,
             password: securePassword,
-            email: secureEmail
+            email: email
         });
 
         const newUserDatabase = await newUser.save();
@@ -51,7 +58,7 @@ router.get('/', async (req, res) => {
 
         const loginUser = await user.findOne({name: name, email: email});
 
-        if(loginUser === null || password == undefined) {
+        if(loginUser === null || password === undefined) {
             res.status(400).json({
                 message: "User Doesn't Exist"
             });
@@ -74,6 +81,16 @@ router.get('/', async (req, res) => {
             error: e
         });
     }
+});
+
+// 404
+router.use(function (req, res, next) {
+    fs.readFile('./out/404.html', function(err, data) {
+        if(err) { return res.status(404).send("404 not found"); }    
+        res.writeHead(404, {'Content-Type': 'text/html'});
+        res.write(data);
+        return res.end();
+    });
 });
 
 module.exports = router;
