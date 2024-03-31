@@ -11,9 +11,7 @@ import UserAvatar from "./UserAvatar"
 
 
 const UserAccountNav = () => {
-
-    
-    
+ 
     return (<DropdownMenu>
         <DropdownMenuTrigger asChild className="overflow-visible">
             <Button variant='ghost' size='sm' className="relative">
@@ -33,14 +31,10 @@ const UserAccountNav = () => {
             <DropdownMenuSeparator className="h-0.5 bg-gray-300" />
 
             <DropdownMenuItem asChild>
-                <Link href="/user-settings">Settings</Link>
+                <Link href="/general">Settings</Link>
             </DropdownMenuItem>
 
             <DropdownMenuSeparator />
-
-            <DropdownMenuItem asChild>
-                <Link href="/sell">Seller Dashboard</Link>
-            </DropdownMenuItem>
 
             <DropdownMenuSeparator />
 

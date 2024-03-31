@@ -20,8 +20,8 @@ const Navbar = async () => {
             <div className="flex h-16 items-center">
               <div className="ml-4 flex lg:ml-0">
                 <Link href="/">
-                  <Image src="public\IceCube logo.svg" alt="IceCube Logo" width="50" height="50"/>
-                  {/* <Box className="h-10 w-10" color="#00406C" /> */}
+                  {/* <Image src="public\IceCube logo.svg" alt="IceCube Logo" width="50" height="50"/> */}
+                  <Box className="h-10 w-10" color="#00406C" />
                 </Link>
               </div>
 
