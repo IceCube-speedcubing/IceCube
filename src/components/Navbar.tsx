@@ -10,18 +10,17 @@ import UserAccountNav from "./UserAccountNav";
 
 const Navbar = async () => {
 
-  const user = true
+  const user = false
   
   return (
-    <div className="bg-white  sticky z-50 top-0 inset-0 inset-x-0 h-16">
-      <header className="relative bg-white ">
+    <div className="bg-white dark:bg-[#020817] sticky z-50 top-0 inset-0 inset-x-0 h-16">
+      <header className="relative bg-white dark:bg-[#020817] dark">
         <MaxWidthWrapper>
           <div className="border-b-4 border-[#00253E] border-rounded">
             <div className="flex h-16 items-center">
               <div className="ml-4 flex lg:ml-0">
                 <Link href="/">
-                  {/* <Image src="public\IceCube logo.svg" alt="IceCube Logo" width="50" height="50"/> */}
-                  <Box className="h-10 w-10" color="#00406C" />
+                  <Image src="/IceCube logo.svg" alt="IceCube Logo" width="50" height="50"/>
                 </Link>
               </div>
 
@@ -30,13 +29,15 @@ const Navbar = async () => {
               </div>
               <Link href="/timer">
               <Button
-              variant="ghost">
+              variant="ghost"
+              className="font-bold">
                 Timer
               </Button>
               </Link>
               <Link href="/about">
               <Button
-              variant="ghost">
+              variant="ghost"
+              className="font-bold">
                 About
               </Button>
               </Link>

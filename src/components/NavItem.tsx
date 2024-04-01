@@ -21,7 +21,7 @@ const NavItem = ({ isAnyOpen, category, handleOpen, isOpen }: NavItemProps) => {
     <div className="flex">
       <div className="relative flex items-center">
         <Button
-          className="gap-1.5"
+          className="gap-1.5 font-bold"
           onClick={handleOpen}
           variant={isOpen ? "secondary" : "ghost"}
         >
@@ -49,27 +49,29 @@ const NavItem = ({ isAnyOpen, category, handleOpen, isOpen }: NavItemProps) => {
           />
 
           <div className="relative bg-white">
-            <div className="mx-auto max-w-7xl px-8">
-              <div className="grid grid-cols-4 gap-x-8 gap-y-10 py-16">
+            <div className="mx-auto max-w-5xl px-8">
+              <div className="grid grid-cols-5 gap-x-8 gap-y-10 py-16">
                 <div className="col-span-4 col-start-1 grid grid-col-3 gap-x-8">
                   {category.featured.map((item) => (
                     <div
                       key={item.name}
                       className="group relative text-base sm:text-sm"
                     >
-                      <div className="relative aspect-video overflow-hidden rounded-lg bg-gray-100 groupe-hover:opacity-75">
+                      <Link href={item.href}>
+                      <div className="relative aspect-auto overflow-hidden rounded-lg bg-gray-100 groupe-hover:opacity-75">
                         <Image
                           src={item.imgSrc}
                           alt="nav category image"
-                          fill
+                          width={50}
+                          height={50}
                           className="object-cover object-center"
                         />
                       </div>
+                      </Link>
 
                       <Link href={item.href} className="mt-6 block font-medium text-gray-900">
                         {item.name}
                       </Link>
-                      <p className="mt-1" aria-hidden="true" >Begin now</p>
                     </div>
                   ))}
                 </div>
