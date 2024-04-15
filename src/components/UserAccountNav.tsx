@@ -17,7 +17,7 @@ const UserAccountNav = () => {
  
     return (<DropdownMenu>
         <DropdownMenuTrigger asChild className="overflow-visible">
-            <Button variant='ghost' size='sm' className="relative">
+            <Button variant='ghost' size='sm' className="relative hover:bg-white">
                 <UserAvatar />
             </Button>
         </DropdownMenuTrigger>
