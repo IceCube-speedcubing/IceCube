@@ -2,7 +2,6 @@ import Link from "next/link";
 import MaxWidthWrapper from "./MaxWidthWrapper";
 import { Box } from "lucide-react";
 import { Button, buttonVariants } from "./ui/button";
-import NavItems from "./NavItems";
 import Image from "next/image";
 import { ModeToggle } from "./ModeToggle";
 import UserAccountNav from "./UserAccountNav";
@@ -24,9 +23,23 @@ const Navbar = async () => {
                 </Link>
               </div>
 
-              <div className="hidden z-50 lg:ml-8 lg:block lg:self-stretch">
-              <NavItems />
-              </div>
+              <div className="ml-10">
+              <Link href="/algs">
+              <Button
+              variant="ghost"
+              className="font-bold">
+                Algs
+              </Button>
+              </Link>
+
+              <Link href="/courses">
+              <Button
+              variant="ghost"
+              className="font-bold">
+                Courses
+              </Button>
+              </Link>
+
               <Link href="/timer">
               <Button
               variant="ghost"
@@ -34,6 +47,7 @@ const Navbar = async () => {
                 Timer
               </Button>
               </Link>
+
               <Link href="/about">
               <Button
               variant="ghost"
@@ -41,6 +55,8 @@ const Navbar = async () => {
                 About
               </Button>
               </Link>
+
+                </div>
 
               <div className='ml-auto flex items-center'>
                 <div className='hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6'>

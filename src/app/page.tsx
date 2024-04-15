@@ -1,6 +1,6 @@
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Crown, School, Percent } from "lucide-react";
+import { Crown, School, Percent, Trophy } from "lucide-react";
 import Link from "next/link";
 
 const perks = [
@@ -17,7 +17,7 @@ const perks = [
   },
   {
     name: "100% Improve Rate",
-    Icon: Percent,
+    Icon: Trophy,
     description: "We have the best changes for you to improve in all events",
   },
 ];
