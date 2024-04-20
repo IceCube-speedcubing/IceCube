@@ -1,0 +1,66 @@
+[
+  {
+    "cubes": [
+      {
+        "name": "3x3",
+        "cubeImg": "/cubes/3x3.png",
+        "methods": [
+          {
+            "name": "cfop",
+            "methodImg": "",
+            "algSets": [
+              {
+                "name": "pll",
+                "algSetImg": ""
+              },
+              {
+                "name": "oll",
+                "algSetImg": ""
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "2x2",
+        "cubeImg": "/cubes/2x2.png",
+        "methods": [
+          {
+            "name": "ortega",
+            "methodImg": "",
+            "algSets": [
+              {
+                "name": "oll",
+                "algSetImg": ""
+              },
+              {
+                "name": "pbl",
+                "algSetImg": ""
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "algs": [
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "pll",
+        "algName": "T-perm",
+        "alg": "(R U R' U') (R' F R2 U') R' U' (R U R' F')",
+        "algImg": "/algs/3x3-cfop-pll-Tperm.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "T-perm",
+        "alg": "F (R U R' U') F'",
+        "algImg": "/algs/3x3-cfop-oll-Tperm.png"
+      }
+    ]
+  }
+]

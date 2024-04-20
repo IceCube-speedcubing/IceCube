@@ -1,91 +1,59 @@
 "use client"
 
-import { useState } from 'react';
-import Image from 'next/image';
+import { useState } from "react";
+import Image from "next/image";
 
-import { Card, CardTitle, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Card, CardTitle, CardContent } from "@/components/ui/card";
 
-interface Cube {
-  name: string;
-  image: string;
-}
+import algData from "./alg-data.json";
 
-interface Method {
-  name: string;
-  algs: string[];
-}
+const AlgsPage = () => {
+  const [page, setPage] = useState<"cubes" | "methods" | "algSets" | "algs">(
+    "cubes"
+  );
+  const [selectedCube, setSelectedCube] = useState<string | null>(null);
+  const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
+  const [selectedAlgSet, setSelectedAlgSet] = useState<string | null>(null);
 
-interface Alg {
-  name: string;
-  notation: string; 
-}
+  const cubes = algData[0].cubes;
 
-const cubes: Cube[] = [
-  { 
-    name: '3x3',
-    image: '/cubes/3x3.png'
-  },
-  {
-    name: '2x2', 
-    image: '/cubes/2x2.png'
-  }
-];
+  const methods =
+    selectedCube &&
+    cubes.find((cube) => cube.name === selectedCube)?.methods;
 
-const methods: Method[] = [
-  {
-    name: 'Beginner',
-    algs: ['sune', 'sexyMove']
-  },
-  {
-    name: 'CFOP',
-    algs: ['cross', 'f2l', 'oll', 'pll']
-  }
-];
+  const algSets =
+    selectedMethod &&
+    methods?.find((method) => method.name === selectedMethod)?.algSets;
 
-const algs: Alg[] = [
-  {
-    name: 'Sune',
-    notation: 'R U R\' U R U2 R\''
-  },
-  {
-    name: 'T-Perm',
-    notation: 'R U R\' U\' R\' F R2 U\' R\' U\' R U R\' F\''
-  }
-];
+  const algs =
+    selectedAlgSet &&
+    algData[1].algs.filter(
+      (alg) =>
+        alg.cube === selectedCube &&
+        alg.method === selectedMethod &&
+        alg.algSet === selectedAlgSet
+    );
 
-export default function AlgsPage() {
+  return (
+    <div className="mx-auto max-w-6xl p-4">
 
-  const [page, setPage] = useState<'cubes' | 'methods' | 'algs'>('cubes');
-
-  const [previousPage, setPreviousPage] = useState<string | null>(null);
-
-  const handleBack = () => {
-    if (previousPage) {
-      setPage(previousPage);
-    }
-  }
-
-  const renderPage = () => {
-
-    if (page === 'cubes') {
-      return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {cubes.map(cube => (
-            <Card 
+      <div className="mt-10 grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3">
+        {page === "cubes" &&
+          cubes.map((cube) => (
+            <Card
               key={cube.name}
               className="bg-white rounded-lg shadow-md transform hover:scale-105 duration-300"
               onClick={() => {
-                setPage('methods');
-                setPreviousPage('cubes');
+                setPage("methods");
+                setSelectedCube(cube.name);
               }}
             >
               <CardTitle className="text-xl font-bold p-4 border-b">
                 {cube.name}
               </CardTitle>
               <CardContent className="p-4">
-                <Image 
-                  src={cube.image}
+                <Image
+                  src={cube.cubeImg}
                   width={300}
                   height={300}
                   alt={cube.name}
@@ -94,68 +62,81 @@ export default function AlgsPage() {
               </CardContent>
             </Card>
           ))}
-        </div>
-      );
-    }
-  
-    if (page === 'methods') {
-      return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {methods.map(method => (
+
+        {page === "methods" &&
+          methods?.map((method) => (
             <Card
               key={method.name}
               className="bg-white rounded-lg shadow-md transform hover:scale-105 duration-300"
               onClick={() => {
-                setPage('algs');
-                setPreviousPage('methods');
+                setPage("algSets");
+                setSelectedMethod(method.name);
               }}
             >
               <CardTitle className="text-xl font-bold p-4 border-b">
                 {method.name}
               </CardTitle>
+              <CardContent className="p-4">
+                <Image
+                  src={method.methodImg}
+                  width={300}
+                  height={300}
+                  alt={method.name}
+                  className="rounded-lg"
+                />
+              </CardContent>
             </Card>
           ))}
-        </div>
-      );
-    }
-  
-    if (page === 'algs') {
-      return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {algs.map(alg => (
-            <Card 
-              key={alg.name}
+
+        {page === "algSets" &&
+          algSets?.map((algSet) => (
+            <Card
+              key={algSet.name}
               className="bg-white rounded-lg shadow-md transform hover:scale-105 duration-300"
               onClick={() => {
-                setPage('methods'); 
-                setPreviousPage('algs');
+                setPage("algs");
+                setSelectedAlgSet(algSet.name);
               }}
             >
               <CardTitle className="text-xl font-bold p-4 border-b">
-                {alg.name}
+                {algSet.name}
               </CardTitle>
+              <CardContent className="p-4">
+                <Image
+                  src={algSet.algSetImg}
+                  width={300}
+                  height={300}
+                  alt={algSet.name}
+                  className="rounded-lg"
+                />
+              </CardContent>
             </Card>
           ))}
-        </div>
-      );
-    }
-  
-  }
 
- return (
-  <div className="m-10">
-  
-      {previousPage &&  
-        <Button 
-          onClick={handleBack}
-          variant="outline"
-          className="mb-5"
-        >
-          Go Back  
-        </Button>
-      }
-  
-      {renderPage()} 
+        {page === "algs" &&
+          algs?.map((alg) => (
+            <Card
+              key={alg.algName}
+              className="bg-white rounded-lg shadow-md"
+            >
+              <CardTitle className="text-xl font-bold p-4 border-b">
+                {alg.algName}
+              </CardTitle>
+              <CardContent className="p-4">
+                <p>{alg.alg}</p>
+                <Image
+                  src={alg.algImg}
+                  width={300}
+                  height={300}
+                  alt={alg.algName}
+                  className="rounded-lg"
+                />
+              </CardContent>
+            </Card>
+          ))}
+      </div>
     </div>
- )
-}
+  );
+};
+
+export default AlgsPage;

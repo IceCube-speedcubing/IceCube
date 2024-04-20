@@ -9,9 +9,6 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "IceCube",
   description: "IceCube is a all in one place for cubing.",
-  icons: {
-    icon: "public/IceCube logo.svg"
-  }
 };
 
 export default function RootLayout({
