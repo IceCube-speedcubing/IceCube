@@ -49,17 +49,177 @@
         "cube": "3x3",
         "method": "cfop",
         "algSet": "pll",
+        "algName": "Ua-perm",
+        "alg": "( R U R' U R' ) U' R2 U' ( R' U R' U R )",
+        "algImg": "/algs/3x3-cfop-pll-UaPerm.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "pll",
+        "algName": "Ub-perm",
+        "alg": "( R' U ) ( R' U' ) ( R' U' ) ( R' U ) R U R2",
+        "algImg": "/algs/3x3-cfop-pll-UbPerm.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "pll",
+        "algName": "H-perm",
+        "alg": "M2 ( U' ) M2 ( U2 ) M2 ( U' ) M2",
+        "algImg": "/algs/3x3-cfop-pll-HPerm.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "pll",
+        "algName": "Z-perm",
+        "alg": "M' U' ( M2 U' ) ( M2 U' ) M' U2 M2",
+        "algImg": "/algs/3x3-cfop-pll-ZPerm.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "pll",
+        "algName": "Aa-perm",
+        "alg": "x ( R' U R' ) D2 ( R U' R' ) D2 R2 x'",
+        "algImg": "/algs/3x3-cfop-pll-AaPerm.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "pll",
+        "algName": "Ab-perm",
+        "alg": "x R2 D2 ( R U R' ) D2 ( R U' R ) x'",
+        "algImg": "/algs/3x3-cfop-pll-AbPerm.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "pll",
+        "algName": "E-perm",
+        "alg": "x' (R U' R' D) (R U R' D') (R U R' D) (R U' R' D') x",
+        "algImg": "/algs/3x3-cfop-pll-EPerm.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "pll",
         "algName": "T-perm",
         "alg": "(R U R' U') (R' F R2 U') R' U' (R U R' F')",
-        "algImg": "/algs/3x3-cfop-pll-Tperm.png"
+        "algImg": "/algs/3x3-cfop-pll-TPerm.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "pll",
+        "algName": "F-perm",
+        "alg": "( R' U' F' ) ( R U R' U' ) ( R' F R2 U' ) ( R' U' R U ) ( R' U R )",
+        "algImg": "/algs/3x3-cfop-pll-FPerm.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "pll",
+        "algName": "Ja-perm",
+        "alg": "( R' U L' U2 ) ( R U' R' U2 ) R L",
+        "algImg": "/algs/3x3-cfop-pll-JaPerm.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "pll",
+        "algName": "Jb-perm",
+        "alg": "( R U R' F' ) ( R U R' U' ) R' F R2 U' R'",
+        "algImg": "/algs/3x3-cfop-pll-JbPerm.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "pll",
+        "algName": "Ra-perm",
+        "alg": "( R U' R' U' ) ( R U R ) D ( R' U' R ) D' ( R' U2 R' )",
+        "algImg": "/algs/3x3-cfop-pll-RaPerm.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "pll",
+        "algName": "Rb-perm",
+        "alg": "( R' U2 R U2' ) R' F ( R U R' U' ) R' F' R2",
+        "algImg": "/algs/3x3-cfop-pll-RbPerm.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "pll",
+        "algName": "Y-perm",
+        "alg": "F (R U' R' U') (R U R' F') (R U R' U') (R' F R F')",
+        "algImg": "/algs/3x3-cfop-pll-YPerm.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "pll",
+        "algName": "V-perm",
+        "alg": "( R' U R' U' ) y ( R' F' R2 U' ) ( R' U R' F ) R F",
+        "algImg": "/algs/3x3-cfop-pll-VPerm.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "pll",
+        "algName": "Na-perm",
+        "alg": "( R U R' U ) ( R U R' F' ) ( R U R' U' ) R' F ( R2 U' R' ) ( U2 R U' R' )",
+        "algImg": "/algs/3x3-cfop-pll-NaPerm.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "pll",
+        "algName": "Nb-perm",
+        "alg": "( R' U R U' ) ( R' F' U' F ) ( R U R' F ) R' F' ( R U' R )",
+        "algImg": "/algs/3x3-cfop-pll-NbPerm.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "pll",
+        "algName": "Ga-perm",
+        "alg": "R2 U ( R' U R' U' ) ( R U' R2) D U' ( R' U R D' )",
+        "algImg": "/algs/3x3-cfop-pll-GaPerm.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "pll",
+        "algName": "Gb-perm",
+        "alg": "D ( R' U' R U ) D' ( R2 U R' U ) ( R U' R U' ) R2'",
+        "algImg": "/algs/3x3-cfop-pll-GbPerm.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "pll",
+        "algName": "Gc-perm",
+        "alg": "R2' F2 ( R U2 R U2' ) R' F ( R U R' U' ) R' F R2",
+        "algImg": "/algs/3x3-cfop-pll-GcPerm.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "pll",
+        "algName": "Gd-perm",
+        "alg": "(R U R' U') D (R2 U' R U') (R' U R' U) R2 D'",
+        "algImg": "/algs/3x3-cfop-pll-GdPerm.png"
       },
       {
         "cube": "3x3",
         "method": "cfop",
         "algSet": "oll",
-        "algName": "T-perm",
+        "algName": "T",
         "alg": "F (R U R' U') F'",
-        "algImg": "/algs/3x3-cfop-oll-Tperm.png"
+        "algImg": "/algs/3x3-cfop-oll-T.png"
       }
     ]
   }
