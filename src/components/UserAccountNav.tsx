@@ -37,10 +37,10 @@ const UserAccountNav = () => {
             <DropdownMenuItem asChild>
                 <Link href="/general">Settings</Link>
             </DropdownMenuItem>
-            
-            <DropdownMenuSeparator />
+
+            <DropdownMenuItem asChild>
             <Link href="/dashboard">Dashbord</Link>
-            <DropdownMenuSeparator />
+            </DropdownMenuItem>
 
             <DropdownMenuItem  className="cursor-pointer">
                 Log out
