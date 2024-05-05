@@ -10,7 +10,7 @@ const Timer = () => {
 
   useEffect(() => {
 
-    const handleKeyDown = (event: KeyboardEvent) => {
+    const handleKeyDown = (event: onKeyDown) => {
       if (event.code === "Space") {
         if (!isRunning) {
           startTimer();
