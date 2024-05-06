@@ -28,6 +28,7 @@
     "cubing": "^0.48.2",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "isomorphic-unfetch": "^4.0.2",
     "lucide": "^0.363.0",
     "lucide-react": "^0.363.0",
     "mongoose": "^8.2.3",
