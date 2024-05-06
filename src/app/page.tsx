@@ -58,7 +58,7 @@ export default function Home() {
               <h2 className="text-3xl font-bold mb-4">
                 Comprehensive Algorithm Library
               </h2>
-              <p className="text-lg mb-8">
+              <p className="text-lg mb-8"> 
                 Explore our extensive collection of algorithms for every WCA
                 event, meticulously curated and explained by experts. Master
                 the most efficient techniques and unlock your full potential.
@@ -86,17 +86,13 @@ export default function Home() {
         <MaxWidthWrapper>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
             <div>
-              <Image
-                src="/cubing-courses.jpg"
-                alt="Cubing Courses"
-                width={600}
-                height={400}
-                className="rounded-lg shadow-lg"
-              />
+              <div className="rounded-lg shadow-lg bg-gray-100 flex items-center justify-center h-[400px] overflow-hidden">
+                <span className="text-4xl font-bold">Coming Soon</span>
+              </div>
             </div>
             <div>
               <h2 className="text-3xl font-bold mb-4">
-                Personalized Cubing Courses
+                 Cubing Courses
               </h2>
               <p className="text-lg mb-8">
                 Accelerate your progress with our expertly designed cubing
