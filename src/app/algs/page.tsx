@@ -1,21 +1,98 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import Link from 'next/link'
-import Image from 'next/image'
-import algData from '../../data/alg-data.json'
 import { Progress } from '@/components/ui/progress'
 import { Skeleton } from '@/components/ui/skeleton'
+import Image from 'next/image'
+import { useEffect, useState } from 'react'
+import algData from '../../data/alg-data.json'
+import { Box, RotateCcw, RotateCw } from 'lucide-react'
+
+
+const NotationsSection = ({ onBackClick }) => {
+  return (
+    <div className="max-w-3xl mx-auto">
+  <h2 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-[#6e6e6e] sm:text-6xl mb-6">
+    Singmaster Notation
+  </h2>
+  <p className="mt-6 text-lg max-w-prose text-muted-foreground">
+    The Singmaster Notation, also known as SiNG, is the most widely used notation system for representing moves on the Rubik's Cube and other twisty puzzles. It uses a combination of letters and numbers to denote the faces and layers of the cube, as well as the direction of the moves.
+  </p>
+
+  <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-6">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+      <div className="flex items-center justify-center mb-4">
+        <div className="h-12 w-12 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-white">
+          <Box size={24} />
+        </div>
+      </div>
+      <h3 className="text-xl font-bold mb-4">Face Notation</h3>
+      <ul className="list-disc list-inside text-muted-foreground">
+        <li>
+          <span className="font-semibold">F:</span> Front face
+        </li>
+        <li>
+          <span className="font-semibold">B:</span> Back face
+        </li>
+        <li>
+          <span className="font-semibold">R:</span> Right face
+        </li>
+        <li>
+          <span className="font-semibold">L:</span> Left face
+        </li>
+        <li>
+          <span className="font-semibold">U:</span> Up face
+        </li>
+        <li>
+          <span className="font-semibold">D:</span> Down face
+        </li>
+      </ul>
+    </div>
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+      <div className="flex items-center justify-center mb-4">
+        <div className="h-12 w-12 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-white">
+          <RotateCw size={24} />
+        </div>
+      </div>
+      <h3 className="text-xl font-bold mb-4">Move Notation</h3>
+      <ul className="list-disc list-inside text-muted-foreground">
+        <li>
+          <span className="font-semibold">No suffix:</span> Clockwise 90-degree turn
+        </li>
+        <li>
+          <span className="font-semibold">':</span> Counterclockwise 90-degree turn
+        </li>
+        <li>
+          <span className="font-semibold">2:</span> 180-degree turn
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div className="mt-8">
+    <p className="text-muted-foreground">
+      For example, <span className="font-semibold">R</span> represents a clockwise 90-degree turn of the right face, while <span className="font-semibold">L'</span> represents a counterclockwise 90-degree turn of the left face.
+    </p>
+    <div className="mt-4 flex justify-center">
+      <div className="h-64 w-64 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-white">
+        <RotateCw size={48} />
+        <RotateCcw size={48} className="-rotate-90" />
+      </div>
+    </div>
+  </div>
+</div>
+  )
+}
 
 const AlgsPage = () => {
   const [selectedCube, setSelectedCube] = useState<string | null>(null)
   const [selectedMethod, setSelectedMethod] = useState<string | null>(null)
   const [selectedAlgSet, setSelectedAlgSet] = useState<string | null>(null)
+  const [showNotations, setShowNotations] = useState(false)
   const [learnedAlgs, setLearnedAlgs] = useState<{ [key: string]: boolean }>({})
   const [isLoading, setIsLoading] = useState(true)
 
@@ -35,15 +112,18 @@ const AlgsPage = () => {
     setSelectedCube(cubeName)
     setSelectedMethod(null)
     setSelectedAlgSet(null)
+    setShowNotations(false)
   }
 
   const handleMethodSelection = (methodName: string) => {
     setSelectedMethod(methodName)
     setSelectedAlgSet(null)
+    setShowNotations(false)
   }
 
   const handleAlgSetSelection = (algSetName: string) => {
     setSelectedAlgSet(algSetName)
+    setShowNotations(false)
   }
 
   const handleAlgStatusChange = (algName: string, algSet: string, isLearned: boolean) => {
@@ -257,22 +337,38 @@ const AlgsPage = () => {
         <div className="py-8">
           <h1 className="text-3xl font-bold mb-4">Algorithms</h1>
           <div className="flex justify-end mb-4">
-            {selectedAlgSet !== null && (
+            {showNotations && (
+              <Button onClick={() => setShowNotations(false)}>Back to Algorithms</Button>
+            )}
+            {!showNotations && selectedAlgSet !== null && (
               <Button onClick={() => setSelectedAlgSet(null)}>Back to Algorithm Sets</Button>
             )}
-            {selectedMethod !== null && selectedAlgSet === null && (
+            {!showNotations && selectedMethod !== null && selectedAlgSet === null && (
               <Button onClick={() => setSelectedMethod(null)}>Back to Methods</Button>
             )}
-            {selectedCube !== null && selectedMethod === null && (
+            {!showNotations && selectedCube !== null && selectedMethod === null && (
               <Button onClick={() => setSelectedCube(null)}>Back to Cubes</Button>
             )}
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {selectedCube === null && renderCubeCards()}
-            {selectedCube !== null && selectedMethod === null && renderMethodCards()}
-            {selectedMethod !== null && selectedAlgSet === null && renderAlgSetCards()}
-            {selectedAlgSet !== null && renderAlgCards()}
-          </div>
+          {showNotations ? (
+            <NotationsSection onBackClick={() => setShowNotations(false)} />
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              <Card
+                className="bg-white rounded-lg shadow-md transform hover:scale-105 duration-300"
+                onClick={() => setShowNotations(true)}
+              >
+                <CardTitle className="text-xl font-bold p-4 border-b">Notations</CardTitle>
+                <CardContent className="p-4">
+                  <p>Click here to learn about notations.</p>
+                </CardContent>
+              </Card>
+              {renderCubeCards()}
+              {selectedCube !== null && selectedMethod === null && renderMethodCards()}
+              {selectedMethod !== null && selectedAlgSet === null && renderAlgSetCards()}
+              {selectedAlgSet !== null && renderAlgCards()}
+            </div>
+          )}
         </div>
       </MaxWidthWrapper>
     </>
