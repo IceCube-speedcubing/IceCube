@@ -2,9 +2,9 @@ POST http://localhost:8080/api/user/
 Content-Type: application/json
 
 {
-    "name": "James",
+    "username": "James",
     "password": "James",
-    "email": "James@example.com"
+    "email": "james@czak.me"
 }
 
 ###
@@ -16,4 +16,16 @@ Content-Type: application/json
     "name": "James",
     "password": "James",
     "email": "James@example.com"
+}
+
+###
+
+GET http://localhost:8080/api/algs/
+Content-Type: application/json
+
+{
+    "cube": "3x3",
+    "method": "cfop",
+    "set": "pll",
+    "alg": "jperm"
 }

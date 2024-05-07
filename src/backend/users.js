@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const nodemailer = require('nodemailer');
 
 const router = express.Router();
 const user = require('./models/user.js');
@@ -8,6 +9,7 @@ const user = require('./models/user.js');
 // Make user
 router.post('/', async (req, res) => {
     try {
+        const authKey = (new Date()).getTime().toString(36) + Math.random().toString(36).slice(2);
         const name = req.body.username;
         const password = req.body.password;
         const email = req.body.email;
@@ -32,8 +34,47 @@ router.post('/', async (req, res) => {
         const newUser = new user({
             name: name,
             password: securePassword,
-            email: email
+            email: email,
+            authKey: authKey
         });
+
+        // send verfication email
+        try {
+            let transporter = nodemailer.createTransport({
+                service: "gmail",
+                auth: {
+                    type: "OAuth2",
+                    user: process.env.EMAIL,
+                    pass: process.env.EMAIL_PASSWORD,
+                    clientId: process.env.OAUTH_CLIENT_ID,
+                    clientSecret: process.env.OAUTH_CLIENT_SECRET,
+                    refreshToken: process.env.OAUTH_REFRESH_TOKEN
+                }
+            });
+
+            let mailOptions = {
+                from: process.env.EMAIL,
+                to: email,
+                subject: 'Verify IceCube Email.',
+                html: `
+                <h1>IceCube email verification</h1>
+                <h3><p>Someone has tryed to use your email ${email} to get a IceCube account.
+                <br>If it was you hit the verify link below if its not ignore this email.</p></h3>
+                <hr>
+                <a href="http://localhost:8080/api/user/verifiy/${authKey}">Verify email</a>
+                `
+            };
+
+            transporter.sendMail(mailOptions, function(err, info) {
+                if(err) {
+                    console.log("error sending mail\n"+err);
+                    return res.end("Error sending mail" + err);
+                }
+            });
+        } catch(e) {
+            res.status(400).send("Email not valid or theres been a error on the server.<br>"+e);
+            return;
+        }
 
         const newUserDatabase = await newUser.save();
 
@@ -46,6 +87,7 @@ router.post('/', async (req, res) => {
         res.status(500).json({
             message: `Error: ${e}`
         });
+        return;
     }
 });
 
@@ -81,6 +123,29 @@ router.get('/', async (req, res) => {
             error: e
         });
     }
+});
+
+router.get('/verifiy/:authKey', async (req, res) => {
+    //user.findOne({authKey: req.params.authKey}, function(err, currentUser) {
+    //    if(err) {
+    //        return res.status(400).send("Error: "+err);
+    //    }
+    //    currentUser.authKey = undefined;
+    //    currentUser.isEmailConnected = true;
+    //    currentUser.save(function(err) {
+    //        if(err) {
+    //            return res.status(400).send("Error: "+err);
+    //        }
+    //        return res.send("Email verified");
+    //    });
+    //});
+
+    const currentUser = await user.findOne({authKey: req.params.authKey});
+    currentUser.authKey = "VERIFIED";
+    currentUser.isEmailConnected = true;
+    await currentUser.save();
+
+    res.send("Email verified");
 });
 
 // 404

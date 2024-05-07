@@ -25,6 +25,15 @@ const userSchema = new mongoose.Schema({
         type: Array,
         required: true,
         default: []
+    },
+    isEmailConnected: {
+        type: Boolean,
+        required: true,
+        default: false
+    },
+    authKey: {
+        type: String,
+        required: true
     }
 });
 
