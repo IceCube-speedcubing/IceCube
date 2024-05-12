@@ -7,38 +7,44 @@ const Timer = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [scrambleString, setScrambleString] = useState("");
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const [intervalId, setIntervalId] = useState<ReturnType<typeof startTimer> | null>(null);
 
-  useEffect(() => {
+  
+const startTimer = () => {
+  const startTime = Date.now() - time;
+  setIsRunning(true);
+  setTime(0);
+  const newIntervalId = setInterval(() => setTime(Date.now() - startTime), 10);
+  setIntervalId(newIntervalId);
 
-    const handleKeyDown = (event: onKeyDown) => {
-      if (event.code === "Space") {
-        if (!isRunning) {
-          startTimer();
-        } else {
-          stopTimer();
-        }
-      }
-    };
+  return newIntervalId;
+};
 
-    document.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [isRunning]);
-
-  const startTimer = () => {
-    const startTime = Date.now() - time;
-    timerRef.current = setInterval(() => {
-      setTime(Date.now() - startTime);
-    }, 10);
-    setIsRunning(true);
-  };
-
-  const stopTimer = () => {
-    clearInterval(timerRef.current as NodeJS.Timeout);
+const stopTimer = () => {
+  if (intervalId) {
+    clearInterval(intervalId);
     setIsRunning(false);
+    setIntervalId(null);
+  }
+};
+
+useEffect(() => {
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.code === "Space") {
+      if (!isRunning) {
+        startTimer();
+      } else {
+        stopTimer();
+      }
+    }
   };
+
+  window.addEventListener("keydown", handleKeyDown);
+
+  return () => {
+    window.removeEventListener("keydown", handleKeyDown);
+  };
+}, [isRunning]);
 
   const resetTimer = () => {
     setTime(0);

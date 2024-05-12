@@ -1,23 +1,33 @@
-'use client'
+"use client"
 
-import MaxWidthWrapper from '@/components/MaxWidthWrapper'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Progress } from '@/components/ui/progress'
-import { Skeleton } from '@/components/ui/skeleton'
-import Image from 'next/image'
-import { useEffect, useState } from 'react'
-import algData from '../../data/alg-data.json'
-import { Box, RotateCcw, RotateCw } from 'lucide-react'
+import MaxWidthWrapper from "../../components/MaxWidthWrapper";
+import { Button } from "../../components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import algData from "../../data/alg-data.json";
+import { Box, RotateCcw, RotateCw } from "lucide-react";
+import React from 'react';
 
+interface Alg {
+  cube: string;
+  method: string;
+  algSet: string;
+  algName: string;
+  alg: string;
+  algImg: string;
+  learned?: boolean;
+}
 
-const NotationsSection = ({ onBackClick }) => {
+const NotationsSection = ({ onBackClick }: { onBackClick: () => void }) => {
   return (
     <div className="max-w-3xl mx-auto">
   <h2 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-[#6e6e6e] sm:text-6xl mb-6">
-    Singmaster Notation
+    Singmaster Notation (SiNG)
   </h2>
   <p className="mt-6 text-lg max-w-prose text-muted-foreground">
     The Singmaster Notation, also known as SiNG, is the most widely used notation system for representing moves on the Rubik&apos;s Cube and other twisty puzzles. It uses a combination of letters and numbers to denote the faces and layers of the cube, as well as the direction of the moves.
@@ -85,76 +95,100 @@ const NotationsSection = ({ onBackClick }) => {
     </div>
   </div>
 </div>
-  )
-}
+  );
+};
 
 const AlgsPage = () => {
-  const [selectedCube, setSelectedCube] = useState<string | null>(null)
-  const [selectedMethod, setSelectedMethod] = useState<string | null>(null)
-  const [selectedAlgSet, setSelectedAlgSet] = useState<string | null>(null)
-  const [showNotations, setShowNotations] = useState(false)
-  const [learnedAlgs, setLearnedAlgs] = useState<{ [key: string]: boolean }>({})
-  const [isLoading, setIsLoading] = useState(true)
+  const [selectedCube, setSelectedCube] = useState<string | null>(null);
+  const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
+  const [selectedAlgSet, setSelectedAlgSet] = useState<string | null>(null);
+  const [showNotations, setShowNotations] = useState(false);
+  const [learnedAlgs, setLearnedAlgs] = useState<{ [key: string]: boolean }>(
+    {}
+  );
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const storedLearnedAlgs = localStorage.getItem('learnedAlgs')
+    const storedLearnedAlgs = localStorage.getItem("learnedAlgs");
     if (storedLearnedAlgs) {
-      setLearnedAlgs(JSON.parse(storedLearnedAlgs))
+      setLearnedAlgs(JSON.parse(storedLearnedAlgs));
     }
-    setIsLoading(false)
-  }, [])
+    setIsLoading(false);
+  }, []);
 
   useEffect(() => {
-    localStorage.setItem('learnedAlgs', JSON.stringify(learnedAlgs))
-  }, [learnedAlgs])
+    localStorage.setItem("learnedAlgs", JSON.stringify(learnedAlgs));
+  }, [learnedAlgs]);
+
+  useEffect(() => {
+    localStorage.setItem("learnedAlgs", JSON.stringify(learnedAlgs));
+  }, [learnedAlgs]);
 
   const handleCubeSelection = (cubeName: string) => {
-    setSelectedCube(cubeName)
-    setSelectedMethod(null)
-    setSelectedAlgSet(null)
-    setShowNotations(false)
-  }
+    setSelectedCube(cubeName);
+    setSelectedMethod(null);
+    setSelectedAlgSet(null);
+    setShowNotations(false);
+  };
 
   const handleMethodSelection = (methodName: string) => {
-    setSelectedMethod(methodName)
-    setSelectedAlgSet(null)
-    setShowNotations(false)
-  }
+    setSelectedMethod(methodName);
+    setSelectedAlgSet(null);
+    setShowNotations(false);
+  };
 
   const handleAlgSetSelection = (algSetName: string) => {
-    setSelectedAlgSet(algSetName)
-    setShowNotations(false)
-  }
+    setSelectedAlgSet(algSetName);
+    setShowNotations(false);
+  };
 
-  const handleAlgStatusChange = (algName: string, algSet: string, isLearned: boolean) => {
-    const algKey = `${algName}-${algSet}`
+  const handleAlgStatusChange = (
+    algName: string,
+    algSet: string,
+    isLearned: boolean
+  ) => {
+    const algKey = `${algName}-${algSet}`;
     setLearnedAlgs((prevLearnedAlgs) => ({
       ...prevLearnedAlgs,
       [algKey]: isLearned,
-    }))
-  }
+    }));
+  };
 
   const getLearnedAlgsPercentage = (algSet: string) => {
-    const algs = algData[1].algs.filter(
-      (alg) => alg.cube === selectedCube && alg.method === selectedMethod && alg.algSet === algSet
-    )
-
-    const learnedAlgsCount = algs.filter((alg) => learnedAlgs[`${alg.algName}-${algSet}`]).length
-    const totalAlgsCount = algs.length
-
-    return totalAlgsCount > 0 ? (learnedAlgsCount / totalAlgsCount) * 100 : 0
-  }
+    if (algData[1] && algData[1].algs) {
+      const algs = algData[1].algs.filter(
+        (alg) =>
+          alg.cube === selectedCube &&
+          alg.method === selectedMethod &&
+          alg.algSet === algSet
+      );
+      const learnedAlgs: { [key: string]: Alg } = algs.reduce((acc, alg) => {
+        const key = `${alg.algName}-${algSet}`;
+        if (learnedAlgs[key]) {
+          acc[key] = alg;
+        }
+        return acc;
+      }, {} as { [key: string]: Alg });
+      return (Object.values(learnedAlgs).length / algs.length) * 100;
+    }
+    return 0;
+  };
 
   const getLearnedMethodsPercentage = (method: string) => {
-    const algs = algData[1].algs.filter(
-      (alg) => alg.cube === selectedCube && alg.method === method
-    )
+    if (algData[1] && algData[1].algs) {
+      const algs = algData[1].algs.filter(
+        (alg) => alg.cube === selectedCube && alg.method === method
+      );
 
-    const learnedAlgsCount = algs.filter((alg) => learnedAlgs[`${alg.algName}-${alg.algSet}`]).length
-    const totalAlgsCount = algs.length
+      const learnedAlgsCount = algs.filter(
+        (alg) => learnedAlgs[`${alg.algName}-${alg.algSet}`]
+      ).length;
+      const totalAlgsCount = algs.length;
 
-    return totalAlgsCount > 0 ? (learnedAlgsCount / totalAlgsCount) * 100 : 0
-  }
+      return totalAlgsCount > 0 ? (learnedAlgsCount / totalAlgsCount) * 100 : 0;
+    }
+    return 0;
+  };
 
   const renderCubeCards = () => {
     return isLoading ? (
@@ -170,91 +204,112 @@ const AlgsPage = () => {
           </Card>
         ))}
       </div>
-    ) : (
+    ) : algData[0] && algData[0].cubes ? (
       algData[0].cubes.map((cube) => (
         <Card
           key={cube.name}
           className="bg-white rounded-lg shadow-md transform hover:scale-105 duration-300"
           onClick={() => handleCubeSelection(cube.name)}
         >
-          <CardTitle className="text-xl font-bold p-4 border-b">{cube.name}</CardTitle>
-          <CardContent className="p-4">
-            <Image src={cube.cubeImg} width={300} height={300} alt={cube.name} className="rounded-lg" />
-          </CardContent>
-        </Card>
-      ))
-    )
-  }
-
-  const renderMethodCards = () => {
-    const selectedCubeData = algData[0].cubes.find((cube) => cube.name === selectedCube)
-    if (!selectedCubeData) return null
-
-    return isLoading ? (
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {Array.from({ length: 4 }).map((_, index) => (
-          <Card key={index} className="bg-white rounded-lg shadow-md">
-            <CardHeader>
-              <Skeleton className="h-6 w-1/2 rounded-md" />
-            </CardHeader>
-            <CardContent className="p-4">
-              <Skeleton className="h-48 w-full rounded-md" />
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    ) : (
-      selectedCubeData.methods.map((method) => (
-        <Card
-          key={method.name}
-          className="bg-white rounded-lg shadow-md transform hover:scale-105 duration-300"
-          onClick={() => handleMethodSelection(method.name)}
-        >
-          <CardTitle className="text-xl font-bold p-4 border-b flex items-center justify-between">
-            <span className="flex-1">{method.name}</span>
-            <div className="flex items-center ml-2">
-              <span className="text-sm font-semibold mr-2">
-                ({getLearnedMethodsPercentage(method.name).toFixed(0)}% learned)
-              </span>
-              <Progress
-                value={getLearnedMethodsPercentage(method.name)}
-                className="w-20 h-4 rounded-full bg-muted"
-              />
-            </div>
+          <CardTitle className="text-xl font-bold p-4 border-b">
+            {cube.name}
           </CardTitle>
           <CardContent className="p-4">
-            <Image src={method.methodImg} width={300} height={300} alt={method.name} className="rounded-lg" />
+            <Image
+              src={cube.cubeImg}
+              width={300}
+              height={300}
+              alt={cube.name}
+              className="rounded-lg"
+            />
           </CardContent>
         </Card>
       ))
-    )
-  }
+    ) : null;
+  };
 
-  const renderAlgSetCards = () => {
-    const selectedCubeData = algData[0].cubes.find((cube) => cube.name === selectedCube)
-    const selectedMethodData = selectedCubeData?.methods.find((method) => method.name === selectedMethod)
-    if (!selectedMethodData) return null
+  const renderMethodCards = () => {
+    if (algData[0] && algData[0].cubes) {
+      const selectedCubeData = algData[0].cubes.find(
+        (cube) => cube.name === selectedCube
+      );
+      if (!selectedCubeData) return null;
 
-    return isLoading ? (
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {Array.from({ length: 4 }).map((_, index) => (
-          <Card key={index} className="bg-white rounded-lg shadow-md">
-            <CardHeader>
-              <Skeleton className="h-6 w-1/2 rounded-md" />
-            </CardHeader>
+      return isLoading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <Card key={index} className="bg-white rounded-lg shadow-md">
+              <CardHeader>
+                <Skeleton className="h-6 w-1/2 rounded-md" />
+              </CardHeader>
+              <CardContent className="p-4">
+                <Skeleton className="h-48 w-full rounded-md" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        selectedCubeData.methods.map((method) => (
+          <Card
+            key={method.name}
+            className="bg-white rounded-lg shadow-md transform hover:scale-105 duration-300"
+            onClick={() => handleMethodSelection(method.name)}
+          >
+            <CardTitle className="text-xl font-bold p-4 border-b flex items-center justify-between">
+              <span className="flex-1">{method.name}</span>
+              <div className="flex items-center ml-2">
+                <span className="text-sm font-semibold mr-2">
+                  ({getLearnedMethodsPercentage(method.name).toFixed(0)}%
+                  learned)
+                </span>
+                <Progress
+                  value={getLearnedMethodsPercentage(method.name)}
+                  className="w-20 h-4 rounded-full bg-muted"
+                />
+              </div>
+            </CardTitle>
             <CardContent className="p-4">
-              <Skeleton className="h-48 w-full rounded-md" />
+              <Image
+                src={method.methodImg}
+                width={300}
+                height={300}
+                alt={method.name}
+                className="rounded-lg"
+              />
             </CardContent>
           </Card>
-        ))}
-      </div>
-    ) : (
+        ))
+      );
+    }
+    return null;
+  };
+
+  const renderAlgSetCards = () => {
+    if (algData[0] && algData[0].cubes) {
+      const selectedCubeData = algData[0].cubes.find((cube) => cube.name === selectedCube);
+      const selectedMethodData = selectedCubeData?.methods.find((method) => method.name === selectedMethod);
+      if (!selectedMethodData) return null;
+  
+      return isLoading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <Card key={index} className="bg-white rounded-lg shadow-md">
+              <CardHeader>
+                <Skeleton className="h-6 w-1/2 rounded-md" />
+              </CardHeader>
+              <CardContent className="p-4">
+                <Skeleton className="h-48 w-full rounded-md" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+     ) : (
       selectedMethodData.algSets.map((algSet) => {
-        const algs = algData[1].algs.filter(
+        const algs = algData[1]?.algs?.filter(
           (alg) => alg.cube === selectedCube && alg.method === selectedMethod && alg.algSet === algSet.name
-        )
-        const learnedAlgsCount = algs.filter((alg) => learnedAlgs[`${alg.algName}-${algSet.name}`]).length
-        const totalAlgsCount = algs.length
+        ) || [];
+        const learnedAlgsCount = algs.filter((alg) => learnedAlgs[`${alg.algName}-${algSet.name}`]).length;
+        const totalAlgsCount = algs.length;
 
         return (
           <Card
@@ -275,18 +330,28 @@ const AlgsPage = () => {
               </div>
             </CardTitle>
             <CardContent className="p-4">
-              <Image src={algSet.algSetImg} width={300} height={300} alt={algSet.name} className="rounded-lg" />
+              <Image
+                src={algSet.algSetImg}
+                width={300}
+                height={300}
+                alt={algSet.name}
+                className="rounded-lg"
+              />
             </CardContent>
           </Card>
-        )
+        );
       })
-    )
-  }
+    );
+  };
+}
 
-  const renderAlgCards = () => {
-    const algs = algData[1].algs.filter(
-      (alg) => alg.cube === selectedCube && alg.method === selectedMethod && alg.algSet === selectedAlgSet
-    )
+const renderAlgCards = () => {
+  const algs = algData[1]?.algs?.filter(
+    (alg) =>
+      alg.cube === selectedCube &&
+      alg.method === selectedMethod &&
+      alg.algSet === selectedAlgSet
+  ) || [];
 
     return isLoading ? (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -307,29 +372,48 @@ const AlgsPage = () => {
           key={alg.algName}
           className="bg-white rounded-lg shadow-md transform hover:scale-105 duration-300"
         >
-          <CardTitle className="text-xl font-bold p-4 border-b">{alg.algName}</CardTitle>
+          <CardTitle className="text-xl font-bold p-4 border-b">
+            {alg.algName}
+          </CardTitle>
           <CardContent className="p-4">
-            <Image src={alg.algImg} width={300} height={300} alt={alg.algName} className="rounded-lg" />
+            <Image
+              src={alg.algImg}
+              width={300}
+              height={300}
+              alt={alg.algName}
+              className="rounded-lg"
+            />
             <div className="mt-4">
               <p className="text-gray-600">Algorithm: {alg.alg}</p>
               <div className="flex items-center mt-2">
-                <Label htmlFor={`status-${alg.algName}-${selectedAlgSet}`} className="mr-2">
+                <Label
+                  htmlFor={`status-${alg.algName}-${selectedAlgSet}`}
+                  className="mr-2"
+                >
                   Status:
                 </Label>
                 <Input
                   id={`status-${alg.algName}-${selectedAlgSet}`}
                   type="checkbox"
                   className="rounded-full"
-                  checked={learnedAlgs[`${alg.algName}-${selectedAlgSet}`] || false}
-                  onChange={(e) => handleAlgStatusChange(alg.algName, selectedAlgSet!, e.target.checked)}
+                  checked={
+                    learnedAlgs[`${alg.algName}-${selectedAlgSet}`] || false
+                  }
+                  onChange={(e) =>
+                    handleAlgStatusChange(
+                      alg.algName,
+                      selectedAlgSet!,
+                      e.target.checked
+                    )
+                  }
                 />
               </div>
             </div>
           </CardContent>
         </Card>
       ))
-    )
-  }
+    );
+  };
 
   return (
     <>
@@ -338,17 +422,29 @@ const AlgsPage = () => {
           <h1 className="text-3xl font-bold mb-4">Algorithms</h1>
           <div className="flex justify-end mb-4">
             {showNotations && (
-              <Button onClick={() => setShowNotations(false)}>Back to Algorithms</Button>
+              <Button onClick={() => setShowNotations(false)}>
+                Back to Algorithms
+              </Button>
             )}
             {!showNotations && selectedAlgSet !== null && (
-              <Button onClick={() => setSelectedAlgSet(null)}>Back to Algorithm Sets</Button>
+              <Button onClick={() => setSelectedAlgSet(null)}>
+                Back to Algorithm Sets
+              </Button>
             )}
-            {!showNotations && selectedMethod !== null && selectedAlgSet === null && (
-              <Button onClick={() => setSelectedMethod(null)}>Back to Methods</Button>
-            )}
-            {!showNotations && selectedCube !== null && selectedMethod === null && (
-              <Button onClick={() => setSelectedCube(null)}>Back to Cubes</Button>
-            )}
+            {!showNotations &&
+              selectedMethod !== null &&
+              selectedAlgSet === null && (
+                <Button onClick={() => setSelectedMethod(null)}>
+                  Back to Methods
+                </Button>
+              )}
+            {!showNotations &&
+              selectedCube !== null &&
+              selectedMethod === null && (
+                <Button onClick={() => setSelectedCube(null)}>
+                  Back to Cubes
+                </Button>
+              )}
           </div>
           {showNotations ? (
             <NotationsSection onBackClick={() => setShowNotations(false)} />
@@ -358,21 +454,27 @@ const AlgsPage = () => {
                 className="bg-white rounded-lg shadow-md transform hover:scale-105 duration-300"
                 onClick={() => setShowNotations(true)}
               >
-                <CardTitle className="text-xl font-bold p-4 border-b">Notations</CardTitle>
+                <CardTitle className="text-xl font-bold p-4 border-b">
+                  Notations
+                </CardTitle>
                 <CardContent className="p-4">
                   <p>Click here to learn about notations.</p>
                 </CardContent>
               </Card>
               {renderCubeCards()}
-              {selectedCube !== null && selectedMethod === null && renderMethodCards()}
-              {selectedMethod !== null && selectedAlgSet === null && renderAlgSetCards()}
+              {selectedCube !== null &&
+                selectedMethod === null &&
+                renderMethodCards()}
+              {selectedMethod !== null &&
+                selectedAlgSet === null &&
+                renderAlgSetCards()}
               {selectedAlgSet !== null && renderAlgCards()}
             </div>
           )}
         </div>
       </MaxWidthWrapper>
     </>
-  )
+  );
 }
 
 export default AlgsPage

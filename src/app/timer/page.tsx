@@ -34,7 +34,6 @@ const TimerPage = () => {
       <CubeTimer />
     </div>
     <footer>
-        <DisplayCube cube={scrambledCube} />
     </footer>
         </>
     )

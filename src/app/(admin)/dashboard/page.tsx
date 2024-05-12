@@ -33,11 +33,37 @@ import {
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+interface Alg {
+  cube: string;
+  method: string;
+  algSet: string;
+  algName: string;
+  alg: string;
+  algImg: string;
+}
+
 const AdminPage = () => {
-  const [cubes, setCubes] = useState([]);
-  const [algs, setAlgs] = useState([]);
-  const [methods, setMethods] = useState([]);
-  const [algSets, setAlgSets] = useState([]);
+  const [cubes, setCubes] = useState<string[]>([]);
+  const [algs, setAlgs] = useState<Alg[]>([]);
+  const [methods, setMethods] = useState<string[]>([]);
+  const [algSets, setAlgSets] = useState<string[]>([]);
+
+  const [newAlgCube, setNewAlgCube] = useState("");
+  const [newAlgMethod, setNewAlgMethod] = useState("");
+  const [newAlgSet, setNewAlgSet] = useState("");
+  const [newAlgName, setNewAlgName] = useState("");
+  const [newAlgString, setNewAlgString] = useState("");
+  const [newAlgImg, setNewAlgImg] = useState<File | null>(null);
+  const [isAddAlgDialogOpen, setIsAddAlgDialogOpen] = useState(false);
+
+  const [editAlgIndex, setEditAlgIndex] = useState(-1);
+  const [editAlgCube, setEditAlgCube] = useState("");
+  const [editAlgMethod, setEditAlgMethod] = useState("");
+  const [editAlgSet, setEditAlgSet] = useState("");
+  const [editAlgName, setEditAlgName] = useState("");
+  const [editAlgString, setEditAlgString] = useState("");
+  const [editAlgImg, setEditAlgImg] = useState<File | null>(null);
+  const [isEditAlgDialogOpen, setIsEditAlgDialogOpen] = useState(false);
 
   useEffect(() => {
     if (algData && algData.length > 0) {
@@ -45,7 +71,7 @@ const AdminPage = () => {
         setCubes(algData[0].cubes.map((cube) => cube.name));
       }
       if (algData[1] && algData[1].algs) {
-        setAlgs(algData[1].algs);
+        setAlgs(algData[1].algs as Alg[]);
 
         const uniqueMethods = new Set(algData[1].algs.map((alg) => alg.method));
         setMethods(Array.from(uniqueMethods));
@@ -56,33 +82,7 @@ const AdminPage = () => {
     }
   }, []);
 
-
-  const [newAlgCube, setNewAlgCube] = useState("");
-  const [newAlgMethod, setNewAlgMethod] = useState("");
-  const [newAlgSet, setNewAlgSet] = useState("");
-  const [newAlgName, setNewAlgName] = useState("");
-  const [newAlgString, setNewAlgString] = useState("");
-  const [newAlgImg, setNewAlgImg] = useState(null);
-  const [isAddAlgDialogOpen, setIsAddAlgDialogOpen] = useState(false);
-
-  const [editAlgIndex, setEditAlgIndex] = useState(-1);
-  const [editAlgCube, setEditAlgCube] = useState("");
-  const [editAlgMethod, setEditAlgMethod] = useState("");
-  const [editAlgSet, setEditAlgSet] = useState("");
-  const [editAlgName, setEditAlgName] = useState("");
-  const [editAlgString, setEditAlgString] = useState("");
-  const [editAlgImg, setEditAlgImg] = useState(null);
-  const [isEditAlgDialogOpen, setIsEditAlgDialogOpen] = useState(false);
-
-  useEffect(() => {
-    const uniqueMethods = new Set(algs.map((alg) => alg.method));
-    setMethods(Array.from(uniqueMethods));
-
-    const uniqueAlgSets = new Set(algs.map((alg) => alg.algSet));
-    setAlgSets(Array.from(uniqueAlgSets));
-  }, [algs]);
-
-  const handleAddAlg = (e) => {
+  const handleAddAlg = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (
       newAlgCube &&
@@ -92,7 +92,7 @@ const AdminPage = () => {
       newAlgString &&
       newAlgImg
     ) {
-      const newAlgorithm = {
+      const newAlgorithm: Alg = {
         cube: newAlgCube,
         method: newAlgMethod,
         algSet: newAlgSet,
@@ -106,24 +106,19 @@ const AdminPage = () => {
 
       // Save the new algorithm to the JSON file
       const updatedData = [...algData];
-      updatedData[1].algs[editAlgIndex] = updatedAlg;
-      saveDataToFile(updatedData);
+      if (updatedData[1] && updatedData[1].algs) {
+        updatedData[1].algs.push(newAlgorithm);
+        saveDataToFile(updatedData);
+      }
 
       const updatedAlgs = [...algs];
-      updatedAlgs[editAlgIndex] = updatedAlg;
+      updatedAlgs.push(newAlgorithm);
       setAlgs(updatedAlgs);
-      setEditAlgIndex(-1);
-      setEditAlgCube("");
-      setEditAlgMethod("");
-      setEditAlgSet("");
-      setEditAlgName("");
-      setEditAlgString("");
-      setEditAlgImg(null);
-      setIsEditAlgDialogOpen(false);
+      handleAddAlgDialogClose();
     }
   };
 
-  const handleEditAlg = (index) => {
+  const handleEditAlg = (index: number) => {
     const alg = algs[index];
     setEditAlgIndex(index);
     setEditAlgCube(alg.cube);
@@ -131,7 +126,12 @@ const AdminPage = () => {
     setEditAlgSet(alg.algSet);
     setEditAlgName(alg.algName);
     setEditAlgString(alg.alg);
-    setEditAlgImg(alg.algImg);
+    if (typeof alg.algImg === "string") {
+      const file = new File([alg.algImg], "image.png", { type: "image/png" });
+      setEditAlgImg(file);
+    } else {
+      setEditAlgImg(null);
+    }
     setIsEditAlgDialogOpen(true);
   };
 
@@ -144,7 +144,7 @@ const AdminPage = () => {
       editAlgString &&
       editAlgImg
     ) {
-      const updatedAlg = {
+      const updatedAlg: Alg = {
         cube: editAlgCube,
         method: editAlgMethod,
         algSet: editAlgSet,
@@ -185,18 +185,20 @@ const AdminPage = () => {
     setNewAlgImg(null);
   };
 
-  const handleDeleteAlg = (index) => {
+  const handleDeleteAlg = (index: number) => {
     // Remove the algorithm from the JSON file
     const updatedData = [...algData];
-    updatedData[1].algs.splice(index, 1);
-    saveDataToFile(updatedData);
+    if (updatedData[1] && updatedData[1].algs) {
+      updatedData[1].algs.splice(index, 1);
+      saveDataToFile(updatedData);
+    }
 
     const updatedAlgs = [...algs];
     updatedAlgs.splice(index, 1);
     setAlgs(updatedAlgs);
   };
 
-  const saveDataToFile = async (data) => {
+  const saveDataToFile = async (data: any) => {
     try {
       const response = await fetch("/api/saveData", {
         method: "POST",
@@ -508,10 +510,15 @@ const AdminPage = () => {
               </Label>
               <div className="col-span-3 flex items-center">
                 <Input
-                  id="editAlgImg"
                   type="file"
                   accept="image/*"
-                  onChange={(e) => setEditAlgImg(e.target.files[0])}
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files.length > 0) {
+                      setEditAlgImg(e.target.files[0]);
+                    } else {
+                      setEditAlgImg(null);
+                    }
+                  }}
                   className="flex-1"
                 />
                 {editAlgImg && (
@@ -658,10 +665,15 @@ const AdminPage = () => {
                 </Label>
                 <div className="col-span-3 flex items-center">
                   <Input
-                    id="newAlgImg"
                     type="file"
                     accept="image/*"
-                    onChange={(e) => setNewAlgImg(e.target.files[0])}
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files.length > 0) {
+                        setNewAlgImg(e.target.files[0]);
+                      } else {
+                        setNewAlgImg(null);
+                      }
+                    }}
                     className="flex-1"
                   />
                   {newAlgImg && (
@@ -700,7 +712,15 @@ const AdminPage = () => {
   );
 };
 
-const NavLink = ({ href, icon, children }) => (
+const NavLink = ({
+  href,
+  icon,
+  children,
+}: {
+  href: string;
+  icon: React.ReactNode;
+  children: React.ReactNode;
+}) => (
   <Link
     href={href}
     className="flex items-center gap-2 rounded-md px-2 py-1 hover:bg-muted/20"
