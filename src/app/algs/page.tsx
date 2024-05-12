@@ -20,7 +20,7 @@ const NotationsSection = ({ onBackClick }) => {
     Singmaster Notation
   </h2>
   <p className="mt-6 text-lg max-w-prose text-muted-foreground">
-    The Singmaster Notation, also known as SiNG, is the most widely used notation system for representing moves on the Rubik's Cube and other twisty puzzles. It uses a combination of letters and numbers to denote the faces and layers of the cube, as well as the direction of the moves.
+    The Singmaster Notation, also known as SiNG, is the most widely used notation system for representing moves on the Rubik&apos;s Cube and other twisty puzzles. It uses a combination of letters and numbers to denote the faces and layers of the cube, as well as the direction of the moves.
   </p>
 
   <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -64,7 +64,7 @@ const NotationsSection = ({ onBackClick }) => {
           <span className="font-semibold">No suffix:</span> Clockwise 90-degree turn
         </li>
         <li>
-          <span className="font-semibold">':</span> Counterclockwise 90-degree turn
+          <span className="font-semibold">&apos;:</span> Counterclockwise 90-degree turn
         </li>
         <li>
           <span className="font-semibold">2:</span> 180-degree turn
@@ -75,7 +75,7 @@ const NotationsSection = ({ onBackClick }) => {
 
   <div className="mt-8">
     <p className="text-muted-foreground">
-      For example, <span className="font-semibold">R</span> represents a clockwise 90-degree turn of the right face, while <span className="font-semibold">L'</span> represents a counterclockwise 90-degree turn of the left face.
+      For example, <span className="font-semibold">R</span> represents a clockwise 90-degree turn of the right face, while <span className="font-semibold">L&apos;</span> represents a counterclockwise 90-degree turn of the left face.
     </p>
     <div className="mt-4 flex justify-center">
       <div className="h-64 w-64 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-white">

@@ -34,10 +34,28 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const AdminPage = () => {
-  const [cubes, setCubes] = useState(algData[0].cubes.map((cube) => cube.name));
-  const [algs, setAlgs] = useState(algData[1].algs);
+  const [cubes, setCubes] = useState([]);
+  const [algs, setAlgs] = useState([]);
   const [methods, setMethods] = useState([]);
   const [algSets, setAlgSets] = useState([]);
+
+  useEffect(() => {
+    if (algData && algData.length > 0) {
+      if (algData[0] && algData[0].cubes) {
+        setCubes(algData[0].cubes.map((cube) => cube.name));
+      }
+      if (algData[1] && algData[1].algs) {
+        setAlgs(algData[1].algs);
+
+        const uniqueMethods = new Set(algData[1].algs.map((alg) => alg.method));
+        setMethods(Array.from(uniqueMethods));
+
+        const uniqueAlgSets = new Set(algData[1].algs.map((alg) => alg.algSet));
+        setAlgSets(Array.from(uniqueAlgSets));
+      }
+    }
+  }, []);
+
 
   const [newAlgCube, setNewAlgCube] = useState("");
   const [newAlgMethod, setNewAlgMethod] = useState("");
