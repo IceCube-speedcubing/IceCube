@@ -9,7 +9,7 @@ import UserAccountNav from "./UserAccountNav";
 
 const Navbar = async () => {
 
-  const user = false
+  const user = true
   
   return (
     <div className="bg-white dark:bg-[#020817] sticky z-50 top-0 inset-0 inset-x-0 h-16">

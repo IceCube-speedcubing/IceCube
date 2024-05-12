@@ -225,16 +225,7 @@ const AdminPage = () => {
       <div className="flex min-h-screen flex-col md:flex-row">
         {/* Sidebar */}
         <aside className="fixed inset-y-0 left-0 hidden h-full border-r bg-white md:block">
-          <div className="flex h-full max-h-screen flex-col">
-            <div className="flex items-center justify-between border-b px-4 py-2">
-              <span className="flex items-center gap-2 text-lg font-semibold">
-                <img src="/logo.svg" alt="Logo" className="h-6 w-6" />
-                Acme Inc
-              </span>
-              <Button variant="ghost" className="md:hidden">
-                <Menu className="h-5 w-5" />
-              </Button>
-            </div>
+          <div className="flex h-full max-h-screen flex-col pt-16">
             <div className="flex-1 overflow-y-auto px-4 py-2">
               <nav className="grid items-start text-sm font-medium">
                 <div className="mt-4 space-y-2">
