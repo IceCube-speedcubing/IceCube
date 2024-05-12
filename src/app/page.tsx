@@ -51,7 +51,7 @@ export default function Home() {
         </div>
       </MaxWidthWrapper>
 
-      <section className="bg-gray-100 py-20">
+      <section className="bg-gray-100 py-20 dark:bg-[#00253E]">
         <MaxWidthWrapper>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
             <div>
@@ -82,11 +82,11 @@ export default function Home() {
         </MaxWidthWrapper>
       </section>
 
-      <section className="bg-white py-20">
+      <section className="bg-white py-20 dark:bg-[#001A]">
         <MaxWidthWrapper>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
             <div>
-              <div className="rounded-lg shadow-lg bg-gray-100 flex items-center justify-center h-[400px] overflow-hidden">
+              <div className="rounded-lg shadow-lg bg-gray-100 flex items-center justify-center h-[400px] overflow-hidden dark:bg-[#010313]">
                 <span className="text-4xl font-bold">Coming Soon</span>
               </div>
             </div>
@@ -110,7 +110,7 @@ export default function Home() {
         </MaxWidthWrapper>
       </section>
 
-      <section className="border-t border-gray-200 bg-gray-50 dark:bg-[#0a0e1e]">
+      <section className="bg-gray-50 dark:bg-[#001A]">
         <MaxWidthWrapper className="py-20">
           <div className="grid grid-cols-1 gap-y-12 sm:grid-cols-2 sm:gap-x-6 lg:grid-cols-3 lg:gap-x-8 lg:gap-y-0">
             {perks.map((perk) => (
