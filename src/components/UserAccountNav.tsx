@@ -35,7 +35,7 @@ const UserAccountNav = () => {
             <DropdownMenuSeparator className="h-0.5 bg-gray-300 dark:bg-[#002E4E]" />
 
             <DropdownMenuItem asChild>
-                <Link href="/general" className="cursor-pointer dark:hover:bg-[#002137]">Settings</Link>
+                <Link href="/settings/general" className="cursor-pointer dark:hover:bg-[#002137]">Settings</Link>
             </DropdownMenuItem>
 
             <DropdownMenuItem asChild>
