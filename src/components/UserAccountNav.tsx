@@ -13,40 +13,50 @@ import UserAvatar from "./UserAvatar"
 const UserAccountNav = () => {
 
     const user = "admin"
-    const admin = user === "admin" 
+    const isAdmin = user === "admin"
+    
  
-    return (<DropdownMenu>
-        <DropdownMenuTrigger asChild className="overflow-visible">
-            <Button variant='ghost' size='sm' className="relative hover:bg-white dark:hover:bg-[#020817]">
-                <UserAvatar />
-            </Button>
-        </DropdownMenuTrigger>
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild className="overflow-visible">
+                <Button variant='ghost' size='sm' className="relative hover:bg-white">
+                    <UserAvatar />
+                </Button>
+            </DropdownMenuTrigger>
 
-        <DropdownMenuContent className="bg-white w-60 dark:bg-[#00406C]" align="end">
-            <div className="flex items-center justify-start gap-2 p-2">
-                <div className="flex flex-col space-y-0.5 leading-none">
-                    <p className="text-dm font-bold">
-                        Username
-                    </p>
+            <DropdownMenuContent className="bg-white w-60" align="end">
+                <div className="flex items-center justify-start gap-2 p-2">
+                    <div className="flex flex-col space-y-0.5 leading-none">
+                        <p className="font-medium text-dm text-black">
+                            Username
+                        </p>
+                    </div>
                 </div>
-            </div>
-            
 
-            <DropdownMenuSeparator className="h-0.5 bg-gray-300 dark:bg-[#002E4E]" />
+                <DropdownMenuSeparator className="h-0.5 bg-gray-300" />
 
-            <DropdownMenuItem asChild>
-                <Link href="/settings/general" className="cursor-pointer dark:hover:bg-[#002137]">Settings</Link>
-            </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                    <Link href="/settings/general">Settings</Link>
+                </DropdownMenuItem>
 
-            <DropdownMenuItem asChild>
-            <Link href="/dashboard" className="cursor-pointer dark:hover:bg-[#002137]">Dashbord</Link>
-            </DropdownMenuItem>
+                {isAdmin && (
+                    <>
+                    <DropdownMenuSeparator />
+                        
+                        <DropdownMenuItem asChild>
+                        <Link href="/dashboard">Dashboard</Link>
+                        </DropdownMenuItem>
 
-            <DropdownMenuItem  className="cursor-pointer dark:hover:bg-[#002137]">
-                Log out
-            </DropdownMenuItem>
-        </DropdownMenuContent>
-    </DropdownMenu>)
+                        <DropdownMenuSeparator />
+                    </>
+                )}
+
+                <DropdownMenuItem className="cursor-pointer">
+                    Log out
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+    )
 }
 
 export default UserAccountNav

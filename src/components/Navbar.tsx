@@ -3,12 +3,12 @@ import MaxWidthWrapper from "./MaxWidthWrapper";
 import { Box } from "lucide-react";
 import { Button, buttonVariants } from "./ui/button";
 import Image from "next/image";
-import { ModeToggle } from "./ModeToggle";
 import UserAccountNav from "./UserAccountNav";
 
 const Navbar = async () => {
 
-  const user = false
+  const user = true
+
   return (
     <div className="bg-white dark:bg-[#020817] sticky z-50 top-0 inset-0 inset-x-0 h-16">
       <header className="relative bg-white dark:bg-[#020817] dark">
