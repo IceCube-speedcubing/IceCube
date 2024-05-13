@@ -4,10 +4,10 @@ import { Box } from "lucide-react";
 import { Button, buttonVariants } from "./ui/button";
 import Image from "next/image";
 import UserAccountNav from "./UserAccountNav";
+import MobileNavbar from "./MobileNavbar"; // Import the MobileNavbar component
 
 const Navbar = async () => {
-
-  const user = true
+  const user = true;
 
   return (
     <div className="bg-white dark:bg-[#020817] sticky z-50 top-0 inset-0 inset-x-0 h-16">
@@ -26,7 +26,7 @@ const Navbar = async () => {
                 </Link>
               </div>
 
-              <div className="ml-10">
+              <div className="ml-10 hidden md:flex"> {/* Add md:hidden to hide on mobile */}
                 <Link href="/algs">
                   <Button variant="ghost" className="font-bold">
                     Algs
@@ -66,7 +66,10 @@ const Navbar = async () => {
                   )}
 
                   {user ? null : (
-                    <span className="h-6 w-px bg-gray-200" aria-hidden="true" />
+                    <span
+                      className="h-6 w-px bg-gray-200"
+                      aria-hidden="true"
+                    />
                   )}
 
                   {user ? (
@@ -83,6 +86,9 @@ const Navbar = async () => {
                   )}
                 </div>
               </div>
+
+              {/* Add the MobileNavbar component */}
+              <MobileNavbar />
             </div>
           </div>
         </MaxWidthWrapper>
