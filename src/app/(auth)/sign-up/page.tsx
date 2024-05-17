@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from "react";
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -16,13 +16,14 @@ import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 
 const SignUpPage = () => {
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertTimeout, setAlertTimeout] = useState<NodeJS.Timeout | null>(null);
   const [formData, setFormData] = useState({
     username: '',
     email: '',
     password: '',
   })
   const [error, setError] = useState('')
-  const [showAlert, setShowAlert] = useState(false)
   const router = useRouter()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,16 +75,18 @@ const SignUpPage = () => {
   }
 
   useEffect(() => {
-    let alertTimeout;
+    let timeout: NodeJS.Timeout | null = null;
 
     if (showAlert) {
-      alertTimeout = setTimeout(() => {
+      timeout = setTimeout(() => {
         setShowAlert(false);
-      }, 5000); // Hide the alert after 5 seconds
+      }, 3000);
     }
 
     return () => {
-      clearTimeout(alertTimeout);
+      if (timeout) {
+        clearTimeout(timeout);
+      }
     };
   }, [showAlert]);
 
