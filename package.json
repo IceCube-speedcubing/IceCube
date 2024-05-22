@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "echo 'Building...' && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "backendDevStart": "nodemon src/backend/server.js",
