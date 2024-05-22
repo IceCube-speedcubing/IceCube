@@ -43,6 +43,7 @@
     "sr-scrambler": "^2.0.2",
     "tailwind-merge": "^2.2.2",
     "tailwindcss-animate": "^1.0.7",
+    "next": "^14.2.3",
     "vercel": "^34.2.0"
   },
   "devDependencies": {
