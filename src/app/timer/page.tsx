@@ -1,15 +1,15 @@
-"use client"
+"use client";
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { generateScramble } from 'react-rubiks-cube-utils';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { formatTime } from '@/lib/formatTime';
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { generateScramble } from "react-rubiks-cube-utils";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { formatTime } from "@/lib/formatTime";
 
 const TimerPage = () => {
-  const [scramble, setScramble] = useState('');
-  const [scrambleType, setScrambleType] = useState('3x3');
+  const [scramble, setScramble] = useState("");
+  const [scrambleType, setScrambleType] = useState("3x3");
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [isInspectionTime, setIsInspectionTime] = useState(false);
   const [inspectionTimeRemaining, setInspectionTimeRemaining] = useState(15000); // 15 seconds
@@ -126,7 +126,9 @@ const TimerPage = () => {
     generateNewScramble();
   };
 
-  const handleScrambleTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleScrambleTypeChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     setScrambleType(event.target.value);
   };
 
@@ -138,7 +140,7 @@ const TimerPage = () => {
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
-      if (event.code === 'Space') {
+      if (event.code === "Space") {
         if (isTimerRunning) {
           stopTimer();
         } else if (isInspectionTime) {
@@ -147,7 +149,7 @@ const TimerPage = () => {
           setIsInspectionTime(true);
           setInspectionTimeRemaining(15000);
         }
-      } else if (event.code === 'KeyR') {
+      } else if (event.code === "KeyR") {
         resetTimer();
       }
     },
@@ -155,9 +157,9 @@ const TimerPage = () => {
   );
 
   useEffect(() => {
-    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown);
     return () => {
-      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener("keydown", handleKeyDown);
     };
   }, [handleKeyDown]);
 
@@ -181,7 +183,10 @@ const TimerPage = () => {
       <div className="mb-8 text-center max-w-md w-full">
         <div className="mb-4 flex justify-between items-center">
           <div className="w-1/2 pr-2">
-            <Label htmlFor="scrambleType" className="text-gray-700 dark:text-gray-300">
+            <Label
+              htmlFor="scrambleType"
+              className="text-gray-700 dark:text-gray-300"
+            >
               Scramble Type
             </Label>
             <select
@@ -208,31 +213,43 @@ const TimerPage = () => {
             </Button>
           </div>
         </div>
-        <h3 className="text-2xl font-bold text-gray-700 dark:text-gray-300 mb-4">Scramble</h3>
+        <h3 className="text-2xl font-bold text-gray-700 dark:text-gray-300 mb-4">
+          Scramble
+        </h3>
         <div className="bg-white rounded-lg p-4 mb-4 shadow-md">
-          <p className="text-gray-700 dark:text-gray-300 break-words">{scramble}</p>
+          <p className="text-gray-700 dark:text-gray-300 break-words">
+            {scramble}
+          </p>
         </div>
       </div>
 
       <div className="mb-8 text-center">
         <span className="text-6xl font-bold text-gray-700 dark:text-gray-300">
-          {isInspectionTime ? Math.floor(inspectionTimeRemaining / 1000) : formatTime(currentTime)}
+          {isInspectionTime
+            ? Math.floor(inspectionTimeRemaining / 1000)
+            : formatTime(currentTime)}
         </span>
       </div>
       <div className="flex justify-center gap-4">
         <Button
           onMouseDown={isInspectionTime ? handleStartButtonClick : undefined}
           onMouseUp={isInspectionTime ? handleStartButtonMouseUp : undefined}
-          onClick={isTimerRunning ? stopTimer : isInspectionTime ? undefined : () => setIsInspectionTime(true)}
+          onClick={
+            isTimerRunning
+              ? stopTimer
+              : isInspectionTime
+              ? undefined
+              : () => setIsInspectionTime(true)
+          }
           className={`${
             isTimerRunning
-              ? 'bg-red-500 hover:bg-red-700'
+              ? "bg-red-500 hover:bg-red-700"
               : isInspectionTime
-              ? 'bg-green-500 hover:bg-green-700'
-              : 'bg-blue-500 hover:bg-blue-700'
+              ? "bg-green-500 hover:bg-green-700"
+              : "bg-blue-500 hover:bg-blue-700"
           } text-white font-bold py-2 px-4 rounded`}
         >
-          {isTimerRunning ? 'Stop' : isInspectionTime ? 'Start' : 'Inspection'}
+          {isTimerRunning ? "Stop" : isInspectionTime ? "Start" : "Inspection"}
         </Button>
         {isInspectionTime && (
           <Button
@@ -249,9 +266,11 @@ const TimerPage = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           <div className="max-w-sm w-full bg-white dark:bg-gray-700 rounded-lg shadow-lg p-6">
             <div className="mb-4">
-              <Label className="text-gray-700 dark:text-gray-300">Best Time</Label>
+              <Label className="text-gray-700 dark:text-gray-300">
+                Best Time
+              </Label>
               <Input
-                value={bestTime ? formatTime(bestTime) : '-'}
+                value={bestTime ? formatTime(bestTime) : "-"}
                 readOnly
                 className="w-full rounded-md border-gray-300 bg-gray-100 dark:bg-gray-800 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
               />
@@ -260,9 +279,11 @@ const TimerPage = () => {
 
           <div className="max-w-sm w-full bg-white dark:bg-gray-700 rounded-lg shadow-lg p-6">
             <div className="mb-4">
-              <Label className="text-gray-700 dark:text-gray-300">Average Time</Label>
+              <Label className="text-gray-700 dark:text-gray-300">
+                Average Time
+              </Label>
               <Input
-                value={averageTime ? formatTime(averageTime) : '-'}
+                value={averageTime ? formatTime(averageTime) : "-"}
                 readOnly
                 className="w-full rounded-md border-gray-300 bg-gray-100 dark:bg-gray-800 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
               />
@@ -273,7 +294,7 @@ const TimerPage = () => {
             <div className="mb-4">
               <Label className="text-gray-700 dark:text-gray-300">Ao5</Label>
               <Input
-                value={ao5 ? formatTime(ao5) : '-'}
+                value={ao5 ? formatTime(ao5) : "-"}
                 readOnly
                 className="w-full rounded-md border-gray-300 bg-gray-100 dark:bg-gray-800 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
               />
@@ -284,7 +305,7 @@ const TimerPage = () => {
             <div className="mb-4">
               <Label className="text-gray-700 dark:text-gray-300">Ao12</Label>
               <Input
-                value={ao12 ? formatTime(ao12) : '-'}
+                value={ao12 ? formatTime(ao12) : "-"}
                 readOnly
                 className="w-full rounded-md border-gray-300 bg-gray-100 dark:bg-gray-800 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
               />
@@ -296,7 +317,10 @@ const TimerPage = () => {
               <Label className="text-gray-700 dark:text-gray-300">Times</Label>
               <ul className="list-disc list-inside">
                 {times.map((time, index) => (
-                  <li key={index} className="text-gray-700 dark:text-gray-300 flex justify-between items-center">
+                  <li
+                    key={index}
+                    className="text-gray-700 dark:text-gray-300 flex justify-between items-center"
+                  >
                     <span>{formatTime(time)}</span>
                     <Button
                       variant="outline"
