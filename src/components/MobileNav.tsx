@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { UserAccountNav } from "@/components/UserAccountNav";
 
-// TODO: Consider moving this to a separate configuration file
 const navItems = [
   { name: "Algorithms", href: "/algs" },
   { name: "Courses", href: "/courses" },
@@ -106,8 +105,3 @@ export function MobileNav({ isLoggedIn }: MobileNavProps) {
     </>
   );
 }
-
-// TODO: Implement active link styling
-// TODO: Add accessibility features (e.g., focus management)
-// TODO: Consider adding a search input in the mobile menu
-// TODO: Add unit and integration tests for the MobileNav component
