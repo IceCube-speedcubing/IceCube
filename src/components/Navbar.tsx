@@ -1,100 +1,104 @@
-import Link from "next/link";
-import MaxWidthWrapper from "./MaxWidthWrapper";
-import { Box } from "lucide-react";
-import { Button, buttonVariants } from "./ui/button";
-import Image from "next/image";
-import UserAccountNav from "./UserAccountNav";
-import MobileNavbar from "./MobileNavbar"; // Import the MobileNavbar component
+"use client";
 
-const Navbar = async () => {
-  const user = false;
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { UserAccountNav } from "@/components/UserAccountNav";
+import Image from "next/image";
+import { MobileNav } from "@/components/MobileNav";
+
+// TODO: Consider moving this to a separate configuration file
+const navItems = [
+  { name: "Algorithms", href: "/algs" },
+  { name: "Courses", href: "/courses" },
+  { name: "About", href: "/about" },
+];
+
+export function Navbar() {
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // TODO: Implement a custom hook for scroll handling to improve reusability
+
+  const isLoggedIn = true; // TODO: Replace with actual auth check
 
   return (
-    <div className="bg-white dark:bg-[#020817] sticky z-50 top-0 inset-0 inset-x-0 h-16">
-      <header className="relative bg-white dark:bg-[#020817] dark">
-        <MaxWidthWrapper>
-          <div className="border-b-4 border-[#00253E] border-rounded">
-            <div className="flex h-16 items-center">
-              <div className="ml-4 flex lg:ml-0">
-                <Link href="/">
-                  <Image
-                    src="/IceCube logo.svg"
-                    alt="IceCube Logo"
-                    width="50"
-                    height="50"
-                  />
-                </Link>
-              </div>
+    <nav
+      className={`fixed w-full z-50 transition-all duration-300 ${
+        isScrolled ? "bg-black bg-opacity-50 backdrop-blur-md" : ""
+      }`}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-20">
+          <Link href="/">
+            <Image
+              src="/images/type-logo-w.png"
+              alt="logo"
+              width={100}
+              height={100}
+            />
+          </Link>
 
-              <div className="ml-10 hidden md:flex"> {/* Add md:hidden to hide on mobile */}
-                <Link href="/algs">
-                  <Button variant="ghost" className="font-bold">
-                    Algs
-                  </Button>
-                </Link>
-
-                <Link href="/courses">
-                  <Button variant="ghost" className="font-bold">
-                    Courses
-                  </Button>
-                </Link>
-
-                <Link href="/timer">
-                  <Button variant="ghost" className="font-bold">
-                    Timer
-                  </Button>
-                </Link>
-
-                <Link href="/about">
-                  <Button variant="ghost" className="font-bold">
-                    About
-                  </Button>
-                </Link>
-              </div>
-
-              <div className="ml-auto flex items-center">
-                <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
-                  {user ? null : (
-                    <Link
-                      href="/sign-in"
-                      className={buttonVariants({
-                        variant: "ghost",
-                      })}
-                    >
-                      Sign in
-                    </Link>
-                  )}
-
-                  {user ? null : (
-                    <span
-                      className="h-6 w-px bg-gray-200"
-                      aria-hidden="true"
-                    />
-                  )}
-
-                  {user ? (
-                    <UserAccountNav />
-                  ) : (
-                    <Link
-                      href="/sign-up"
-                      className={buttonVariants({
-                        variant: "ghost",
-                      })}
-                    >
-                      Create account
-                    </Link>
-                  )}
-                </div>
-              </div>
-
-              {/* Add the MobileNavbar component */}
-              <MobileNavbar />
-            </div>
+          <div className="hidden md:flex items-center justify-center flex-1">
+            {navItems.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300"
+              >
+                {item.name}
+              </Link>
+            ))}
           </div>
-        </MaxWidthWrapper>
-      </header>
-    </div>
-  );
-};
 
-export default Navbar;
+          <div className="hidden md:flex items-center">
+            {isLoggedIn ? (
+              <UserAccountNav />
+            ) : (
+              <>
+                <Link href="/auth/login">
+                  <Button
+                    variant="ghost"
+                    className="text-white hover:text-[#0A4779] transition-colors duration-300"
+                  >
+                    Log In
+                  </Button>
+                </Link>
+                <div className="w-px h-6 bg-gray-400 mx-2" />
+                <Link href="/auth/signup">
+                  <Button
+                    variant="ghost"
+                    className="text-white hover:text-[#0A4779] transition-colors duration-300"
+                  >
+                    Sign Up
+                  </Button>
+                </Link>
+              </>
+            )}
+          </div>
+
+          <MobileNav isLoggedIn={isLoggedIn} />
+        </div>
+      </div>
+    </nav>
+  );
+}
+
+// TODO: Implement active link styling
+// TODO: Add dropdown menus for more complex navigation structures
+// TODO: Implement internationalization (i18n) for multi-language support
+// TODO: Add accessibility features (e.g., aria-labels, keyboard navigation)
+// TODO: Implement a dark/light mode toggle
+// TODO: Add animations for navbar items on page load
+// TODO: Optimize performance using React.memo or useMemo where appropriate
+// TODO: Implement analytics tracking for navigation interactions
+// TODO: Add unit and integration tests for the Navbar component
+// TODO: Consider implementing a search functionality in the navbar
+// TODO: Add support for dynamic navigation items (e.g., fetched from an API)
