@@ -18,6 +18,16 @@
                 "algSetImg": ""
               }
             ]
+          },
+          {
+            "name": "roux",
+            "methodImg": "",
+            "algSets": [
+              {
+                "name": "cmll",
+                "algSetImg": ""
+              }
+            ]
           }
         ]
       },
