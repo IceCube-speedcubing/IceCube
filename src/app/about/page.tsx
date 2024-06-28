@@ -105,7 +105,7 @@ export default function AboutPage() {
               courses.
             </p>
             <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-              <Link href="/signup">
+              <Link href="/auth/signup">
                 <Button className="w-full sm:w-auto bg-[#0A4779] hover:bg-[#083A61] text-white py-2 px-6 rounded-lg transition-all duration-300 ease-in-out transform hover:scale-105 text-lg">
                   Sign Up
                 </Button>

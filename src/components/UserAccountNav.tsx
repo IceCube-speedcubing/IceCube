@@ -68,7 +68,6 @@ export function UserAccountNav() {
         align="end"
         className="w-64 bg-gray-900 bg-opacity-95 backdrop-blur-xl border border-gray-800 text-white rounded-xl overflow-hidden shadow-2xl animate-in slide-in-from-top-5 duration-300"
       >
-        {/* TODO: Consider adding a dark mode toggle here */}
         <div className="px-4 py-3 bg-gradient-to-r from-blue-500/10 to-purple-500/10">
           <div className="flex items-center justify-between">
             <p className="text-sm font-medium leading-none">{user.name}</p>

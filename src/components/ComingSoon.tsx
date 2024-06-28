@@ -3,6 +3,7 @@ import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Background } from "@/components/Background";
+import { ArrowRight } from "lucide-react";
 
 interface ComingSoonProps {
   title: string;
@@ -45,7 +46,8 @@ const ComingSoon: React.FC<ComingSoonProps> = ({
                     variant="default"
                     className="bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white font-semibold py-3 px-6 shadow-lg transform transition duration-300 ease-in-out hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
                   >
-                    {linkText}
+                    {linkText} 
+                    <ArrowRight className="ml-2" />
                   </Button>
                 </Link>
               </div>

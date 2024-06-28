@@ -12,6 +12,7 @@ import FilterDropdown from "@/components/FilterDropdown";
 import { Alg, CubeData } from "@/types/algTypes";
 import { useInView } from "react-intersection-observer";
 import { toast } from "react-hot-toast";
+import { Background } from "@/components/Background";
 
 const ITEMS_PER_PAGE = 20;
 
@@ -114,12 +115,9 @@ const AlgorithmsPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
+      <Background />
       <div className="container mx-auto px-4 py-16">
-        <h1 className="text-5xl font-bold text-center mb-12 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
-          Speedcubing Algorithms
-        </h1>
-
-        <div className="mb-8 flex flex-wrap items-center gap-4">
+        <div className="mb-8 flex flex-wrap items-center gap-4 mt-5 bg-white/10 backdrop-blur-lg rounded-lg border border-gray-600/20 p-4">
           <FilterDropdown
             value={selectedCube}
             setter={setSelectedCube}
@@ -166,9 +164,9 @@ const AlgorithmsPage = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3, delay: index * 0.05 }}
+                transition={{ duration: 0.3, delay: index * 0.05 }} 
               >
-                <Card className="bg-gray-800 border-gray-700 overflow-hidden hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
+                <Card className="bg-white/10 backdrop-blur-lg rounded-lg border border-gray-600/20 overflow-hidden hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
                   <CardContent className="p-4 flex-grow flex flex-col">
                     <div className="mb-4 relative aspect-square rounded-md overflow-hidden">
                       <Image
