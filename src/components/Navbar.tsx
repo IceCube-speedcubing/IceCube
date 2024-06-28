@@ -46,6 +46,7 @@ const navItems = [
       // TODO: Integrate a search functionality within the dropdown for quick course lookup
     ]
   },
+  { name: "Timer", href: "/timer" },
   { name: "About", href: "/about" },
 ];
 
@@ -70,7 +71,7 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const isLoggedIn = true; // TODO: Replace with actual auth check
+  const isLoggedIn = false; // TODO: Replace with actual auth check
 
   const trackNavigation = (path: string) => {
     // TODO: Replace with actual analytics tracking

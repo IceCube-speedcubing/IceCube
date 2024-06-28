@@ -1,274 +1,238 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Search, Copy } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Search, Loader2, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { motion, AnimatePresence } from "framer-motion";
+import algData from "@/data/alg-data.json";
+import FilterDropdown from "@/components/FilterDropdown";
+import { Alg, CubeData } from "@/types/algTypes";
+import { useInView } from "react-intersection-observer";
+import { toast } from "react-hot-toast";
 
-// Import the JSON data
-import algorithmData from "@/data/alg-data.json";
-import { Background } from "@/components/Background";
+const ITEMS_PER_PAGE = 20;
 
-// TODO: Consider moving these interfaces to a separate types file for better organization
-interface Cube {
-  name: string;
-  cubeImg: string;
-  methods: Method[];
-}
-
-interface Method {
-  name: string;
-  algSets: AlgSet[];
-}
-
-interface AlgSet {
-  name: string;
-  algs: Alg[];
-}
-
-interface Alg {
-  cube: string;
-  method: string;
-  algSet: string;
-  algName: string;
-  alg: string;
-  algImg: string;
-}
-
-export default function AlgorithmsPage() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [activeCube, setActiveCube] = useState("");
-  const [activeMethod, setActiveMethod] = useState("");
-  const [activeAlgSet, setActiveAlgSet] = useState("");
-  const [cubes, setCubes] = useState<Cube[]>([]);
+const AlgorithmsPage = () => {
+  const [selectedCube, setSelectedCube] = useState<string>("");
+  const [selectedMethod, setSelectedMethod] = useState<string>("");
+  const [selectedAlgSet, setSelectedAlgSet] = useState<string>("");
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [cubes, setCubes] = useState<CubeData[]>([]);
+  const [methods, setMethods] = useState<{ name: string; methodImg: string }[]>(
+    []
+  );
+  const [algSets, setAlgSets] = useState<{ name: string; algSetImg: string }[]>(
+    []
+  );
   const [algs, setAlgs] = useState<Alg[]>([]);
+  const [page, setPage] = useState(1);
+  const [ref, inView] = useInView();
 
   useEffect(() => {
-    if (Array.isArray(algorithmData) && algorithmData.length >= 2) {
-      const cubesData = algorithmData[0].cubes;
-      const algsData = algorithmData[1].algs;
+    try {
+      const cubesData = algData[0].cubes as CubeData[];
+      const allAlgs = algData[1].algs as Alg[];
 
-      if (Array.isArray(cubesData) && cubesData.length > 0) {
-        setCubes(cubesData);
-        setActiveCube(cubesData[0].name);
-        if (cubesData[0].methods && cubesData[0].methods.length > 0) {
-          setActiveMethod(cubesData[0].methods[0].name);
-          if (
-            cubesData[0].methods[0].algSets &&
-            cubesData[0].methods[0].algSets.length > 0
-          ) {
-            setActiveAlgSet(cubesData[0].methods[0].algSets[0].name);
+      setCubes(cubesData);
+      setAlgs(allAlgs);
+
+      if (cubesData.length > 0) {
+        const firstCube = cubesData[0];
+        setSelectedCube(firstCube.name);
+
+        if (firstCube.methods.length > 0) {
+          const firstMethod = firstCube.methods[0];
+          setSelectedMethod(firstMethod.name);
+          setMethods(firstCube.methods);
+
+          if (firstMethod.algSets.length > 0) {
+            setSelectedAlgSet(firstMethod.algSets[0].name);
+            setAlgSets(firstMethod.algSets);
           }
         }
       }
-
-      if (Array.isArray(algsData)) {
-        setAlgs(algsData);
-      }
+    } catch (error) {
+      console.error("Error fetching algorithm data:", error);
+      toast.error("Failed to load algorithm data. Please try again later.");
     }
-    setIsLoading(false);
   }, []);
 
-  // TODO: Consider memoizing this filtered array to optimize performance
-  const filteredAlgs = algs.filter(
-    (alg) =>
-      alg.algName.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      alg.cube === activeCube &&
-      alg.method === activeMethod &&
-      alg.algSet === activeAlgSet
-  );
+  useEffect(() => {
+    const selectedCubeData = cubes.find((cube) => cube.name === selectedCube);
+    if (selectedCubeData) {
+      setMethods(selectedCubeData.methods);
+      if (selectedCubeData.methods.length > 0) {
+        setSelectedMethod(selectedCubeData.methods[0].name);
+      }
+    }
+  }, [selectedCube, cubes]);
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
-        <span className="ml-2 text-white">Loading algorithms...</span>
-      </div>
+  useEffect(() => {
+    const selectedCubeData = cubes.find((cube) => cube.name === selectedCube);
+    if (selectedCubeData) {
+      const selectedMethodData = selectedCubeData.methods.find(
+        (method) => method.name === selectedMethod
+      );
+      if (selectedMethodData) {
+        setAlgSets(selectedMethodData.algSets);
+        if (selectedMethodData.algSets.length > 0) {
+          setSelectedAlgSet(selectedMethodData.algSets[0].name);
+        }
+      }
+    }
+  }, [selectedMethod, cubes, selectedCube]);
+
+  useEffect(() => {
+    if (inView) {
+      setPage((prevPage) => prevPage + 1);
+    }
+  }, [inView]);
+
+  const filteredAlgs = useMemo(() => {
+    return algs.filter(
+      (alg) =>
+        alg.cube === selectedCube &&
+        alg.method === selectedMethod &&
+        alg.algSet === selectedAlgSet &&
+        (searchTerm === "" ||
+          alg.algName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          alg.alg.toLowerCase().includes(searchTerm.toLowerCase()))
     );
-  }
+  }, [algs, selectedCube, selectedMethod, selectedAlgSet, searchTerm]);
+
+  const paginatedAlgs = useMemo(() => {
+    return filteredAlgs.slice(0, page * ITEMS_PER_PAGE);
+  }, [filteredAlgs, page]);
+
+  const handleCopyAlg = (alg: string) => {
+    navigator.clipboard.writeText(alg);
+    toast.success("Algorithm copied to clipboard!");
+  };
 
   return (
-    <div className="min-h-screen relative bg-gradient-to-b from-gray-900 to-gray-800">
-      <Background />
+    <div className="min-h-screen bg-gray-900 text-white">
+      <div className="container mx-auto px-4 py-16">
+        <h1 className="text-5xl font-bold text-center mb-12 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
+          Speedcubing Algorithms
+        </h1>
 
-      <div className="relative z-10 pt-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="bg-gradient-to-br from-[#00406C] to-[#001F33] rounded-3xl shadow-2xl mb-12 overflow-hidden border border-blue-400/30">
-            <div className="p-8">
-              <div className="flex flex-col space-y-8">
-                <div className="relative max-w-2xl mx-auto w-full">
-                  <Search
-                    className="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-300"
-                    size={20}
-                  />
-                  <Input
-                    type="text"
-                    placeholder="Search algorithms..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-12 py-3 w-full bg-white/10 text-white border-blue-400/30 placeholder-blue-200 focus:ring-2 focus:ring-blue-400 transition-all duration-300 rounded-full text-lg"
-                  />
-                </div>
-
-                {/* TODO: Consider extracting this cube selection grid into a separate component */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 justify-items-center">
-                  {cubes.map((cube) => (
-                    <div
-                      key={cube.name}
-                      className="flex flex-col items-center w-full"
-                    >
-                      <Button
-                        onClick={() =>
-                          setActiveCube(
-                            cube.name === activeCube ? "" : cube.name
-                          )
-                        }
-                        className={`w-full aspect-square rounded-2xl text-sm font-medium transition-all duration-300 flex flex-col items-center justify-center ${
-                          activeCube === cube.name
-                            ? "bg-blue-500 text-white shadow-lg"
-                            : "bg-white/10 text-blue-100 hover:bg-white/20"
-                        }`}
-                      >
-                        <Image
-                          src={`/images/${cube.name.toLowerCase()}.png`}
-                          alt={cube.name}
-                          width={48}
-                          height={48}
-                        />
-                        <span className="mt-2">{cube.name}</span>
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-
-                {/* TODO: Consider extracting method and alg set selection into separate components */}
-                {activeCube && (
-                  <div className="flex flex-col items-center space-y-4">
-                    <h3 className="text-blue-200 text-xl font-semibold">
-                      Select Method
-                    </h3>
-                    <div className="flex flex-wrap gap-3 justify-center">
-                      {cubes
-                        .find((c) => c.name === activeCube)
-                        ?.methods.map((method) => (
-                          <Button
-                            key={method.name}
-                            onClick={() =>
-                              setActiveMethod(
-                                method.name === activeMethod ? "" : method.name
-                              )
-                            }
-                            className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-                              activeMethod === method.name
-                                ? "bg-blue-500 text-white shadow-lg"
-                                : "bg-white/10 text-blue-100 hover:bg-white/20"
-                            }`}
-                          >
-                            {method.name}
-                          </Button>
-                        ))}
-                    </div>
-                  </div>
-                )}
-
-                {activeMethod && (
-                  <div className="flex flex-col items-center space-y-4">
-                    <h3 className="text-blue-200 text-xl font-semibold">
-                      Select Algorithm Set
-                    </h3>
-                    <div className="flex flex-wrap gap-3 justify-center">
-                      {cubes
-                        .find((c) => c.name === activeCube)
-                        ?.methods.find((m) => m.name === activeMethod)
-                        ?.algSets.map((algSet) => (
-                          <Button
-                            key={algSet.name}
-                            onClick={() =>
-                              setActiveAlgSet(
-                                algSet.name === activeAlgSet ? "" : algSet.name
-                              )
-                            }
-                            className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-                              activeAlgSet === algSet.name
-                                ? "bg-blue-500 text-white shadow-lg"
-                                : "bg-white/10 text-blue-100 hover:bg-white/20"
-                            }`}
-                          >
-                            {algSet.name}
-                          </Button>
-                        ))}
-                    </div>
-                  </div>
-                )}
-
-                <div className="flex items-center justify-center text-blue-200 space-x-2 bg-black/20 py-3 px-6 rounded-full">
-                  <span className="font-semibold">
-                    {activeCube || "Select Cube"}
-                  </span>
-                  {activeCube && <ChevronRight size={16} />}
-                  <span className="font-semibold">
-                    {activeMethod || "Select Method"}
-                  </span>
-                  {activeMethod && <ChevronRight size={16} />}
-                  <span className="font-semibold">
-                    {activeAlgSet || "Select Alg Set"}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* TODO: Consider implementing pagination or infinite scroll for large numbers of algorithms */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredAlgs.map((alg) => (
-              <Card
-                key={`${alg.cube}-${alg.method}-${alg.algSet}-${alg.algName}`}
-                className="bg-white bg-opacity-10 backdrop-blur-md border-white border-opacity-20 overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/10 group"
-              >
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold text-white mb-4 group-hover:text-blue-400 transition-colors duration-300">
-                    {alg.algName}
-                  </h3>
-                  <div className="bg-black bg-opacity-20 p-4 rounded-lg mb-4 group-hover:bg-opacity-30 transition-all duration-300">
-                    <code className="text-green-400 text-sm font-mono">
-                      {alg.alg}
-                    </code>
-                  </div>
-                  <div className="flex justify-center mb-4 relative group">
-                    <div className="absolute inset-0 bg-blue-500 opacity-0 group-hover:opacity-20 transition-opacity duration-300 rounded-lg"></div>
-                    <Image
-                      src={alg.algImg}
-                      alt={alg.algName}
-                      width={150}
-                      height={150}
-                      className="rounded-lg shadow-md transition-transform duration-300 group-hover:scale-105"
-                    />
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-300">{`${alg.cube} - ${alg.method} - ${alg.algSet}`}</span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 transition-all duration-300"
-                    >
-                      Learn More <ChevronRight className="ml-1 h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+        <div className="mb-8 flex flex-wrap items-center gap-4">
+          <FilterDropdown
+            value={selectedCube}
+            setter={setSelectedCube}
+            options={cubes}
+            label="Cube"
+          />
+          <FilterDropdown
+            value={selectedMethod}
+            setter={setSelectedMethod}
+            options={methods}
+            label="Method"
+          />
+          <FilterDropdown
+            value={selectedAlgSet}
+            setter={setSelectedAlgSet}
+            options={algSets}
+            label="Set"
+          />
+          <div className="flex-1 min-w-[200px] relative">
+            <Search
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              size={20}
+            />
+            <Input
+              type="text"
+              placeholder="Search algorithms..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 bg-gray-800 border-gray-700 text-gray-300 placeholder-gray-500 w-full"
+            />
           </div>
         </div>
+
+        <motion.div
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <AnimatePresence>
+            {paginatedAlgs.map((alg, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3, delay: index * 0.05 }}
+              >
+                <Card className="bg-gray-800 border-gray-700 overflow-hidden hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
+                  <CardContent className="p-4 flex-grow flex flex-col">
+                    <div className="mb-4 relative aspect-square rounded-md overflow-hidden">
+                      <Image
+                        src={alg.algImg}
+                        alt={alg.algName}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover"
+                      />
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-100 mb-2">
+                      {alg.algName}
+                    </h3>
+                    <div className="bg-gray-700 p-3 rounded-md relative group mt-auto">
+                      <p className="text-sm font-mono font-semibold text-gray-200 break-words">
+                        {alg.alg}
+                      </p>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-gray-400 hover:text-white"
+                        onClick={() => handleCopyAlg(alg.alg)}
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
+
+        {filteredAlgs.length === 0 && (
+          <p className="text-center text-gray-400 mt-8">
+            No algorithms found. Try adjusting your filters or search term.
+          </p>
+        )}
+
+        {paginatedAlgs.length < filteredAlgs.length && (
+          <div ref={ref} className="h-10 mt-8" />
+        )}
       </div>
     </div>
   );
-}
+};
 
-// TODO: Implement error handling for failed data fetching
-// TODO: Add accessibility features (e.g., proper ARIA labels, keyboard navigation)
+export default AlgorithmsPage;
+
+// TODO: Implement a way to practice algorithms
+// TODO: Implement user accounts to save progress and favorite algorithms
+// TODO: Add accessibility features (e.g., keyboard navigation, screen reader support)
 // TODO: Optimize image loading (e.g., lazy loading, responsive images)
-// TODO: Consider adding a "Reset Filters" button to clear all selections
-// TODO: Implement proper SEO optimization (meta tags, structured data)
+// TODO: Add analytics to track most viewed/used algorithms
+// TODO: Add a feature to contribute new algorithms or suggest improvements
+// TODO: Add a submit button to submit new algorithms to a case to the community
+// TODO: Implement a rating system for algorithms
+// TODO: Add algorithm execution visualization
+// TODO: Implement algorithm comparison feature
+// TODO: Add multi-language support for algorithm descriptions
+// TODO: Implement algorithm sharing via social media
+// TODO: Add a feature to generate PDF cheat sheets for selected algorithms
+// TODO: Implement a spaced repetition system for algorithm practice
+// TODO: Add a timer feature to practice execution speed
+// TODO: Implement a leaderboard for algorithm execution times
+// TODO: Add a feature to suggest related or alternative algorithms
+// TODO: Implement a system for user-generated tags and categorization
