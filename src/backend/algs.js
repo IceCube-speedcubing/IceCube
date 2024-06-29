@@ -1,9 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
 
 const router = express.Router();
-const user = require('./models/user.js');
+const alg = require('./models/alg.js');
+const bcrypt = require('bcrypt');
 
 router.get('/', async (req, res) => {
 
