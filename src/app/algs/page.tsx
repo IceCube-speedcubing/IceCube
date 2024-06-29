@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
-import algData from "@/data/alg-data.json";
+import algData from "@/data/alg.json";
 import FilterDropdown from "@/components/FilterDropdown";
 import { Alg, CubeData } from "@/types/algTypes";
 import { useInView } from "react-intersection-observer";

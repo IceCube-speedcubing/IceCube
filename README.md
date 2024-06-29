@@ -1,95 +1,33 @@
-# **Welcome To IceCube**
-## **IceCube** is a all in one speedcubing website
+# **IceCube**
+
+## **The All-in-One Speedcubing Platform**
+
+IceCube is a comprehensive website dedicated to the speedcubing community, providing cubers of all levels with the best resources, algorithms, and courses to help them improve their skills and achieve their goals.
 
 ### **Features**
-- Encyclopedia for everything cubing related!
-- Timer that saves all your times everywhere!
 
-### **API**
-- **Creating a user**  
-  Request
-  ```
-  POST http://url.com/api/user/
-  Content-Type: application/json
+- **Extensive Algorithm Library**: Explore our vast collection of algorithms for every WCA event, ensuring you have access to the most efficient and effective solutions.
+- **Comprehensive Courses**: Our expertly designed courses cover all events, from beginner to advanced levels, helping you improve at your own pace.
+- **Supportive Community**: Join our vibrant community of cubers, share your experiences, and get support from fellow enthusiasts.
+- **All Events Covered**: IceCube covers all official WCA events, ensuring you have resources for every puzzle you solve.
 
-  {
-      "username": "Joe",
-      "password": "1234",
-      "email": "JoeIsCool@example.com"
-  }
-  ```
-  Response
-  ```
-  {
-      "username": "Joe",
-      "password": "1234",
-      "email": "JoeIsCool@example.com",
-      *has id and more*
-  }
-  ```
+### **Getting Started**
 
-- **Adding WCA stuff to a user** (*this is a work in progress so this is not done*)  
-  Request
-  ```
-  POST http://url.com/api/user/wca/
-  Content-Type: application/json
+1. Visit the IceCube website at [https://www.icecubing.com](https://www.icecubing.com).
+2. Sign up for a new account or log in if you already have one.
+3. Explore the algorithm library, enroll in courses, and join our community.
 
-  {
-      "username": "Joe",
-      "password": "1234",
-      "email": "JoeIsCool@example.com",
-      "wcaEmail": "JoeIsCool@example.com",
-      "wcaPassword": "1234"
-  }
-  ```
+### **Contributing**
 
-- **Encyclopedia add** (*this is a work in progress so this is not done*)  
-  Request
-  ```
-  POST http://url.com/api/encyclopedia/
-  Content-Type: application/json
+IceCube is a closed-source project developed and maintained by a dedicated team of cubers, developers, and designers. While we appreciate the interest in contributing, we are not currently accepting external contributions.
 
-  {
-      "username": "Joe",
-      "password": "1234",
-      "email": "JoeIsCool@example.com",
-      "content": `# 3x3 Methods
-        - CFOP
-        - ROUX
-        - APB
-      `
-  }
-  ```
-  Response
-  ```
-  {
-      "message": "Pending Approval From Community",
-      "url": "http://url.com/encyclopedia/:id/"
-  }
-  ```
+### **Support**
 
-- **Encyclopedia Edit** (*this is a work in progress so this is not done*)  
-  Request
-  ```
-  PATCH http://url.com/api/encyclopedia/:id/
-  Content-Type: application/json
+If you have any questions, issues, or feedback, please reach out to our support team at [icecubespeedcubing@gmail.com](icecubespeedcubing@gmail.com).
 
-  {
-      "username": "Joe",
-      "password": "1234",
-      "email": "JoeIsCool@example.com",
-      "content": `# 3x3 Methods
-        - CFOP
-        - ROUX
-        - APB
-        - BEGINNERS METHOD
-      `
-  }
-  ```
-  Response
-  ```
-  {
-       "message": "Pending Approval From Community",
-       "url": "http://url.com/encyclopedia/:id/edits/:id/"
-  }
-  ```
+### **Stay Connected**
+
+- **Website**: [https://www.icecubing.com](https://www.icecubing.com)
+- **Discord**: [https://discord.gg/7xcTTGAuWb](https://discord.gg/7xcTTGAuWb)
+
+Join our community and stay up-to-date with the latest news, events, and cubing discussions!

@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Trophy, Book, Users, Box } from "lucide-react";
+import { Trophy, Book, Users, Box, UserPlus, Zap } from "lucide-react";
+import { FaDiscord } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import { Background } from "@/components/Background";
@@ -45,7 +46,6 @@ export default function AboutPage() {
       <Background />
       <MaxWidthWrapper className="relative z-10">
         <div className="pt-24 md:pt-32 pb-12 md:pb-16 flex flex-col items-center">
-          {/* ^ Added pt-24 for mobile and md:pt-32 for larger screens */}
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-white mb-6 text-center">
             About IceCube
           </h1>
@@ -60,22 +60,24 @@ export default function AboutPage() {
             {features.map((feature, index) => (
               <div
                 key={index}
-                className="flex flex-col items-center bg-black bg-opacity-40 backdrop-blur-md p-6 rounded-lg transition-all duration-300 hover:bg-opacity-50"
+                className="flex flex-col items-center bg-black bg-opacity-40 backdrop-blur-md p-6 rounded-lg transition-all duration-300 hover:bg-opacity-50 hover:scale-105 transform"
               >
-                <div className="relative h-16 w-16 mb-4">
-                  <feature.icon className={`h-12 w-12 ${feature.color}`} />
+                <div className="relative h-20 w-20 mb-4">
+                  <feature.icon
+                    className={`h-16 w-16 ${feature.color} animate-pulse`}
+                  />
                   <div
-                    className={`absolute -top-1 -right-1 ${feature.bg} rounded-full h-6 w-6 flex items-center justify-center`}
+                    className={`absolute -top-2 -right-2 ${feature.bg} rounded-full h-8 w-8 flex items-center justify-center`}
                   >
-                    <span className="text-white text-sm font-bold">
+                    <span className="text-white text-lg font-bold">
                       {index + 1}
                     </span>
                   </div>
                 </div>
-                <h2 className="text-xl font-bold text-white mb-2 text-center">
+                <h2 className="text-2xl font-bold text-white mb-2 text-center">
                   {feature.title}
                 </h2>
-                <p className="text-gray-300 text-center text-sm md:text-base">
+                <p className="text-gray-300 text-center text-base">
                   {feature.description}
                 </p>
               </div>
@@ -83,10 +85,10 @@ export default function AboutPage() {
           </div>
 
           <div className="max-w-3xl text-center mb-16 px-4">
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
-              Our Team
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4 flex items-center justify-center">
+              <UserPlus className="mr-2 h-6 w-6 animate-bounce" /> Our Team
             </h2>
-            <p className="text-gray-300 text-sm md:text-base">
+            <p className="text-gray-300 text-base">
               IceCube was founded by a group of passionate cubers who wanted to
               create a comprehensive platform for the speedcubing community. Our
               team consists of experienced cubers, developers, and designers who
@@ -95,27 +97,50 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div className="max-w-3xl text-center mb-12 px-4">
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
-              Get Started
+          <div className="max-w-3xl text-center mb-16 px-4">
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4 flex items-center justify-center">
+              <FaDiscord  className="mr-2 h-6 w-6 animate-bounce" /> Join Our
+              Community
             </h2>
-            <p className="text-gray-300 text-sm md:text-base mb-6">
+            <p className="text-gray-300 text-base mb-6">
+              Connect with fellow cubers, share your experiences, and get
+              support from our vibrant community on Discord. Join our server to
+              stay up-to-date with the latest news, events, and cubing
+              discussions.
+            </p>
+            <Link
+              href="https://discord.gg/7xcTTGAuWb"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center bg-[#0A4779] hover:bg-[#083A61] text-white py-2 px-6 rounded-lg transition-all duration-300 ease-in-out transform hover:scale-105 text-lg"
+            >
+              <FaDiscord  className="mr-2 h-5 w-5 animate-pulse" /> Join Discord
+              Server
+            </Link>
+          </div>
+
+          <div className="max-w-3xl text-center mb-12 px-4">
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4 flex items-center justify-center">
+              <Zap className="mr-2 h-6 w-6 animate-bounce" /> Get Started
+            </h2>
+            <p className="text-gray-300 text-base mb-6">
               Ready to take your cubing skills to the next level? Sign up today
               and start exploring our extensive collection of algorithms and
               courses.
             </p>
             <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
               <Link href="/auth/signup">
-                <Button className="w-full sm:w-auto bg-[#0A4779] hover:bg-[#083A61] text-white py-2 px-6 rounded-lg transition-all duration-300 ease-in-out transform hover:scale-105 text-lg">
-                  Sign Up
+                <Button className="w-full sm:w-auto bg-[#0A4779] hover:bg-[#083A61] text-white py-2 px-6 rounded-lg transition-all duration-300 ease-in-out transform hover:scale-105 text-lg flex items-center">
+                  <UserPlus className="mr-2 h-5 w-5 animate-pulse" /> Sign Up
                 </Button>
               </Link>
               <Link href="/algs">
                 <Button
                   variant="outline"
-                  className="w-full sm:w-auto text-[#0A4779] hover:bg-[#0A4779] hover:text-white border-[#0A4779] py-2 px-6 rounded-lg transition-all duration-300 ease-in-out transform hover:scale-105 text-lg"
+                  className="w-full sm:w-auto text-[#0A4779] hover:bg-[#0A4779] hover:text-white border-[#0A4779] py-2 px-6 rounded-lg transition-all duration-300 ease-in-out transform hover:scale-105 text-lg flex items-center"
                 >
-                  Explore Algorithms
+                  <Zap className="mr-2 h-5 w-5 animate-pulse" /> Explore
+                  Algorithms
                 </Button>
               </Link>
             </div>
