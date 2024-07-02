@@ -4,15 +4,10 @@ const app = express();
 const fs = require('fs'); 
 require('dotenv').config();
 
-mongoose.connect(process.env.MONGODB_URL_MAIN);
+mongoose.connect(process.env.MONGODB_URL);
 const db = mongoose.connection;
 db.on('error', (e) => console.error(e));
 db.on('open', () => console.log('Connected to Database'));
-
-mongoose.createConnection(process.env.MONGODB_URL_ALGS);
-const dbAlgs = mongoose.connection;
-dbAlgs.on('error', (e) => console.error(e));
-dbAlgs.on('open', () => console.log('Connected to Database'));
 
 const apiRouter = require('./api.js');
 

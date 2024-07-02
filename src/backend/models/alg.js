@@ -9,7 +9,11 @@ const algSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    name: {
+    set: {
+        type: String,
+        required: true
+    },
+    alg: {
         type: String,
         required: true
     },

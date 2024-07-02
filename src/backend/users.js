@@ -2,31 +2,49 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
+const emailValidator = require('email-validator');
 
 const router = express.Router();
 const user = require('./models/user.js');
 
+// string.shuffle()
+String.prototype.shuffle = function() {
+    var a = this.split("");
+    var n = a.length;
+
+    for(var i = n - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = a[i];
+        a[i] = a[j];
+        a[j] = tmp;
+    }
+    return a.join("");
+}
+
 // Make user
 router.post('/', async (req, res) => {
     try {
-        const authKey = (new Date()).getTime().toString(36) + Math.random().toString(36).slice(2);
+        const authKey = (new Date()).getTime().toString(36) + Math.random().toString(36).slice(2) + req.body.email.shuffle();
         const name = req.body.username;
         const password = req.body.password;
         const email = req.body.email;
 	
-	if(name === undefined || password === undefined || email === undefined) {
-		console.log(name);
-		console.log(password);
-		console.log(email);
-		return res.status(400).send("Name/Password/Email not defined in body!");
-	}
+	    if(name === undefined || password === undefined || email === undefined)
+		    return res.status(400).send("Name/Password/Email not defined in body!");
 
-	const passwordSalt = await bcrypt.genSalt(10);
+	    const passwordSalt = await bcrypt.genSalt(10);
         const securePassword = await bcrypt.hash(password, passwordSalt);
 
         if(await user.findOne({email: email}) !== null) {
             res.status(400).json({
                 message: "Email Taken"
+            });
+            return;
+        }
+
+        if(!emailValidator.validate(email)) {
+            res.status(400).json({
+                message: "Email doesn't exist"
             });
             return;
         }
@@ -61,7 +79,7 @@ router.post('/', async (req, res) => {
                 <h3><p>Someone has tryed to use your email ${email} to get a IceCube account.
                 <br>If it was you hit the verify link below if its not ignore this email.</p></h3>
                 <hr>
-                <a href="http://localhost:8080/api/user/verifiy/${authKey}">Verify email</a>
+                <h3><a href="http://localhost:8080/api/user/verifiy/${authKey}">Verify email</a></h3>
                 `
             };
 
@@ -79,8 +97,7 @@ router.post('/', async (req, res) => {
         const newUserDatabase = await newUser.save();
 
         res.status(201).json({
-            message: "Succses",
-            user: newUserDatabase
+            message: "Succses"
         });
     } catch(e) {
         console.error(e);
@@ -107,9 +124,17 @@ router.get('/', async (req, res) => {
             return;
         }
 
+        if(!loginUser.isEmailConnected) {
+            res.status(400).json({
+                message: "Email not verified!"
+            });
+            return;
+        }
+
         if(await bcrypt.compare(password, loginUser.password)) {
             res.status(200).json({
-                message: "Logged in!"
+                message: "Logged in!",
+                user: loginUser
             });
         } else {
             res.status(400).json({
@@ -126,26 +151,16 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/verifiy/:authKey', async (req, res) => {
-    //user.findOne({authKey: req.params.authKey}, function(err, currentUser) {
-    //    if(err) {
-    //        return res.status(400).send("Error: "+err);
-    //    }
-    //    currentUser.authKey = undefined;
-    //    currentUser.isEmailConnected = true;
-    //    currentUser.save(function(err) {
-    //        if(err) {
-    //            return res.status(400).send("Error: "+err);
-    //        }
-    //        return res.send("Email verified");
-    //    });
-    //});
-
     const currentUser = await user.findOne({authKey: req.params.authKey});
-    currentUser.authKey = "VERIFIED";
-    currentUser.isEmailConnected = true;
-    await currentUser.save();
+    if(currentUser == undefined) {
+        res.send("Invaild email/auth key.");
+    } else {
+        currentUser.authKey = "VERIFIED";
+        currentUser.isEmailConnected = true;
+        await currentUser.save();
 
-    res.send("Email verified");
+        res.send("Email verified");
+    }
 });
 
 // 404

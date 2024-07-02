@@ -4,7 +4,7 @@ Content-Type: application/json
 {
     "username": "James",
     "password": "James",
-    "email": "james@czak.me"
+    "email": "email@email.com"
 }
 
 ###
@@ -15,7 +15,23 @@ Content-Type: application/json
 {
     "name": "James",
     "password": "James",
-    "email": "James@example.com"
+    "email": "email@email.com"
+}
+
+###
+
+POST http://localhost:8080/api/algs/
+Content-Type: application/json
+
+{
+    "cube": "3x3",
+    "method": "cfop",
+    "set": "pll",
+    "alg": "ja",
+    "data": "( R' U L' U2 ) ( R U' R' U2 ) R L",
+    "name": "James",
+    "password": "James",
+    "email": "email@email.com"
 }
 
 ###
@@ -27,5 +43,38 @@ Content-Type: application/json
     "cube": "3x3",
     "method": "cfop",
     "set": "pll",
-    "alg": "jperm"
+    "alg": "ja"
+}
+
+###
+
+GET http://localhost:8080/api/algs/id
+Content-Type: application/json
+
+{
+    "id": "668439abf02fb64b90ede08a"
+}
+
+###
+
+PATCH http://localhost:8080/api/algs/
+Content-Type: application/json
+
+{
+    "old_data": {
+        "cube": "3x3",
+        "method": "cfop",
+        "set": "pll",
+        "alg": "ja"
+    },
+    "new_data": {
+        "cube": "3x3",
+        "method": "cfop",
+        "set": "pll",
+        "alg": "ja",
+        "data": "( R U R' F' ) ( R U R' U' ) R' F R2 U' R'"
+    },
+    "name": "James",
+    "password": "James",
+    "email": "email@email.com"
 }
