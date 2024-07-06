@@ -61,7 +61,7 @@
         "algSet": "pll",
         "algName": "Ua",
         "alg": "( R U R' U R' ) U' R2 U' ( R' U R' U R )",
-        "algImg": "/algs/3x3-cfop-pll-Ua.png"
+        "algImg": "/algs/3x3/cfop/pll/Ua.png"
       },
       {
         "cube": "3x3",
@@ -69,7 +69,7 @@
         "algSet": "pll",
         "algName": "Ub",
         "alg": "( R' U ) ( R' U' ) ( R' U' ) ( R' U ) R U R2",
-        "algImg": "/algs/3x3-cfop-pll-Ub.png"
+        "algImg": "/algs/3x3/cfop/pll/Ub.png"
       },
       {
         "cube": "3x3",
@@ -77,7 +77,7 @@
         "algSet": "pll",
         "algName": "H",
         "alg": "M2 ( U' ) M2 ( U2 ) M2 ( U' ) M2",
-        "algImg": "/algs/3x3-cfop-pll-H.png"
+        "algImg": "/algs/3x3/cfop/pll/H.png"
       },
       {
         "cube": "3x3",
@@ -85,7 +85,7 @@
         "algSet": "pll",
         "algName": "Z",
         "alg": "M' U' ( M2 U' ) ( M2 U' ) M' U2 M2",
-        "algImg": "/algs/3x3-cfop-pll-Z.png"
+        "algImg": "/algs/3x3/cfop/pll/Z.png"
       },
       {
         "cube": "3x3",
@@ -93,7 +93,7 @@
         "algSet": "pll",
         "algName": "Aa",
         "alg": "x ( R' U R' ) D2 ( R U' R' ) D2 R2 x'",
-        "algImg": "/algs/3x3-cfop-pll-Aa.png"
+        "algImg": "/algs/3x3/cfop/pll/Aa.png"
       },
       {
         "cube": "3x3",
@@ -101,7 +101,7 @@
         "algSet": "pll",
         "algName": "Ab",
         "alg": "x R2 D2 ( R U R' ) D2 ( R U' R ) x'",
-        "algImg": "/algs/3x3-cfop-pll-Ab.png"
+        "algImg": "/algs/3x3/cfop/pll/Ab.png"
       },
       {
         "cube": "3x3",
@@ -109,7 +109,7 @@
         "algSet": "pll",
         "algName": "E",
         "alg": "x' (R U' R' D) (R U R' D') (R U R' D) (R U' R' D') x",
-        "algImg": "/algs/3x3-cfop-pll-E.png"
+        "algImg": "/algs/3x3/cfop/pll/E.png"
       },
       {
         "cube": "3x3",
@@ -117,7 +117,7 @@
         "algSet": "pll",
         "algName": "T",
         "alg": "(R U R' U') (R' F R2 U') R' U' (R U R' F')",
-        "algImg": "/algs/3x3-cfop-pll-T.png"
+        "algImg": "/algs/T.png"
       },
       {
         "cube": "3x3",
@@ -125,7 +125,7 @@
         "algSet": "pll",
         "algName": "F",
         "alg": "( R' U' F' ) ( R U R' U' ) ( R' F R2 U' ) ( R' U' R U ) ( R' U R )",
-        "algImg": "/algs/3x3-cfop-pll-F.png"
+        "algImg": "/algs/3x3/cfop/pll/F.png"
       },
       {
         "cube": "3x3",
@@ -133,7 +133,7 @@
         "algSet": "pll",
         "algName": "Ja",
         "alg": "( R' U L' U2 ) ( R U' R' U2 ) R L",
-        "algImg": "/algs/3x3-cfop-pll-Ja.png"
+        "algImg": "/algs/3x3/cfop/pll/Ja.png"
       },
       {
         "cube": "3x3",
@@ -141,7 +141,7 @@
         "algSet": "pll",
         "algName": "Jb",
         "alg": "( R U R' F' ) ( R U R' U' ) R' F R2 U' R'",
-        "algImg": "/algs/3x3-cfop-pll-Jb.png"
+        "algImg": "/algs/3x3/cfop/pll/Jb.png"
       },
       {
         "cube": "3x3",
@@ -149,7 +149,7 @@
         "algSet": "pll",
         "algName": "Ra",
         "alg": "( R U' R' U' ) ( R U R ) D ( R' U' R ) D' ( R' U2 R' )",
-        "algImg": "/algs/3x3-cfop-pll-Ra.png"
+        "algImg": "/algs/3x3/cfop/pll/Ra.png"
       },
       {
         "cube": "3x3",
@@ -157,7 +157,7 @@
         "algSet": "pll",
         "algName": "Rb",
         "alg": "( R' U2 R U2' ) R' F ( R U R' U' ) R' F' R2",
-        "algImg": "/algs/3x3-cfop-pll-Rb.png"
+        "algImg": "/algs/3x3/cfop/pll/Rb.png"
       },
       {
         "cube": "3x3",
@@ -165,7 +165,7 @@
         "algSet": "pll",
         "algName": "Y",
         "alg": "F (R U' R' U') (R U R' F') (R U R' U') (R' F R F')",
-        "algImg": "/algs/3x3-cfop-pll-Y.png"
+        "algImg": "/algs/3x3/cfop/pll/Y.png"
       },
       {
         "cube": "3x3",
@@ -173,7 +173,7 @@
         "algSet": "pll",
         "algName": "V",
         "alg": "( R' U R' U' ) y ( R' F' R2 U' ) ( R' U R' F ) R F",
-        "algImg": "/algs/3x3-cfop-pll-V.png"
+        "algImg": "/algs/3x3/cfop/pll/V.png"
       },
       {
         "cube": "3x3",
@@ -181,7 +181,7 @@
         "algSet": "pll",
         "algName": "Na",
         "alg": "( R U R' U ) ( R U R' F' ) ( R U R' U' ) R' F ( R2 U' R' ) ( U2 R U' R' )",
-        "algImg": "/algs/3x3-cfop-pll-Na.png"
+        "algImg": "/algs/3x3/cfop/pll/Na.png"
       },
       {
         "cube": "3x3",
@@ -189,7 +189,7 @@
         "algSet": "pll",
         "algName": "Nb",
         "alg": "( R' U R U' ) ( R' F' U' F ) ( R U R' F ) R' F' ( R U' R )",
-        "algImg": "/algs/3x3-cfop-pll-Nb.png"
+        "algImg": "/algs/3x3/cfop/pll/Nb.png"
       },
       {
         "cube": "3x3",
@@ -197,7 +197,7 @@
         "algSet": "pll",
         "algName": "Ga",
         "alg": "R2 U ( R' U R' U' ) ( R U' R2) D U' ( R' U R D' )",
-        "algImg": "/algs/3x3-cfop-pll-Ga.png"
+        "algImg": "/algs/3x3/cfop/pll/Ga.png"
       },
       {
         "cube": "3x3",
@@ -205,7 +205,7 @@
         "algSet": "pll",
         "algName": "Gb",
         "alg": "D ( R' U' R U ) D' ( R2 U R' U ) ( R U' R U' ) R2'",
-        "algImg": "/algs/3x3-cfop-pll-Gb.png"
+        "algImg": "/algs/3x3/cfop/pll/Gb.png"
       },
       {
         "cube": "3x3",
@@ -213,7 +213,7 @@
         "algSet": "pll",
         "algName": "Gc",
         "alg": "R2' F2 ( R U2 R U2' ) R' F ( R U R' U' ) R' F R2",
-        "algImg": "/algs/3x3-cfop-pll-Gc.png"
+        "algImg": "/algs/3x3/cfop/pll/Gc.png"
       },
       {
         "cube": "3x3",
@@ -221,7 +221,7 @@
         "algSet": "pll",
         "algName": "Gd",
         "alg": "(R U R' U') D (R2 U' R U') (R' U R' U) R2 D'",
-        "algImg": "/algs/3x3-cfop-pll-Gd.png"
+        "algImg": "/algs/3x3/cfop/pll/Gd.png"
       },
       {
         "cube": "3x3",
@@ -229,7 +229,447 @@
         "algSet": "oll",
         "algName": "T",
         "alg": "F (R U R' U') F'",
-        "algImg": "/algs/3x3-cfop-oll-T.png"
+        "algImg": "/algs/3x3/cfop/oll/T.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Sune",
+        "alg": "R U R' U R U2' R'",
+        "algImg": "/algs/3x3/cfop/oll/Sune.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Anti-Sune",
+        "alg": "R U2 R' U' R U' R'",
+        "algImg": "/algs/3x3/cfop/oll/Anti-Sune.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Cross",
+        "alg": "(R U2 R') (U' R U R') (U' R U' R')",
+        "algImg": "/algs/3x3/cfop/oll/Cross.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Bruno",
+        "alg": "R U2' R2' U' R2 U' R2' U2' R",
+        "algImg": "/algs/3x3/cfop/oll/Bruno.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Chameleon",
+        "alg": "(r U R' U') (r' F R F')",
+        "algImg": "/algs/3x3/cfop/oll/Chameleon.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Headlights",
+        "alg": "R2 D (R' U2 R) D' (R' U2 R')",
+        "algImg": "/algs/3x3/cfop/oll/Headlights.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Bowtie",
+        "alg": "F' (r U R' U') r' F R",
+        "algImg": "/algs/3x3/cfop/oll/Bowtie.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "T",
+        "alg": "F (R U R' U') F'",
+        "algImg": "/algs/3x3/cfop/oll/T.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Key",
+        "alg": "(R U R' U') (R' F R F')",
+        "algImg": "/algs/3x3/cfop/oll/Key.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Righty-Square",
+        "alg": "r U2 R' U' R U' r'",
+        "algImg": "/algs/3x3/cfop/oll/Righty-Square.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Lefty-Square",
+        "alg": "r' U2' R U R' U r",
+        "algImg": "/algs/3x3/cfop/oll/Lefty-Square.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Arrow",
+        "alg": "(r U R' U') M (U R U' R')",
+        "algImg": "/algs/3x3/cfop/oll/Arrow.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "H",
+        "alg": "(R U R' U') M' (U R U' r')",
+        "algImg": "/algs/3x3/cfop/oll/H.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Lightning",
+        "alg": "r U R' U R U2' r'",
+        "algImg": "/algs/3x3/cfop/oll/Lightning.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Reverse Lightning",
+        "alg": "r' U' R U' R' U2 r",
+        "algImg": "/algs/3x3/cfop/oll/Reverse Lightning.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Downstairs",
+        "alg": "r' (R2 U R' U R U2 R') U M'",
+        "algImg": "/algs/3x3/cfop/oll/Downstairs.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Upstairs",
+        "alg": "M' (R' U' R U' R' U2 R) U' M",
+        "algImg": "/algs/3x3/cfop/oll/Upstairs.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Big Lightning",
+        "alg": "R' F (R U R' U') F' U R",
+        "algImg": "/algs/3x3/cfop/oll/Big Lightning.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Lefty Big Lightning",
+        "alg": "L F' (L' U' L U) F U' L'",
+        "algImg": "/algs/3x3/cfop/oll/Lefty Big Lightning.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "P",
+        "alg": "f (R U R' U') f'",
+        "algImg": "/algs/3x3/cfop/oll/P.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Inverse P",
+        "alg": "f' (L' U' L U) f",
+        "algImg": "/algs/3x3/cfop/oll/Inverse P.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Couch",
+        "alg": "R' U' F (U R U' R') F' R",
+        "algImg": "/algs/3x3/cfop/oll/Couch.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Anti-Couch",
+        "alg": "R U B' (U' R' U) R B R'",
+        "algImg": "/algs/3x3/cfop/oll/Anti-Couch.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Seein' Headlights",
+        "alg": "R' U' (R' F R F') U R",
+        "algImg": "/algs/3x3/cfop/oll/Seein' Headlights.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "City",
+        "alg": "(R U R' U') B' (R' F R F') B",
+        "algImg": "/algs/3x3/cfop/oll/City.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Mounted Fish",
+        "alg": "F (R U' R' U') (R U R' F')",
+        "algImg": "/algs/3x3/cfop/oll/Mounted Fish.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Fish Salad",
+        "alg": "(R U2') (R2' F R F') (R U2' R')",
+        "algImg": "/algs/3x3/cfop/oll/Fish Salad.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Kite",
+        "alg": "(R U R' U') R' F (R2 U R' U') F'",
+        "algImg": "/algs/3x3/cfop/oll/Kite.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Anti-Kite",
+        "alg": "(R U R' U) (R' F R F') (R U2' R')",
+        "algImg": "/algs/3x3/cfop/oll/Anti-Kite.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Breakneck",
+        "alg": "F (R U R' U') (R U R' U') F'",
+        "algImg": "/algs/3x3/cfop/oll/Breakneck.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Anti-Breakneck",
+        "alg": "R' U' (R' F R F') (R' F R F') U R",
+        "algImg": "/algs/3x3/cfop/oll/Anti-Breakneck.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Frying Pan",
+        "alg": "(r' U' R U') (R' U R U') R' U2 r",
+        "algImg": "/algs/3x3/cfop/oll/Frying Pan.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Anti-Frying Pan",
+        "alg": "(r U R' U) (R U' R' U) R U2' r'",
+        "algImg": "/algs/3x3/cfop/oll/Anti-Frying Pan.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Front Squeezy",
+        "alg": "r' U r2 U' r2' U' r2 U r'",
+        "algImg": "/algs/3x3/cfop/oll/Front Squeezy.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Back Squeezy",
+        "alg": "r U' r2' U r2 U r2' U' r",
+        "algImg": "/algs/3x3/cfop/oll/Back Squeezy.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Mario",
+        "alg": "(R U R' U) (R U' R' U') (R' F R F')",
+        "algImg": "/algs/3x3/cfop/oll/Mario.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Wario",
+        "alg": "(R' U' R U') (R' U R U) l U' R' U x",
+        "algImg": "/algs/3x3/cfop/oll/Wario.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Ant",
+        "alg": "f (R U R' U') (R U R' U') f'",
+        "algImg": "/algs/3x3/cfop/oll/Ant.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Rice Cooker",
+        "alg": "(R U R' U R U') y (R U' R') F'",
+        "algImg": "/algs/3x3/cfop/oll/Rice Cooker.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Streetlights",
+        "alg": "r U r' (U R U' R') (U R U' R') r U' r'",
+        "algImg": "/algs/3x3/cfop/oll/Streetlights.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Anti-Squeegee",
+        "alg": "(r U r') (R U R' U') (r U' r')",
+        "algImg": "/algs/3x3/cfop/oll/Anti-Squeegee.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Gun",
+        "alg": "F U R U' R2' F' R U (R U' R')",
+        "algImg": "/algs/3x3/cfop/oll/Gun.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Anti-Gun",
+        "alg": "(R' F R) (U R' F' R) (F U' F')",
+        "algImg": "/algs/3x3/cfop/oll/Anti-Gun.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Poodle",
+        "alg": "(R U R' U R U2' R') F (R U R' U') F'",
+        "algImg": "/algs/3x3/cfop/oll/Poodle.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Anti-Poodle",
+        "alg": "(R' U' R U' R' U2 R) F (R U R' U') F'",
+        "algImg": "/algs/3x3/cfop/oll/Anti-Poodle.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "WTF",
+        "alg": "r2 D' (r U r') D r2 (U' r' U' r)",
+        "algImg": "/algs/3x3/cfop/oll/WTF.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Anti-WTF",
+        "alg": "F U (R U2 R' U') (R U2 R' U') F'",
+        "algImg": "/algs/3x3/cfop/oll/Anti-WTF.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Blank",
+        "alg": "(R U2') (R2' F R F') U2' (R' F R F')",
+        "algImg": "/algs/3x3/cfop/oll/Blank.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Zamboni",
+        "alg": "F (R U R' U') F' f (R U R' U') f'",
+        "algImg": "/algs/3x3/cfop/oll/Zamboni.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Slash",
+        "alg": "(R U R' U) (R' F R F') U2' (R' F R F')",
+        "algImg": "/algs/3x3/cfop/oll/Slash.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "X, aka Super lip",
+        "alg": "M U (R U R' U') M2' (U R U' r'",
+        "algImg": "/algs/3x3/cfop/oll/X, aka Super lip.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Bunny",
+        "alg": "",
+        "algImg": "/algs/3x3/cfop/oll/Bunny.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Crown",
+        "alg": "(r U R' U R U2 r') (r' U' R U' R' U2 r)",
+        "algImg": "/algs/3x3/cfop/oll/Crown.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Anti-Nazi",
+        "alg": "f (R U R' U') f' U' F (R U R' U') F'",
+        "algImg": "/algs/3x3/cfop/oll/Anti-Nazi.png"
+      },
+      {
+        "cube": "3x3",
+        "method": "cfop",
+        "algSet": "oll",
+        "algName": "Nazi",
+        "alg": "f (R U R' U') f' U F (R U R' U') F'",
+        "algImg": "/algs/3x3/cfop/oll/Nazi.png"
       }
     ]
   }
