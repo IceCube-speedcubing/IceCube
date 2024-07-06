@@ -79,7 +79,6 @@ export function HeroSection() {
                 alt="IceCube Logo - A stylized cube representing the IceCube speedcubing platform"
                 width={400}
                 height={400}
-                className="w-full h-auto transition-transform duration-300 group-hover:scale-105 opacity-75"
                 loading="eager"
               />
             </div>
