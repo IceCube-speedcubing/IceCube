@@ -1,3 +1,5 @@
 {
-  "buildCommand": "next build"
+  "builds": [
+    { "src": "package.json", "use": "@vercel/next" }
+  ]
 }
