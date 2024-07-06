@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -10,37 +10,43 @@ export function HeroSection() {
   // Animations for text and image entrance
   const containerVariants = {
     hidden: { opacity: 0 },
-    visible: { 
+    visible: {
       opacity: 1,
-      transition: { 
-        staggerChildren: 0.3 
-      }
-    }
+      transition: {
+        staggerChildren: 0.3,
+      },
+    },
   };
 
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
-      transition: { 
-        duration: 0.5 
-      }
-    }
+      transition: {
+        duration: 0.5,
+      },
+    },
   };
 
   return (
     <section className="relative min-h-screen flex items-center px-4 md:px-8 lg:px-16 pt-20 md:pt-28">
-      <motion.div 
+      <motion.div
         className="w-full max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
-        <motion.div className="w-full md:w-1/2 mb-12 md:mb-0" variants={itemVariants}>
+        <motion.div
+          className="w-full md:w-1/2 mb-12 md:mb-0"
+          variants={itemVariants}
+        >
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 text-center md:text-left">
             The All-in-one <br />
-            <span className="bg-gradient-to-br from-[#276ea8] to-[#061253] text-transparent bg-clip-text">Speedcubing</span> <br />
+            <span className="bg-gradient-to-br from-[#276ea8] to-[#061253] text-transparent bg-clip-text">
+              Speedcubing
+            </span>{" "}
+            <br />
             website
           </h1>
           <p className="text-lg md:text-xl mb-6 text-gray-300 text-center md:text-left">
@@ -50,17 +56,18 @@ export function HeroSection() {
           </p>
           <div className="flex justify-center md:justify-start">
             <Link href="/auth/signup">
-              <Button 
-                className="text-lg px-8 py-3 bg-[#0A4779] hover:bg-[#083A61] focus:outline-none focus:ring-2 focus:ring-[#0A4779] focus:ring-opacity-50"
-              >
+              <Button className="text-lg px-8 py-3 bg-[#0A4779] hover:bg-[#083A61] focus:outline-none focus:ring-2 focus:ring-[#0A4779] focus:ring-opacity-50">
                 Join Now
                 <UserPlus className="ml-2 h-5 w-5" />
               </Button>
             </Link>
           </div>
         </motion.div>
-        <motion.div className="w-full md:w-1/2 flex justify-center" variants={itemVariants}>
-          <div 
+        <motion.div
+          className="w-full md:w-1/2 flex justify-center"
+          variants={itemVariants}
+        >
+          <div
             className="relative group w-full max-w-md"
             role="img"
             aria-label="IceCube Logo with glowing effect"
@@ -72,7 +79,7 @@ export function HeroSection() {
                 alt="IceCube Logo - A stylized cube representing the IceCube speedcubing platform"
                 width={400}
                 height={400}
-                className="w-full h-auto transition-transform duration-300 group-hover:scale-105"
+                className="w-full h-auto transition-transform duration-300 group-hover:scale-105 opacity-75"
                 loading="eager"
               />
             </div>
@@ -90,9 +97,10 @@ export function HeroSectionSchema() {
       {JSON.stringify({
         "@context": "https://schema.org",
         "@type": "WebSite",
-        "name": "IceCube",
-        "description": "The all-in-one speedcubing website for mastering advanced algorithms, tracking progress, and joining a global community of cubers.",
-        "url": "https://www.icecube-speedcubing.com", // Replace with your actual URL
+        name: "IceCube",
+        description:
+          "The all-in-one speedcubing website for mastering advanced algorithms, tracking progress, and joining a global community of cubers.",
+        url: "https://www.icecube-speedcubing.com", // Replace with your actual URL
       })}
     </script>
   );
