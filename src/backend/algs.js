@@ -6,7 +6,7 @@ const user = require('./models/user.js');
 const alg = require('./models/alg.js');
 const bcrypt = require('bcrypt');
 
-router.get('/', async (req, res) => {
+router.post('/', async (req, res) => {
     const cube = req.body.cube;
     const method = req.body.method;
     const set = req.body.set;
@@ -23,13 +23,13 @@ router.get('/', async (req, res) => {
     else if(algorithm === undefined)
         data = await alg.find({cube: cube, method: method, set: set});
 
-    res.status(200).json({
+    return res.status(200).json({
         message: "Success",
         data: data
     });
 });
 
-router.get('/id', async (req, res) => {
+router.post('/id', async (req, res) => {
     const id = req.body.id;
     if(id === undefined)
         return res.status(400).send("Id is not defined");
@@ -42,7 +42,7 @@ router.get('/id', async (req, res) => {
     });
 });
 
-router.post('/', async (req, res) => {
+router.post('/create/', async (req, res) => {
     const cube = req.body.cube;
     const method = req.body.method;
     const set = req.body.set;
@@ -85,7 +85,7 @@ router.post('/', async (req, res) => {
     });
 });
 
-router.patch('/', async (req, res) => {
+router.patch('/update/', async (req, res) => {
     const username = req.body.name;
     const password = req.body.password;
     const email = req.body.email;

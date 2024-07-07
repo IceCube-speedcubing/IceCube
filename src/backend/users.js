@@ -30,23 +30,23 @@ router.post('/', async (req, res) => {
         const email = req.body.email;
 	
 	    if(name === undefined || password === undefined || email === undefined)
-		    return res.status(400).send("Name/Password/Email not defined in body!");
+		    return res.status(400).json({
+                message: "Name/Password/Email not defined in body!"
+            });
 
 	    const passwordSalt = await bcrypt.genSalt(10);
         const securePassword = await bcrypt.hash(password, passwordSalt);
 
         if(await user.findOne({email: email}) !== null) {
-            res.status(400).json({
+            return res.status(400).json({
                 message: "Email Taken"
             });
-            return;
         }
 
         if(!emailValidator.validate(email)) {
-            res.status(400).json({
+            return res.status(400).json({
                 message: "Email doesn't exist"
             });
-            return;
         }
 
         const newUser = new user({
@@ -85,31 +85,33 @@ router.post('/', async (req, res) => {
 
             transporter.sendMail(mailOptions, function(err, info) {
                 if(err) {
-                    console.log("error sending mail\n"+err);
-                    return res.end("Error sending mail" + err);
+                    console.log("Error sending mail\n"+err);
+                    return res.json({
+                        message: "Error sending mail"
+                    });
                 }
             });
         } catch(e) {
-            res.status(400).send("Email not valid or theres been a error on the server.<br>"+e);
-            return;
+            return res.status(400).json({
+                message: "Server error"
+            });
         }
 
         const newUserDatabase = await newUser.save();
 
-        res.status(201).json({
+        return res.status(201).json({
             message: "Succses"
         });
     } catch(e) {
         console.error(e);
-        res.status(500).json({
+        return res.status(500).json({
             message: `Error: ${e}`
         });
-        return;
     }
 });
 
 // Login
-router.get('/', async (req, res) => {
+router.post('/login/', async (req, res) => {
     try {
         const name = req.body.name;
         const password = req.body.password;
@@ -118,32 +120,30 @@ router.get('/', async (req, res) => {
         const loginUser = await user.findOne({name: name, email: email});
 
         if(loginUser === null || password === undefined) {
-            res.status(400).json({
+            return res.status(400).json({
                 message: "User Doesn't Exist"
             });
-            return;
         }
 
         if(!loginUser.isEmailConnected) {
-            res.status(400).json({
+            return res.status(400).json({
                 message: "Email not verified!"
             });
-            return;
         }
 
         if(await bcrypt.compare(password, loginUser.password)) {
-            res.status(200).json({
+            return res.status(200).json({
                 message: "Logged in!",
                 user: loginUser
             });
         } else {
-            res.status(400).json({
+            return res.status(400).json({
                 message: "Wrong password!"
             });
         }
     } catch(e) {
         console.error(e);
-        res.status(500).json({
+        return res.status(500).json({
             message: "ERROR",
             error: e
         });
@@ -165,11 +165,8 @@ router.get('/verifiy/:authKey', async (req, res) => {
 
 // 404
 router.use(function (req, res, next) {
-    fs.readFile('./out/404.html', function(err, data) {
-        if(err) { return res.status(404).send("404 not found"); }    
-        res.writeHead(404, {'Content-Type': 'text/html'});
-        res.write(data);
-        return res.end();
+    res.json({
+        message: "404 not found"
     });
 });
 
