@@ -45,7 +45,13 @@ const AlgorithmsPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/algs");
+        const response = await fetch("http://localhost:8080/api/algs", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ cube: "3x3" }),
+        });
         if (!response.ok) throw new Error("Failed to fetch algorithm data");
         const data = await response.json();
         if (data.cubes.length === 0 && data.algs.length === 0) {
@@ -158,7 +164,7 @@ const AlgorithmsPage = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:8080/api/algs", {
+      const response = await fetch("http://localhost:8080/api/algs/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
