@@ -48,6 +48,12 @@ const AlgorithmsPage = () => {
         const response = await fetch("http://localhost:8080/api/algs");
         if (!response.ok) throw new Error("Failed to fetch algorithm data");
         const data = await response.json();
+        if (data.cubes.length === 0 && data.algs.length === 0) {
+          toast.error(
+            "The database is currently empty. No algorithms available."
+          );
+          return;
+        }
         setCubes(data.cubes);
         setAlgs(data.algs);
         if (data.cubes.length > 0) {
