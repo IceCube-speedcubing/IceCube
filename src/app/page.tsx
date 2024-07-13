@@ -1,6 +1,7 @@
 import { Background } from '@/components/Background';
 import { HeroSection } from '@/components/ladingPage/HeroSection';
 import { FeaturesSection } from '@/components/ladingPage/FeaturesSection';
+import Footer from '@/components/ladingPage/Footer';
 
 export default function Home() {
   return (
@@ -9,6 +10,7 @@ export default function Home() {
       <div className="relative z-10">
         <HeroSection />
         <FeaturesSection />
+        <Footer />
       </div>
     </main>
   );
