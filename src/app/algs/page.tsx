@@ -45,7 +45,7 @@ const AlgorithmsPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/algs", {
+        const response = await fetch("http://localhost:8080/api/algs/", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

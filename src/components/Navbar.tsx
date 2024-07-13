@@ -98,7 +98,7 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const isLoggedIn = true; // TODO: Replace with actual auth check
+  const isLoggedIn = false; // TODO: Replace with actual auth check
 
   const trackNavigation = (path: string) => {
     // TODO: Replace with actual analytics tracking

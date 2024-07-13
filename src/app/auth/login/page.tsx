@@ -30,6 +30,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
+import axios, { AxiosError } from "axios";
+import { Background } from "@/components/Background";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -70,32 +72,45 @@ export default function LoginPage() {
     setIsLoading(true);
     setLoginAttempts((prev) => prev + 1);
 
-    // Simulating API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/api/user/login/",
+        {
+          email: values.email,
+          password: values.password,
+        }
+      );
 
-    // Simulating a login check
-    if (values.email === "test@example.com" && values.password === "password") {
-      toast({
-        title: "Login successful!",
-        description: "Welcome back to IceCube.",
-      });
+      if (response.data.success) {
+        toast({
+          title: "Login successful!",
+          description: "Welcome back to IceCube.",
+        });
 
-      if (values.rememberMe) {
-        // TODO: Implement actual "Remember me" functionality
-        localStorage.setItem("rememberedUser", values.email);
+        if (values.rememberMe) {
+          localStorage.setItem("rememberedUser", values.email);
+        }
+
+        // TODO: Implement actual analytics tracking
+        console.log("Login success:", {
+          email: values.email,
+          timestamp: new Date().toISOString(),
+        });
+
+        router.push("/dashboard");
+      } else {
+        throw new Error(response.data.message || "Login failed");
       }
+    } catch (error) {
+      const errorMessage =
+        error instanceof AxiosError
+          ? error.response?.data?.message || error.message
+          : "An unexpected error occurred";
 
-      // TODO: Implement actual analytics tracking
-      console.log("Login success:", {
-        email: values.email,
-        timestamp: new Date().toISOString(),
-      });
-
-      router.push("/dashboard");
-    } else {
       toast({
         title: "Login failed",
-        description: "Invalid email or password. Please try again.",
+        description:
+          errorMessage || "Invalid email or password. Please try again.",
         variant: "destructive",
       });
 
@@ -104,23 +119,14 @@ export default function LoginPage() {
         email: values.email,
         timestamp: new Date().toISOString(),
       });
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
   return (
     <div className="relative h-screen w-screen overflow-hidden flex items-center justify-center">
-      {/* Background Image */}
-      <Image
-        src="/images/gradiantBackground.png"
-        alt="Background"
-        layout="fill"
-        objectFit="cover"
-        quality={100}
-        className="opacity-80"
-      />
-
+      <Background />
       {/* Overlay */}
       <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
 
@@ -272,7 +278,7 @@ export default function LoginPage() {
                 </Button>
               </div>
               <p className="text-sm text-center text-gray-300">
-                Don&apos;t have an account?{" "}
+                Don't have an account?{" "}
                 <Link
                   href="/auth/signup"
                   className="text-[#0A4779] hover:text-[#083A61] font-semibold"
