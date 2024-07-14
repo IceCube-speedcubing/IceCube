@@ -25,7 +25,7 @@ const TimerPage = () => {
         </div>
         <div className="mb-8">
           <h1 className="font-bold text-8xl text-white drop-shadow-lg">
-            00.00
+            0.00
           </h1>
         </div>
       </div>

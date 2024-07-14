@@ -17,7 +17,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/ui/card"; 
 import {
   Form,
   FormControl,
@@ -30,7 +30,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
-import axios, { AxiosError } from "axios";
 import { Background } from "@/components/Background";
 
 const formSchema = z.object({
@@ -73,15 +72,24 @@ export default function LoginPage() {
     setLoginAttempts((prev) => prev + 1);
 
     try {
-      const response = await axios.post(
+      const response = await fetch(
         "http://localhost:8080/api/user/login/",
         {
-          email: values.email,
-          password: values.password,
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: values.email,
+            password: values.password,
+          })
         }
       );
 
-      if (response.data.success) {
+      const data = await response.json();
+      console.log("Response:", data);
+
+      if (response.ok) {
         toast({
           title: "Login successful!",
           description: "Welcome back to IceCube.",
@@ -91,30 +99,24 @@ export default function LoginPage() {
           localStorage.setItem("rememberedUser", values.email);
         }
 
-        // TODO: Implement actual analytics tracking
         console.log("Login success:", {
           email: values.email,
           timestamp: new Date().toISOString(),
         });
 
-        router.push("/dashboard");
+        router.push("/");
       } else {
-        throw new Error(response.data.message || "Login failed");
+        throw new Error(data.message || "Login failed");
       }
     } catch (error) {
-      const errorMessage =
-        error instanceof AxiosError
-          ? error.response?.data?.message || error.message
-          : "An unexpected error occurred";
+      const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
 
       toast({
         title: "Login failed",
-        description:
-          errorMessage || "Invalid email or password. Please try again.",
+        description: errorMessage || "Invalid email or password. Please try again.",
         variant: "destructive",
       });
 
-      // TODO: Implement actual analytics tracking
       console.log("Login failure:", {
         email: values.email,
         timestamp: new Date().toISOString(),
@@ -127,10 +129,8 @@ export default function LoginPage() {
   return (
     <div className="relative h-screen w-screen overflow-hidden flex items-center justify-center">
       <Background />
-      {/* Overlay */}
       <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
 
-      {/* Content */}
       <Card className="relative z-10 w-full max-w-md bg-black bg-opacity-40 backdrop-blur-md border-0 shadow-2xl">
         <CardHeader className="space-y-1 pb-8">
           <div className="flex justify-center mb-4">
@@ -245,7 +245,6 @@ export default function LoginPage() {
                   <AlertDescription>
                     Please complete the CAPTCHA to continue.
                   </AlertDescription>
-                  {/* TODO: Implement actual CAPTCHA here */}
                 </Alert>
               )}
             </CardContent>
@@ -270,7 +269,6 @@ export default function LoginPage() {
                   variant="outline"
                   className="bg-white bg-opacity-20 text-white hover:bg-opacity-30"
                   onClick={() => {
-                    // TODO: Implement WCA login
                     console.log("WCA login clicked");
                   }}
                 >
@@ -293,8 +291,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
-// TODO: Add two-factor authentication option
-// TODO: Implement password strength meter
-// TODO: Implement proper accessibility features (e.g., aria labels, keyboard navigation)
-// TODO: Add internationalization support for multiple languages
