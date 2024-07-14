@@ -86,9 +86,6 @@ router.post('/', async (req, res) => {
             transporter.sendMail(mailOptions, function(err, info) {
                 if(err) {
                     console.log("Error sending mail\n"+err);
-                    return res.json({
-                        message: "Error sending mail"
-                    });
                 }
             });
         } catch(e) {
@@ -113,11 +110,10 @@ router.post('/', async (req, res) => {
 // Login
 router.post('/login/', async (req, res) => {
     try {
-        const name = req.body.name;
         const password = req.body.password;
         const email = req.body.email;
 
-        const loginUser = await user.findOne({name: name, email: email});
+        const loginUser = await user.findOne({email: email});
 
         if(loginUser === null || password === undefined) {
             return res.status(400).json({
