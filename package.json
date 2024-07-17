@@ -59,6 +59,7 @@
     "react-intersection-observer": "^9.10.3",
     "react-responsive": "^10.0.0",
     "react-rubiks-cube-utils": "^1.1.2",
+    "recharts": "^2.12.7",
     "scrambled": "^1.0.2",
     "sr-scrambler": "^2.0.2",
     "swr": "^2.2.5",

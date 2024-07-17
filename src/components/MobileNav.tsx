@@ -14,9 +14,10 @@ const navItems = [
 
 interface MobileNavProps {
   isLoggedIn: boolean;
+  user: any;
 }
 
-export function MobileNav({ isLoggedIn }: MobileNavProps) {
+export function MobileNav({ isLoggedIn, user }: MobileNavProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -83,7 +84,7 @@ export function MobileNav({ isLoggedIn }: MobileNavProps) {
           <div className="mt-8 pt-6 border-t border-gray-700">
             {isLoggedIn ? (
               <div className="flex justify-center py-3">
-                <UserAccountNav />
+                <UserAccountNav user={user} />
               </div>
             ) : (
               <div className="space-y-4">

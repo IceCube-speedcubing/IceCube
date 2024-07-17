@@ -8,6 +8,7 @@ import { UserAccountNav } from "@/components/UserAccountNav";
 import Image from "next/image";
 import { MobileNav } from "@/components/MobileNav";
 import { ChevronDown, Clock, ArrowRight } from "lucide-react";
+import { useAuth } from '@/contexts/AuthContext';
 
 const navItems = [
   { name: "Algorithms", href: "/algs" },
@@ -43,10 +44,6 @@ const navItems = [
             duration: "8 weeks",
           },
         ],
-        // TODO: Fetch popular courses from the database instead of hardcoding
-        // TODO: Implement a caching mechanism to avoid frequent database queries
-        // TODO: Add a rating or review count to each course to show popularity
-        // TODO: Implement a mechanism to rotate featured courses periodically
       },
       {
         name: "Course Categories",
@@ -64,30 +61,16 @@ const navItems = [
             count: 5,
           },
         ],
-        // TODO: Fetch category data and course counts from the database
-        // TODO: Implement dynamic routing for category pages
-        // TODO: Add subcategories if the course structure becomes more complex
       },
-      // TODO: Add a section for "New Courses" or "Coming Soon" to highlight fresh content
-      // TODO: Implement user-specific course recommendations based on their progress or interests
-      // TODO: Add a quick link to resume the user's most recent course if they're logged in
-      // TODO: Integrate a search functionality within the dropdown for quick course lookup
     ],
   },
   { name: "Timer", href: "/timer" },
   { name: "About", href: "/about" },
 ];
 
-// TODO: Implement a function to fetch and update course data periodically
-// TODO: Create a context or Redux store to manage global state for course data
-// TODO: Implement error handling for failed data fetches
-// TODO: Add loading states for when course data is being fetched
-// TODO: Optimize images with next/image and implement lazy loading for performance
-// TODO: Implement A/B testing for different dropdown layouts or content arrangements
-// TODO: Add analytics tracking for dropdown interactions (e.g., which courses are clicked most)
-
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const auth = useAuth();
   const pathname = usePathname();
 
   useEffect(() => {
@@ -95,13 +78,11 @@ export function Navbar() {
       setIsScrolled(window.scrollY > 10);
     };
     window.addEventListener("scroll", handleScroll);
+
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const isLoggedIn = false; // TODO: Replace with actual auth check
-
   const trackNavigation = (path: string) => {
-    // TODO: Replace with actual analytics tracking
     console.log(`Navigated to: ${path}`);
   };
 
@@ -213,11 +194,13 @@ export function Navbar() {
           </div>
 
           <div className="hidden md:flex items-center">
-            {isLoggedIn ? (
-              <UserAccountNav />
+            {auth?.loading ? (
+              <div>Loading...</div>
+            ) : auth?.user ? (
+              <UserAccountNav user={auth.user} />
             ) : (
               <>
-                <Link
+                 <Link
                   href="/auth/login"
                   onClick={() => trackNavigation("/auth/login")}
                 >
@@ -243,20 +226,9 @@ export function Navbar() {
               </>
             )}
           </div>
-
-          <MobileNav isLoggedIn={isLoggedIn} />
+          <MobileNav isLoggedIn={!!auth?.user} user={auth?.user} />
         </div>
       </div>
     </nav>
   );
 }
-
-// TODO: Implement internationalization (i18n) for multi-language support
-// TODO: Add accessibility features (e.g., aria-labels, keyboard navigation)
-// TODO: Add animations for navbar items on page load
-// TODO: Optimize performance using React.memo or useMemo where appropriate
-// TODO: Add unit and integration tests for the Navbar component
-// TODO: Consider implementing a search functionality in the navbar
-// TODO: Add support for dynamic navigation items (e.g., fetched from an API)
-// TODO: Implement a close mechanism for the dropdown when clicking outside
-// TODO: Add a subtle transition for the ChevronDown icon rotation on dropdown open/close
