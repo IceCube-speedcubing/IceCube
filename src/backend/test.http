@@ -2,9 +2,9 @@ POST http://localhost:8080/api/user/
 Content-Type: application/json
 
 {
-    "username": "James",
-    "password": "James",
-    "email": "email@email.com"
+    "username": "John",
+    "password": "John",
+    "email": "redcraft1234567890@gmail.com"
 }
 
 ###
@@ -13,9 +13,19 @@ POST http://localhost:8080/api/user/login/
 Content-Type: application/json
 
 {
-    "name": "James",
     "password": "James",
-    "email": "email@email.com"
+    "email": "james@czak.me"
+}
+
+###
+
+POST http://localhost:8080/api/user/admin/
+Content-Type: application/json
+
+{
+    "password": "John",
+    "email": "redcraft1234567890@gmail.com",
+    "newEmail": "redcraft1234567890@gmail.com"
 }
 
 ###

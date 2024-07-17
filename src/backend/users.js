@@ -149,13 +149,53 @@ router.post('/login/', async (req, res) => {
 router.get('/verifiy/:authKey', async (req, res) => {
     const currentUser = await user.findOne({authKey: req.params.authKey});
     if(currentUser == undefined) {
-        res.send("Invaild email/auth key.");
+        res.send("Invaild auth key.");
     } else {
         currentUser.authKey = "VERIFIED";
         currentUser.isEmailConnected = true;
         await currentUser.save();
 
         res.send("Email verified");
+    }
+});
+
+// Make admin
+router.post('/admin/', async (req, res) => {
+    const email = req.body.email;
+    const password = req.body.password;
+    const newEmail = req.body.newEmail;
+
+    const currentUser = await user.findOne({email: email});
+    const newUser = await user.findOne({email: newEmail});
+
+    if(currentUser === null) {
+        return res.status(400).json({
+            message: "Your User Doesn't Exist"
+        });
+    }
+
+    if (newUser === null) {
+        return res.status(400).json({
+            message: "New Admin User Doesn't Exist"
+        });
+    }
+
+    if(await bcrypt.compare(password, currentUser.password)) {
+        if(currentUser.isAdmin) {
+            newUser.isAdmin = true;
+            await newUser.save();
+            return res.status(200).json({
+                message: "New user changed to admin."
+            });
+        } else {
+            return res.status(400).json({
+                message: "Your not a admin."
+            });
+        }
+    } else {
+        return res.status(400).json({
+            message: "Wrong password!"
+        });
     }
 });
 
