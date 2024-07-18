@@ -39,10 +39,16 @@ Content-Type: application/json
     "set": "pll",
     "alg": "ja",
     "data": "( R' U L' U2 ) ( R U' R' U2 ) R L",
+    "img": "http://localhost:3000/idk",
     "name": "James",
     "password": "James",
-    "email": "email@email.com"
+    "email": "james@czak.me"
 }
+
+###
+
+POST http://localhost:8080/api/algs/
+Content-Type: application/json
 
 ###
 

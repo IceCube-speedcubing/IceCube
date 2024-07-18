@@ -20,6 +20,10 @@ const algSchema = new mongoose.Schema({
     data: {
         type: String,
         required: true
+    },
+    img: {
+        type: String,
+        required: true
     }
 });
 

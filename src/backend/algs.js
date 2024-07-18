@@ -13,10 +13,10 @@ router.post('/', async (req, res) => {
     const algorithm = req.body.alg;
 
     let data = await alg.find({cube: cube, method: method, set: set, alg: algorithm});
-    if(cube === undefined)
-        return res.status(400).send("No cube is defiend.");
 
-    if(method === undefined)
+    if(cube === undefined)
+        data = await alg.find({});
+    else if(method === undefined)
         data = await alg.find({cube: cube});
     else if(set === undefined)
         data = await alg.find({cube: cube, method: method});
@@ -48,12 +48,13 @@ router.post('/create/', async (req, res) => {
     const set = req.body.set;
     const algorithm = req.body.alg;
     const data = req.body.data;
+    const img = req.body.img;
     const name = req.body.name;
     const password = req.body.password;
     const email = req.body.email;
 
-    if(cube === undefined || method === undefined || set === undefined || algorithm === undefined || data === undefined || name === undefined || password === undefined || email === undefined)
-        return res.status(400).send("Cube/Method/Set/Alg/Data/Name/Password/Email is undefined in body!");
+    if(cube === undefined || method === undefined || set === undefined || algorithm === undefined || data === undefined || img === undefined || name === undefined || password === undefined || email === undefined)
+        return res.status(400).send("Cube/Method/Set/Alg/Data/Image/Name/Password/Email is undefined in body!");
 
     if(await alg.findOne({cube: cube, method: method, set: set, alg: algorithm}) !== null)
         return res.status(400).send("Algorithm already exists.");
@@ -75,7 +76,8 @@ router.post('/create/', async (req, res) => {
         method: method,
         set: set,
         alg: algorithm,
-        data: data
+        data: data,
+        img: img
     });
 
     const newAlgDB = await newAlg.save();
