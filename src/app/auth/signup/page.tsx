@@ -29,6 +29,8 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { useRouter } from 'next/navigation';
+import { Background } from "@/components/Background";
 
 const formSchema = z
   .object({
@@ -55,6 +57,7 @@ export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -71,28 +74,43 @@ export default function SignUpPage() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
-    // TODO: Implement actual user registration logic here
-    await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulating API call
-    setIsLoading(false);
-    toast({
-      title: "Account created successfully!",
-      description: "Please check your email for verification.",
-    });
-    // TODO: Implement email verification process
+    try {
+      const response = await fetch('http://localhost:8080/api/user/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: values.username,
+          email: values.email,
+          password: values.password,
+        }),
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Account created successfully!",
+          description: "Please check your email for verification.",
+        });
+        router.push('/auth/login');
+      } else {
+        const data = await response.json();
+        throw new Error(data.message || 'Something went wrong');
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : 'An error occurred during sign up',
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="relative h-screen w-screen overflow-hidden flex items-center justify-center">
-      {/* Background Image */}
-      <Image
-        src="/images/gradiantBackground.png"
-        alt="Background"
-        layout="fill"
-        objectFit="cover"
-        quality={100}
-        className="opacity-80"
-      />
-
+      <Background />
       {/* Overlay */}
       <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
 

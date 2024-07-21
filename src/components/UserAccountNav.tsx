@@ -1,7 +1,6 @@
 "use client";
 
 import { User, ShieldCheck, Settings, LogOut, CreditCard } from "lucide-react";
-import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -13,35 +12,44 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useAuth } from "@/contexts/AuthContext";
 
-// TODO: Replace this with actual user data fetching
-const user = {
-  name: "John Doe",
-  email: "john@example.com",
-  image: "https://github.com/shadcn.png",
-  isAdmin: true, // TODO: Replace with actual admin check
-};
-
-// TODO: Consider moving this component to a separate file if it grows in complexity
-const HoverMenuItem = ({ children, icon: Icon }: { children: React.ReactNode, icon: React.ComponentType<any> }) => {
+const HoverMenuItem = ({
+  children,
+  icon: Icon,
+  isSignOut = false,
+}: {
+  children: React.ReactNode;
+  icon: React.ComponentType<any>;
+  isSignOut?: boolean;
+}) => {
   const [isHovered, setIsHovered] = useState(false);
-  
+
   return (
     <div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className="relative overflow-hidden rounded-md transition-all duration-300 ease-in-out"
-      style={{
-        backgroundColor: isHovered ? "rgba(255, 255, 255, 0.1)" : "transparent",
-      }}
     >
       <div
-        className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 opacity-0 transition-opacity duration-300"
-        style={{ opacity: isHovered ? 0.15 : 0 }}
+        className={`absolute inset-0 ${
+          isSignOut
+            ? "bg-gradient-to-r from-red-600 via-red-500 to-red-700"
+            : "bg-gradient-to-r from-blue-500 to-purple-500"
+        } opacity-0 transition-opacity duration-300`}
+        style={{ opacity: isHovered ? 1 : 0 }}
       />
       <div className="relative flex items-center px-4 py-2 text-sm">
-        <Icon className={`mr-2 h-4 w-4 transition-all duration-300 ${isHovered ? 'text-blue-400' : 'text-gray-400'}`} />
-        <span className={`transition-all duration-300 ${isHovered ? 'text-white translate-x-1' : 'text-gray-200'}`}>
+        <Icon
+          className={`mr-2 h-4 w-4 transition-all duration-300 ${
+            isHovered ? "text-white" : "text-gray-400"
+          }`}
+        />
+        <span
+          className={`transition-all duration-300 ${
+            isHovered ? "text-white translate-x-1" : "text-gray-200"
+          }`}
+        >
           {children}
         </span>
       </div>
@@ -49,12 +57,25 @@ const HoverMenuItem = ({ children, icon: Icon }: { children: React.ReactNode, ic
   );
 };
 
-export function UserAccountNav() {
+interface UserType {
+  name: string;
+  email: string;
+  image: string;
+  isAdmin: boolean;
+}
+
+export function UserAccountNav({ user }: { user: UserType }) {
+  const auth = useAuth();
+
+  const handleSignOut = () => {
+    auth?.logout();
+    window.location.href = "/auth/login";
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="focus:outline-none group">
         <div className="relative w-10 h-10">
-          {/* TODO: Customize the glow effect colors to match your brand */}
           <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 opacity-0 group-hover:opacity-75 blur-md transition-all duration-300 ease-in-out"></div>
           <Avatar className="relative w-10 h-10 transition-all duration-300 ease-in-out group-hover:scale-105 border-2 border-transparent group-hover:border-blue-400">
             <AvatarImage src={user.image} alt={user.name} />
@@ -82,7 +103,6 @@ export function UserAccountNav() {
         </div>
         <DropdownMenuSeparator className="bg-gray-800" />
         <div className="py-1">
-          {/* TODO: Implement proper routing for these links */}
           {user.isAdmin && (
             <DropdownMenuItem asChild>
               <HoverMenuItem icon={ShieldCheck}>
@@ -116,17 +136,8 @@ export function UserAccountNav() {
         </div>
         <DropdownMenuSeparator className="bg-gray-800" />
         <DropdownMenuItem asChild>
-          <HoverMenuItem icon={LogOut}>
-            <button
-              className="w-full text-left"
-              onClick={(event) => {
-                event.preventDefault();
-                // TODO: Implement proper sign out logic
-                signOut({
-                  callbackUrl: `${window.location.origin}/login`,
-                });
-              }}
-            >
+          <HoverMenuItem icon={LogOut} isSignOut={true}>
+            <button className="w-full text-left" onClick={handleSignOut}>
               Sign out
             </button>
           </HoverMenuItem>
@@ -135,7 +146,3 @@ export function UserAccountNav() {
     </DropdownMenu>
   );
 }
-
-// TODO: Add proper type checking for props and return types
-// TODO: Consider adding tests for this component
-// TODO: Optimize performance if needed (e.g., memoization)
