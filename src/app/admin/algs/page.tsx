@@ -48,7 +48,11 @@ export default function AlgsPage() {
     try {
       toast.loading("Adding algorithm...");
 
+<<<<<<< HEAD
       const response = await fetch("http://localhost:8080/api/algs/create/", {
+=======
+      const response = await fetch("http://localhost:8080/api/algs/create/" || '/api/algs/create/', {
+>>>>>>> main
         method: "POST",
         headers: {
           "Content-Type": "application/json",

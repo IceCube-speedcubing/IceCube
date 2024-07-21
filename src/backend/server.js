@@ -8,6 +8,17 @@ const db = mongoose.connection;
 db.on('error', (e) => console.error(e));
 db.on('open', () => console.log('Connected to Database'));
 
+<<<<<<< HEAD
+=======
+// dont use in production
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Access-Control-Allow-Methods', '*');
+    next();
+});
+
+>>>>>>> main
 const apiRouter = require('./api.js');
 
 app.use(express.static("out"));

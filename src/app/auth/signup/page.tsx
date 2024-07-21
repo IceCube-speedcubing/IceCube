@@ -75,7 +75,11 @@ export default function SignUpPage() {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     try {
+<<<<<<< HEAD
       const response = await fetch('http://localhost:8080/api/user/', {
+=======
+      const response = await fetch('http://localhost:8080/api/user/' || '/api/user/', {
+>>>>>>> main
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
