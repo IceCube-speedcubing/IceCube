@@ -128,4 +128,4 @@ const TimerComingSoon: React.FC = () => {
   );
 };
 
-export default TimerPage;
+export default TimerComingSoon;

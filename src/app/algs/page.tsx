@@ -66,11 +66,14 @@ const AlgorithmsPage = () => {
 
   const fetchCubes = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/algs/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
-      });
+      const response = await fetch(
+        "http://localhost:8080/api/algs/" || "/api/algs/",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({}),
+        }
+      );
       if (!response.ok) throw new Error("Failed to fetch cubes");
       const data = await response.json();
       const uniqueCubes = Array.from(
@@ -85,11 +88,14 @@ const AlgorithmsPage = () => {
 
   const fetchMethods = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/algs/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cube: selectedCube }),
-      });
+      const response = await fetch(
+        "http://localhost:8080/api/algs/" || "/api/algs/",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ cube: selectedCube }),
+        }
+      );
       if (!response.ok) throw new Error("Failed to fetch methods");
       const data = await response.json();
       const uniqueMethods = Array.from(
@@ -104,11 +110,14 @@ const AlgorithmsPage = () => {
 
   const fetchAlgSets = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/algs/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cube: selectedCube, method: selectedMethod }),
-      });
+      const response = await fetch(
+        "http://localhost:8080/api/algs/" || "/api/algs/",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ cube: selectedCube, method: selectedMethod }),
+        }
+      );
       if (!response.ok) throw new Error("Failed to fetch alg sets");
       const data = await response.json();
       const uniqueAlgSets = Array.from(
@@ -123,15 +132,18 @@ const AlgorithmsPage = () => {
 
   const fetchAlgs = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/algs/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          cube: selectedCube,
-          method: selectedMethod,
-          set: selectedAlgSet,
-        }),
-      });
+      const response = await fetch(
+        "http://localhost:8080/api/algs/" || "/api/algs/",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            cube: selectedCube,
+            method: selectedMethod,
+            set: selectedAlgSet,
+          }),
+        }
+      );
       if (!response.ok) throw new Error("Failed to fetch algs");
       const data = await response.json();
       setAlgs(data.data);

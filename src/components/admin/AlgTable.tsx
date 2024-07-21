@@ -43,11 +43,14 @@ export function AlgTable() {
 
   const fetchAlgs = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/algs/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
-      });
+      const response = await fetch(
+        "http://localhost:8080/api/algs/" || "/api/algs/",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({}),
+        }
+      );
       if (response.ok) {
         const data = await response.json();
         setAlgs(data.data);
@@ -78,22 +81,25 @@ export function AlgTable() {
     if (!editingAlg) return;
 
     try {
-      const response = await fetch("http://localhost:8080/api/algs/update/", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          old_data: {
-            cube: editingAlg.cube,
-            method: editingAlg.method,
-            set: editingAlg.set,
-            alg: editingAlg.alg,
-          },
-          new_data: editingAlg,
-          name: "James",
-          password: "James",
-          email: "james@czak.me",
-        }),
-      });
+      const response = await fetch(
+        "http://localhost:8080/api/algs/update/" || "/api/algs/update/",
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            old_data: {
+              cube: editingAlg.cube,
+              method: editingAlg.method,
+              set: editingAlg.set,
+              alg: editingAlg.alg,
+            },
+            new_data: editingAlg,
+            name: "James",
+            password: "James",
+            email: "james@czak.me",
+          }),
+        }
+      );
 
       const responseText = await response.text();
       console.log("API Response:", responseText);
@@ -123,19 +129,22 @@ export function AlgTable() {
 
   const handleDeleteClick = async (alg: Alg) => {
     try {
-      const response = await fetch("http://localhost:8080/api/algs/delete/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          cube: alg.cube,
-          method: alg.method,
-          set: alg.set,
-          alg: alg.alg,
-          name: "James",
-          password: "James",
-          email: "james@czak.me",
-        }),
-      });
+      const response = await fetch(
+        "http://localhost:8080/api/algs/delete/" || "/api/algs/delete/",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            cube: alg.cube,
+            method: alg.method,
+            set: alg.set,
+            alg: alg.alg,
+            name: "James",
+            password: "James",
+            email: "james@czak.me",
+          }),
+        }
+      );
 
       const responseText = await response.text();
       console.log("API Response:", responseText);
@@ -145,7 +154,7 @@ export function AlgTable() {
           title: "Success",
           description: "Algorithm deleted successfully",
         });
-        fetchAlgs(); 
+        fetchAlgs();
       } else {
         throw new Error(responseText || "Failed to delete algorithm");
       }
@@ -232,7 +241,8 @@ export function AlgTable() {
               Edit Algorithm
             </DialogTitle>
             <DialogDescription className="text-gray-300">
-              Refine your algorithm details below. Save when you&apos;re satisfied.
+              Refine your algorithm details below. Save when you&apos;re
+              satisfied.
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleEditSubmit}>
