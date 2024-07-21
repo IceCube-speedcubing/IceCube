@@ -20,7 +20,7 @@ const TimerPage = () => {
       <div className="text-center relative z-10 flex-grow w-full max-w-4xl flex flex-col items-center justify-center">
         <div className="mb-8 bg-black bg-opacity-30 backdrop-filter backdrop-blur-lg rounded-lg p-6">
           <h2 className="text-2xl font-semibold text-white">
-            F B U' F' B' L' B D' L B' L2 U2 F' U2 B' R2 B' D2 R2 B L2
+            F B U&apos; F&apos; B&apos; L&apos; B D&apos; L B&apos; L2 U2 F&apos; U2 B&apos; R2 B&apos; D2 R2 B L2
           </h2>
         </div>
         <div className="mb-8">
