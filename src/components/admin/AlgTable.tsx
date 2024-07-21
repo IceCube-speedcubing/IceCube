@@ -232,7 +232,7 @@ export function AlgTable() {
               Edit Algorithm
             </DialogTitle>
             <DialogDescription className="text-gray-300">
-              Refine your algorithm details below. Save when you're satisfied.
+              Refine your algorithm details below. Save when you&apos;re satisfied.
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleEditSubmit}>
