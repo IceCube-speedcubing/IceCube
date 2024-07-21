@@ -94,3 +94,20 @@ Content-Type: application/json
     "password": "James",
     "email": "james@czak.me"
 }
+
+###
+
+POST http://localhost:8080/api/algs/delete/
+Content-Type: application/json
+
+{
+    "cube": {
+        "cube": "3x3",
+        "method": "cfop",
+        "set": "pll",
+        "alg": "ja"
+    },
+    "name": "James",
+    "password": "James",
+    "email": "james@czak.me"
+}

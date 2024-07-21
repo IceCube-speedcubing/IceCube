@@ -116,4 +116,24 @@ router.patch('/update/', async (req, res) => {
     res.status(202).send("Patched!");
 });
 
+router.post('/delete/', async (req, res) => {
+    const username = req.body.name;
+    const password = req.body.password;
+    const email = req.body.email;
+    const cube = req.body.cube;
+    if(username === undefined || password === undefined || email === undefined || cube === undefined)
+        return res.status(400).send("Username/Password/Email/Cube not defined!");
+    
+    const currentUser = await user.findOne({name: username, email: email});
+    if(currentUser === undefined || password === undefined || currentUser === null || password === null)
+        return res.status(400).send("User doesn't exist.");
+    else if(!await bcrypt.compare(password, currentUser.password))
+        return res.status(400).send("Password incorrect.");
+    else if(!currentUser.isAdmin)
+        return res.status(400).send("User is not an admin!");
+
+    await alg.findOneAndDelete(cube);
+    res.status(200).send("Deleted!");
+});
+
 module.exports = router;
