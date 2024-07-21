@@ -1,236 +1,247 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
-import Image from "next/image";
-import { Search, Copy } from "lucide-react";
+import { useState, useEffect } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { motion, AnimatePresence } from "framer-motion";
-import algData from "@/data/alg-data.json";
-import FilterDropdown from "@/components/FilterDropdown";
-import { Alg, CubeData } from "@/types/algTypes";
-import { useInView } from "react-intersection-observer";
-import { toast } from "react-hot-toast";
+import Image from "next/image";
 import { Background } from "@/components/Background";
+import { BookOpenIcon, Box, LayersIcon, SearchIcon } from "lucide-react";
 
-const ITEMS_PER_PAGE = 20;
+interface Alg {
+  _id: string;
+  cube: string;
+  method: string;
+  set: string;
+  alg: string;
+  data: string;
+  img: string;
+}
 
 const AlgorithmsPage = () => {
+  const [cubes, setCubes] = useState<string[]>([]);
+  const [methods, setMethods] = useState<string[]>([]);
+  const [algSets, setAlgSets] = useState<string[]>([]);
+  const [algs, setAlgs] = useState<Alg[]>([]);
+  const [filteredAlgs, setFilteredAlgs] = useState<Alg[]>([]);
   const [selectedCube, setSelectedCube] = useState<string>("");
   const [selectedMethod, setSelectedMethod] = useState<string>("");
   const [selectedAlgSet, setSelectedAlgSet] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [cubes, setCubes] = useState<CubeData[]>([]);
-  const [methods, setMethods] = useState<{ name: string; methodImg: string }[]>(
-    []
-  );
-  const [algSets, setAlgSets] = useState<{ name: string; algSetImg: string }[]>(
-    []
-  );
-  const [algs, setAlgs] = useState<Alg[]>([]);
-  const [page, setPage] = useState(1);
-  const [ref, inView] = useInView();
 
   useEffect(() => {
-    try {
-      const cubesData = algData[0].cubes as CubeData[];
-      const allAlgs = algData[1].algs as Alg[];
-
-      setCubes(cubesData);
-      setAlgs(allAlgs);
-
-      if (cubesData.length > 0) {
-        const firstCube = cubesData[0];
-        setSelectedCube(firstCube.name);
-
-        if (firstCube.methods.length > 0) {
-          const firstMethod = firstCube.methods[0];
-          setSelectedMethod(firstMethod.name);
-          setMethods(firstCube.methods);
-
-          if (firstMethod.algSets.length > 0) {
-            setSelectedAlgSet(firstMethod.algSets[0].name);
-            setAlgSets(firstMethod.algSets);
-          }
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching algorithm data:", error);
-      toast.error("Failed to load algorithm data. Please try again later.");
-    }
+    fetchCubes();
   }, []);
 
   useEffect(() => {
-    const selectedCubeData = cubes.find((cube) => cube.name === selectedCube);
-    if (selectedCubeData) {
-      setMethods(selectedCubeData.methods);
-      if (selectedCubeData.methods.length > 0) {
-        setSelectedMethod(selectedCubeData.methods[0].name);
-      }
+    if (selectedCube) {
+      fetchMethods();
     }
-  }, [selectedCube, cubes]);
+  }, [selectedCube]);
 
   useEffect(() => {
-    const selectedCubeData = cubes.find((cube) => cube.name === selectedCube);
-    if (selectedCubeData) {
-      const selectedMethodData = selectedCubeData.methods.find(
-        (method) => method.name === selectedMethod
-      );
-      if (selectedMethodData) {
-        setAlgSets(selectedMethodData.algSets);
-        if (selectedMethodData.algSets.length > 0) {
-          setSelectedAlgSet(selectedMethodData.algSets[0].name);
-        }
-      }
+    if (selectedCube && selectedMethod) {
+      fetchAlgSets();
     }
-  }, [selectedMethod, cubes, selectedCube]);
+  }, [selectedCube, selectedMethod]);
 
   useEffect(() => {
-    if (inView) {
-      setPage((prevPage) => prevPage + 1);
+    if (selectedCube && selectedMethod && selectedAlgSet) {
+      fetchAlgs();
     }
-  }, [inView]);
+  }, [selectedCube, selectedMethod, selectedAlgSet]);
 
-  const filteredAlgs = useMemo(() => {
-    return algs.filter(
-      (alg) =>
-        alg.cube === selectedCube &&
-        alg.method === selectedMethod &&
-        alg.algSet === selectedAlgSet &&
-        (searchTerm === "" ||
-          alg.algName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          alg.alg.toLowerCase().includes(searchTerm.toLowerCase()))
+  useEffect(() => {
+    const filtered = algs.filter((alg) =>
+      alg.alg.toLowerCase().includes(searchTerm.toLowerCase())
     );
-  }, [algs, selectedCube, selectedMethod, selectedAlgSet, searchTerm]);
+    setFilteredAlgs(filtered);
+  }, [algs, searchTerm]);
 
-  const paginatedAlgs = useMemo(() => {
-    return filteredAlgs.slice(0, page * ITEMS_PER_PAGE);
-  }, [filteredAlgs, page]);
+  const fetchCubes = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/algs/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
+      if (!response.ok) throw new Error("Failed to fetch cubes");
+      const data = await response.json();
+      const uniqueCubes = Array.from(
+        new Set(data.data.map((alg: Alg) => alg.cube))
+      ) as string[];
+      setCubes(uniqueCubes);
+    } catch (error) {
+      console.error("Error fetching cubes:", error);
+      setCubes([]);
+    }
+  };
 
-  const handleCopyAlg = (alg: string) => {
-    navigator.clipboard.writeText(alg);
-    toast.success("Algorithm copied to clipboard!");
+  const fetchMethods = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/algs/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cube: selectedCube }),
+      });
+      if (!response.ok) throw new Error("Failed to fetch methods");
+      const data = await response.json();
+      const uniqueMethods = Array.from(
+        new Set(data.data.map((alg: Alg) => alg.method))
+      ) as string[];
+      setMethods(uniqueMethods);
+    } catch (error) {
+      console.error("Error fetching methods:", error);
+      setMethods([]);
+    }
+  };
+
+  const fetchAlgSets = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/algs/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cube: selectedCube, method: selectedMethod }),
+      });
+      if (!response.ok) throw new Error("Failed to fetch alg sets");
+      const data = await response.json();
+      const uniqueAlgSets = Array.from(
+        new Set(data.data.map((alg: Alg) => alg.set))
+      ) as string[];
+      setAlgSets(uniqueAlgSets);
+    } catch (error) {
+      console.error("Error fetching alg sets:", error);
+      setAlgSets([]);
+    }
+  };
+
+  const fetchAlgs = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/algs/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          cube: selectedCube,
+          method: selectedMethod,
+          set: selectedAlgSet,
+        }),
+      });
+      if (!response.ok) throw new Error("Failed to fetch algs");
+      const data = await response.json();
+      setAlgs(data.data);
+      setFilteredAlgs(data.data);
+    } catch (error) {
+      console.error("Error fetching algs:", error);
+      setAlgs([]);
+      setFilteredAlgs([]);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen bg-gray-900 text-white relative pt-16">
       <Background />
-      <div className="container mx-auto px-4 py-16">
-        <div className="mb-8 flex flex-wrap items-center gap-4 mt-5 bg-white/10 backdrop-blur-lg rounded-lg border border-gray-600/20 p-4">
-          <FilterDropdown
-            value={selectedCube}
-            setter={setSelectedCube}
-            options={cubes}
-            label="Cube"
-          />
-          <FilterDropdown
-            value={selectedMethod}
-            setter={setSelectedMethod}
-            options={methods}
-            label="Method"
-          />
-          <FilterDropdown
-            value={selectedAlgSet}
-            setter={setSelectedAlgSet}
-            options={algSets}
-            label="Set"
-          />
-          <div className="flex-1 min-w-[200px] relative">
-            <Search
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-              size={20}
-            />
+      <div className="container mx-auto px-4 py-16 relative z-10">
+        <div className="flex space-x-4 mb-8 items-center">
+          <Select onValueChange={setSelectedCube} value={selectedCube}>
+            <SelectTrigger className="bg-white/10 backdrop-blur-lg border-none text-white hover:bg-white/20 transition-colors">
+              <Box className="w-4 h-4 mr-2" />
+              <SelectValue placeholder="Select Cube" />
+            </SelectTrigger>
+            <SelectContent className="bg-gray-800 border border-gray-700">
+              {cubes.map((cube) => (
+                <SelectItem
+                  key={cube}
+                  value={cube}
+                  className="text-white hover:bg-gray-700 focus:bg-gray-700 focus:text-white data-[selected]:bg-blue-600 data-[selected]:text-white"
+                >
+                  {cube}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select onValueChange={setSelectedMethod} value={selectedMethod}>
+            <SelectTrigger className="bg-white/10 backdrop-blur-lg border-none text-white hover:bg-white/20 transition-colors">
+              <BookOpenIcon className="w-4 h-4 mr-2" />
+              <SelectValue placeholder="Select Method" />
+            </SelectTrigger>
+            <SelectContent className="bg-gray-800 border border-gray-700">
+              {methods.map((method) => (
+                <SelectItem
+                  key={method}
+                  value={method}
+                  className="text-white hover:bg-gray-700 focus:bg-gray-700 focus:text-white data-[selected]:bg-blue-600 data-[selected]:text-white"
+                >
+                  {method}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select onValueChange={setSelectedAlgSet} value={selectedAlgSet}>
+            <SelectTrigger className="bg-white/10 backdrop-blur-lg border-none text-white hover:bg-white/20 transition-colors">
+              <LayersIcon className="w-4 h-4 mr-2" />
+              <SelectValue placeholder="Select Alg Set" />
+            </SelectTrigger>
+            <SelectContent className="bg-gray-800 border border-gray-700">
+              {algSets.map((algSet) => (
+                <SelectItem
+                  key={algSet}
+                  value={algSet}
+                  className="text-white hover:bg-gray-700 focus:bg-gray-700 focus:text-white data-[selected]:bg-blue-600 data-[selected]:text-white"
+                >
+                  {algSet}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <div className="relative">
+            <SearchIcon className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <Input
               type="text"
               placeholder="Search algorithms..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-gray-800 border-gray-700 text-gray-300 placeholder-gray-500 w-full"
+              className="bg-white/10 backdrop-blur-lg text-white w-64 border-none focus:ring-2 focus:ring-blue-500 pl-10"
             />
           </div>
         </div>
-
-        <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          <AnimatePresence>
-            {paginatedAlgs.map((alg, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3, delay: index * 0.05 }} 
-              >
-                <Card className="bg-white/10 backdrop-blur-lg rounded-lg border border-gray-600/20 overflow-hidden hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
-                  <CardContent className="p-4 flex-grow flex flex-col">
-                    <div className="mb-4 relative aspect-square rounded-md overflow-hidden">
-                      <Image
-                        src={alg.algImg}
-                        alt={alg.algName}
-                        fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        className="object-cover"
-                      />
-                    </div>
-                    <h3 className="text-lg font-bold text-gray-100 mb-2">
-                      {alg.algName}
-                    </h3>
-                    <div className="bg-gray-700 p-3 rounded-md relative group mt-auto">
-                      <p className="text-sm font-mono font-semibold text-gray-200 break-words">
-                        {alg.alg}
-                      </p>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-gray-400 hover:text-white"
-                        onClick={() => handleCopyAlg(alg.alg)}
-                      >
-                        <Copy className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </motion.div>
-
-        {filteredAlgs.length === 0 && (
-          <p className="text-center text-gray-400 mt-8">
-            No algorithms found. Try adjusting your filters or search term.
-          </p>
-        )}
-
-        {paginatedAlgs.length < filteredAlgs.length && (
-          <div ref={ref} className="h-10 mt-8" />
-        )}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredAlgs.map((alg) => (
+            <Card
+              key={alg._id}
+              className="bg-black bg-opacity-60 border-none backdrop-filter backdrop-blur-lg rounded-lg overflow-hidden"
+            >
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-xl font-bold text-white">{alg.alg}</h3>
+                  <p className="text-sm text-gray-300">{`${alg.cube} - ${alg.method} - ${alg.set}`}</p>
+                </div>
+                <div className="relative h-48 mb-4">
+                  <Image
+                    src={alg.img}
+                    alt={alg.alg}
+                    layout="fill"
+                    objectFit="contain"
+                    className="rounded-md"
+                  />
+                </div>
+                <div className="bg-white/10 p-3 rounded-md">
+                  <p className="font-mono text-sm text-gray-200 break-words">
+                    {alg.data}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
     </div>
   );
 };
 
 export default AlgorithmsPage;
-
-// TODO: Implement a way to practice algorithms
-// TODO: Implement user accounts to save progress and favorite algorithms
-// TODO: Add accessibility features (e.g., keyboard navigation, screen reader support)
-// TODO: Optimize image loading (e.g., lazy loading, responsive images)
-// TODO: Add analytics to track most viewed/used algorithms
-// TODO: Add a feature to contribute new algorithms or suggest improvements
-// TODO: Add a submit button to submit new algorithms to a case to the community
-// TODO: Implement a rating system for algorithms
-// TODO: Add algorithm execution visualization
-// TODO: Implement algorithm comparison feature
-// TODO: Add multi-language support for algorithm descriptions
-// TODO: Implement algorithm sharing via social media
-// TODO: Add a feature to generate PDF cheat sheets for selected algorithms
-// TODO: Implement a spaced repetition system for algorithm practice
-// TODO: Add a timer feature to practice execution speed
-// TODO: Implement a leaderboard for algorithm execution times
-// TODO: Add a feature to suggest related or alternative algorithms
-// TODO: Implement a system for user-generated tags and categorization
