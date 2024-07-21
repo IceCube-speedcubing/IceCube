@@ -98,7 +98,7 @@ router.patch('/update/', async (req, res) => {
         return res.status(400).send("Username/Password/Email/old_data/new_data are not defined in the body.");
 
     const currentUser = await user.findOne({name: username, email: email});
-    if(currentUser === undefined || password === undefined)
+    if(currentUser === undefined || password === undefined || currentUser === null || password === null)
         return res.status(400).send("User doesn't exist.");
     else if(!await bcrypt.compare(password, currentUser.password))
         return res.status(400).send("Password incorrect.");
