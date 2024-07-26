@@ -1,9 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import AdminCheck from "@/components/admin/AdminCheck";
 import { AlgTable } from "@/components/admin/AlgTable";
-import { Sidebar } from "@/components/admin/Sidebar";
 import { Background } from "@/components/Background";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
@@ -48,7 +46,7 @@ export default function AlgsPage() {
     try {
       toast.loading("Adding algorithm...");
 
-      const response = await fetch("http://localhost:8080/api/algs/create/" || '/api/algs/create/', {
+      const response = await fetch("http://localhost:8080/api/algs/create/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -84,10 +82,8 @@ export default function AlgsPage() {
 
   return (
     <>
-      <AdminCheck>
         <Background />
         <div className="flex min-h-screen relative z-10 pt-16">
-          <Sidebar />
           <main className="flex-1 p-6">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold text-white">Algorithms</h2>
@@ -210,7 +206,6 @@ export default function AlgsPage() {
             <AlgTable key={refreshKey} />
           </main>
         </div>
-      </AdminCheck>
       <Toaster
         position="top-center"
         toastOptions={{

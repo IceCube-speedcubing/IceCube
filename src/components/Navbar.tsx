@@ -8,7 +8,7 @@ import { UserAccountNav } from "@/components/UserAccountNav";
 import Image from "next/image";
 import { MobileNav } from "@/components/MobileNav";
 import { ChevronDown, Clock, ArrowRight } from "lucide-react";
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from "@/contexts/AuthContext";
 
 const navItems = [
   { name: "Algorithms", href: "/algs" },
@@ -85,6 +85,10 @@ export function Navbar() {
   const trackNavigation = (path: string) => {
     console.log(`Navigated to: ${path}`);
   };
+
+  if (pathname.startsWith("/admin")) {
+    return null;
+  }
 
   return (
     <nav
@@ -200,7 +204,7 @@ export function Navbar() {
               <UserAccountNav user={auth.user} />
             ) : (
               <>
-                 <Link
+                <Link
                   href="/auth/login"
                   onClick={() => trackNavigation("/auth/login")}
                 >

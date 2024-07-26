@@ -1,6 +1,5 @@
 "use client";
 
-import { Sidebar } from "@/components/admin/Sidebar";
 import { Background } from "@/components/Background";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -16,7 +15,6 @@ import {
   YAxis,
 } from "recharts";
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
-import AdminCheck from "@/components/admin/AdminCheck";
 
 const userData = [
   { month: "January", users: 1200 },
@@ -79,10 +77,8 @@ const customTooltipStyle = {
 export default function AnalyticsPage() {
   return (
     <>
-      <AdminCheck>
         <Background />
         <div className="flex min-h-screen relative z-10 pt-16">
-          <Sidebar />
           <main className="flex-1 p-6">
             <h2 className="text-4xl font-bold text-white mb-8">
               Analytics Dashboard
@@ -193,7 +189,6 @@ export default function AnalyticsPage() {
             </div>
           </main>
         </div>
-      </AdminCheck>
     </>
   );
 }
