@@ -1,0 +1,9 @@
+Todo list for backend
+- add/remove alg from user array by id
+- Get a user by name/id/search (response carefully)
+- All responses as json
+- Todo api (/api/todo res=todo array i think)
+- Get production .env and separate that from the dev .env and also then get a .env email auth that works all the time or update it more
+- Connect frontend and backend in one command and make them connected
+- Run in one cmd How to Deploy a ReactJS and NodeJS app with Vercel!
+- Connect them by api
