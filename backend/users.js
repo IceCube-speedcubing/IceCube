@@ -199,6 +199,75 @@ router.post('/admin/', async (req, res) => {
     }
 });
 
+router.post('/alg/add/', async (req, res) => {
+    const email = req.body.email;
+    const password = req.body.password;
+    const id = req.body.id;
+    if(email === undefined || password === undefined || id === undefined)
+        return res.status(400).json({message: "Email/Password/Id not defined!"});
+
+    const currentUser = await user.findOne({email: email});
+    if(currentUser === null) {
+        return res.status(400).json({
+            message: "User Doesn't Exist"
+        });
+    }
+
+    if(await bcrypt.compare(password, currentUser.password)) {
+        if(!currentUser.algs.includes(id)) {
+            currentUser.algs.push(id);
+            await currentUser.save();
+        } else {
+            return res.status(400).json({
+                message: "Alg already exists!"
+            });
+        }
+    } else {
+        return res.status(400).json({
+            message: "Wrong password!"
+        });
+    }
+
+    return res.status(200).json({
+        message: "Alg added!"
+    });
+});
+
+router.post('/alg/delete/', async (req, res) => {
+    const email = req.body.email;
+    const password = req.body.password;
+    const id = req.body.id;
+    if(email === undefined || password === undefined || id === undefined)
+        return res.status(400).json({message: "Email/Password/Id not defined!"});
+
+    const currentUser = await user.findOne({email: email});
+    if(currentUser === null) {
+        return res.status(400).json({
+            message: "User Doesn't Exist"
+        });
+    }
+
+    if(await bcrypt.compare(password, currentUser.password)) {
+        if(currentUser.algs.includes(id)) {
+            const index = currentUser.algs.findIndex((id) => id === id);
+            currentUser.algs.splice(index, 1);
+            await currentUser.save();
+        } else {
+            return res.status(400).json({
+                message: "Alg doesn't exist!"
+            });
+        }
+    } else {
+        return res.status(400).json({
+            message: "Wrong password!"
+        });
+    }
+
+    return res.status(200).json({
+        message: "Alg removed!"
+    });
+});
+
 // 404
 router.use(function (req, res, next) {
     res.json({
