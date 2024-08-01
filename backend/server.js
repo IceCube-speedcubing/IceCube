@@ -18,17 +18,8 @@ app.use((req, res, next) => {
 
 const apiRouter = require('./api.js');
 
-app.use(express.static("out"));
 app.use(express.json());
-app.use('/api', apiRouter);
-
-// 404
-// TODO: send 404 file instead of this
-app.use(function (req, res, next) {
-    res.json({
-        message: "404 not found."
-    });
-});
+app.use('/', apiRouter);
 
 app.listen(8080, () => {
     console.log('listening on *:8080');
