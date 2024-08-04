@@ -32,7 +32,9 @@ router.post('/', async (req, res) => {
 router.post('/id', async (req, res) => {
     const id = req.body.id;
     if(id === undefined)
-        return res.status(400).send("Id is not defined");
+        return res.status(400).json({
+            message: "Id is not defined"
+        });
 
     const data = await alg.findOne({"_id": id});
     
@@ -54,22 +56,22 @@ router.post('/create/', async (req, res) => {
     const email = req.body.email;
 
     if(cube === undefined || method === undefined || set === undefined || algorithm === undefined || data === undefined || img === undefined || name === undefined || password === undefined || email === undefined)
-        return res.status(400).send("Cube/Method/Set/Alg/Data/Image/Name/Password/Email is undefined in body!");
+        return res.status(400).json({message: "Cube/Method/Set/Alg/Data/Image/Name/Password/Email is undefined in body!"});
 
     if(await alg.findOne({cube: cube, method: method, set: set, alg: algorithm}) !== null)
-        return res.status(400).send("Algorithm already exists.");
+        return res.status(400).json({message: "Algorithm already exists."});
 
     const loginUser = await user.findOne({name: name, email: email});
 
     if(loginUser === null || password === undefined)
-        return res.status(400).send("User doesn't exist.");
+        return res.status(400).json({message: "User doesn't exist."});
 
     if(!loginUser.isAdmin) {
-        return res.status(400).send("User is not a admin!");
+        return res.status(400).json({message: "User is not a admin!"});
     }
 
     if(!await bcrypt.compare(password, loginUser.password))
-        return res.status(400).send("Password incorrect.");
+        return res.status(400).json({message: "Password incorrect."});
 
     const newAlg = new alg({
         cube: cube,
@@ -95,15 +97,15 @@ router.patch('/update/', async (req, res) => {
     const newData = req.body.new_data;
 
     if(username === undefined || password === undefined || email === undefined || oldData === undefined || newData === undefined)
-        return res.status(400).send("Username/Password/Email/old_data/new_data are not defined in the body.");
+        return res.status(400).json({message: "Username/Password/Email/old_data/new_data are not defined in the body."});
 
     const currentUser = await user.findOne({name: username, email: email});
     if(currentUser === undefined || password === undefined || currentUser === null || password === null)
-        return res.status(400).send("User doesn't exist.");
+        return res.status(400).json({message: "User doesn't exist."});
     else if(!await bcrypt.compare(password, currentUser.password))
-        return res.status(400).send("Password incorrect.");
+        return res.status(400).json({message: "Password incorrect."});
     else if(!currentUser.isAdmin)
-        return res.status(400).send("User is not an admin!");
+        return res.status(400).json({message: "User is not an admin!"});
 
     let algorithm = await alg.findOne(oldData);
     algorithm.cube = newData.cube;
@@ -113,7 +115,7 @@ router.patch('/update/', async (req, res) => {
     algorithm.data = newData.data;
     await algorithm.save();
 
-    res.status(202).send("Patched!");
+    res.status(202).json({message: "Patched!"});
 });
 
 router.post('/delete/', async (req, res) => {
@@ -122,18 +124,18 @@ router.post('/delete/', async (req, res) => {
     const email = req.body.email;
     const cube = req.body.cube;
     if(username === undefined || password === undefined || email === undefined || cube === undefined)
-        return res.status(400).send("Username/Password/Email/Cube not defined!");
+        return res.status(400).json({message: "Username/Password/Email/Cube not defined!"});
     
     const currentUser = await user.findOne({name: username, email: email});
     if(currentUser === undefined || password === undefined || currentUser === null || password === null)
-        return res.status(400).send("User doesn't exist.");
+        return res.status(400).json({message: "User doesn't exist."});
     else if(!await bcrypt.compare(password, currentUser.password))
-        return res.status(400).send("Password incorrect.");
+        return res.status(400).json({message: "Password incorrect."});
     else if(!currentUser.isAdmin)
-        return res.status(400).send("User is not an admin!");
+        return res.status(400).json({message: "User is not an admin!"});
 
     await alg.findOneAndDelete(cube);
-    res.status(200).send("Deleted!");
+    res.status(200).json({message: "Deleted!"});
 });
 
 module.exports = router;
