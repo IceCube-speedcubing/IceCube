@@ -10,6 +10,7 @@ import {
   BookOpen,
   Box,
   BarChart2,
+  CheckSquare,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
@@ -27,6 +28,7 @@ export function AdminSidebar() {
     { label: "Courses", href: "/admin/courses", icon: BookOpen },
     { label: "Algs", href: "/admin/algs", icon: Box },
     { label: "Analytics", href: "/admin/analytics", icon: BarChart2 },
+    { label: "Todo", href: "/admin/todo", icon: CheckSquare },
   ];
 
   return (

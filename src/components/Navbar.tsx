@@ -7,63 +7,11 @@ import { Button } from "@/components/ui/button";
 import { UserAccountNav } from "@/components/UserAccountNav";
 import Image from "next/image";
 import { MobileNav } from "@/components/MobileNav";
-import { ChevronDown, Clock, ArrowRight } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 const navItems = [
   { name: "Algorithms", href: "/algs" },
-  {
-    name: "Courses",
-    href: "/courses",
-    dropdown: [
-      {
-        name: "Popular Courses",
-        courses: [
-          {
-            name: "Beginner's Guide to Speedcubing",
-            href: "/courses/beginners-guide",
-            image: "/images/cubes/3x3",
-            duration: "4 weeks",
-          },
-          {
-            name: "Advanced CFOP Techniques",
-            href: "/courses/advanced-cfop",
-            image: "/images/cubes/3x3",
-            duration: "6 weeks",
-          },
-          {
-            name: "One-Handed Solving Mastery",
-            href: "/courses/one-handed",
-            image: "/images/cubes/3x3",
-            duration: "5 weeks",
-          },
-          {
-            name: "Blindfolded Solving",
-            href: "/courses/blindfolded",
-            image: "/images/cubes/3x3",
-            duration: "8 weeks",
-          },
-        ],
-      },
-      {
-        name: "Course Categories",
-        categories: [
-          { name: "Beginner", href: "/courses/category/beginner", count: 10 },
-          {
-            name: "Intermediate",
-            href: "/courses/category/intermediate",
-            count: 15,
-          },
-          { name: "Advanced", href: "/courses/category/advanced", count: 8 },
-          {
-            name: "Specialized",
-            href: "/courses/category/specialized",
-            count: 5,
-          },
-        ],
-      },
-    ],
-  },
+  { name: "Courses", href: "/courses" },
   { name: "Timer", href: "/timer" },
   { name: "About", href: "/about" },
 ];
@@ -118,81 +66,7 @@ export function Navbar() {
                   onClick={() => trackNavigation(item.href)}
                 >
                   {item.name}
-                  {item.dropdown && (
-                    <ChevronDown className="inline-block ml-1" size={14} />
-                  )}
                 </Link>
-                {item.dropdown && (
-                  <div className="absolute left-1/2 transform -translate-x-1/2 mt-2 w-screen max-w-7xl rounded-md shadow-lg bg-[#1f2937] ring-1 ring-black ring-opacity-5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 ease-in-out">
-                    <div
-                      className="grid grid-cols-3 gap-8 p-8"
-                      role="menu"
-                      aria-orientation="horizontal"
-                      aria-labelledby="options-menu"
-                    >
-                      <div className="col-span-2">
-                        <h3 className="text-white font-semibold mb-4 text-lg">
-                          Popular Courses
-                        </h3>
-                        <div className="grid grid-cols-2 gap-6">
-                          {item.dropdown[0]?.courses?.map(
-                            (course, courseIndex) => (
-                              <Link
-                                key={courseIndex}
-                                href={course.href}
-                                className="flex flex-col space-y-2 text-gray-300 hover:bg-[#374151] hover:text-white p-3 rounded-md transition-colors duration-150 ease-in-out"
-                                onClick={() => trackNavigation(course.href)}
-                              >
-                                <Image
-                                  src={course.image}
-                                  alt={course.name}
-                                  width={200}
-                                  height={120}
-                                  className="rounded-md object-cover"
-                                />
-                                <p className="font-medium">{course.name}</p>
-                                <p className="text-xs flex items-center">
-                                  <Clock size={12} className="mr-1" />{" "}
-                                  {course.duration}
-                                </p>
-                              </Link>
-                            )
-                          )}
-                        </div>
-                      </div>
-                      <div>
-                        <h3 className="text-white font-semibold mb-4 text-lg">
-                          Course Categories
-                        </h3>
-                        <div className="space-y-2">
-                          {item.dropdown[1]?.categories?.map(
-                            (category, categoryIndex) => (
-                              <Link
-                                key={categoryIndex}
-                                href={category.href}
-                                className="flex items-center justify-between text-gray-300 hover:bg-[#374151] hover:text-white p-2 rounded-md transition-colors duration-150 ease-in-out"
-                                onClick={() => trackNavigation(category.href)}
-                              >
-                                <span>{category.name}</span>
-                                <span className="text-sm text-gray-400">
-                                  {category.count} courses
-                                </span>
-                              </Link>
-                            )
-                          )}
-                        </div>
-                        <Link
-                          href="/courses"
-                          className="mt-6 block text-center bg-[#0A4779] text-white p-2 rounded-md hover:bg-[#0D2E4D] transition-colors duration-150 ease-in-out"
-                          onClick={() => trackNavigation("/courses")}
-                        >
-                          View All Courses{" "}
-                          <ArrowRight className="inline-block ml-1" size={14} />
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                )}
               </div>
             ))}
           </div>

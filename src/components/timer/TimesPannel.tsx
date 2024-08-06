@@ -1,14 +1,15 @@
 import React from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
+interface Time {
+  time: number;
+  isDNF: boolean;
+  isPlus2: boolean;
+}
+
 interface TimePanelProps {
-  times: { time: number; isDNF: boolean; isPlus2: boolean }[];
-  onUpdateTime: (
-    index: number,
-    newTime: number,
-    isDNF: boolean,
-    isPlus2: boolean
-  ) => void;
+  times: Time[];
+  onUpdateTime: (index: number, newTime: Time) => void;
   onDelete: (index: number) => void;
 }
 
@@ -17,7 +18,7 @@ const TimesPanel: React.FC<TimePanelProps> = ({
   onUpdateTime,
   onDelete,
 }) => {
-  const formatTime = (time: number, isPlus2: boolean) => {
+  const formatTime = (time: number, isPlus2: boolean): string => {
     const adjustedTime = isPlus2 ? time + 2 : time;
     const minutes = Math.floor(adjustedTime / 60);
     const seconds = adjustedTime % 60;
@@ -26,21 +27,14 @@ const TimesPanel: React.FC<TimePanelProps> = ({
       : seconds.toFixed(2);
   };
 
-  const togglePenalty = (index: number, penaltyType: "plus2" | "dnf") => {
+  const togglePenalty = (index: number, penaltyType: "plus2" | "dnf"): void => {
     const { time, isDNF, isPlus2 } = times[index];
-    let newIsDNF = isDNF;
-    let newIsPlus2 = isPlus2;
-
-    if (penaltyType === "plus2") {
-      newIsPlus2 = !isPlus2;
-      newIsDNF = false;
-    } else {
-      // DNF
-      newIsDNF = !isDNF;
-      newIsPlus2 = false;
-    }
-
-    onUpdateTime(index, time, newIsDNF, newIsPlus2);
+    const newTime: Time = {
+      time,
+      isDNF: penaltyType === "dnf" ? !isDNF : false,
+      isPlus2: penaltyType === "plus2" ? !isPlus2 : false,
+    };
+    onUpdateTime(index, newTime);
   };
 
   return (

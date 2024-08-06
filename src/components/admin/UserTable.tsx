@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useState, useEffect } from "react";
 import {
@@ -24,21 +24,21 @@ export default function UserTable() {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/user/all', {
-        method: 'GET',
+      const response = await fetch("http://localhost:8080/user/getall/", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        credentials: 'include',
+        credentials: "include",
       });
       if (response.ok) {
         const data = await response.json();
         setUsers(data.users);
       } else {
-        console.error('Failed to fetch users');
+        console.error("Failed to fetch users");
       }
     } catch (error) {
-      console.error('Error fetching users:', error);
+      console.error("Error fetching users:", error);
     }
   };
 

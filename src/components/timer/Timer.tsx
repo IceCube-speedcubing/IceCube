@@ -7,16 +7,17 @@ interface TimerProps {
 }
 
 const Timer: React.FC<TimerProps> = ({ onAddTime }) => {
-  const [displayTime, setDisplayTime] = useState(0);
-  const [isRunning, setIsRunning] = useState(false);
-  const [isInspecting, setIsInspecting] = useState(false);
-  const [inspectionTime, setInspectionTime] = useState(15);
-  const [isSpacePressed, setIsSpacePressed] = useState(false);
-  const [isHoldingLongEnough, setIsHoldingLongEnough] = useState(false);
-  const timeRef = useRef(0);
+  const [displayTime, setDisplayTime] = useState<number>(0);
+  const [isRunning, setIsRunning] = useState<boolean>(false);
+  const [isInspecting, setIsInspecting] = useState<boolean>(false);
+  const [inspectionTime, setInspectionTime] = useState<number>(15);
+  const [isSpacePressed, setIsSpacePressed] = useState<boolean>(false);
+  const [isHoldingLongEnough, setIsHoldingLongEnough] =
+    useState<boolean>(false);
+  const timeRef = useRef<number>(0);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: NodeJS.Timeout | undefined;
     if (isInspecting) {
       interval = setInterval(() => {
         setInspectionTime((prevTime) => {
@@ -37,7 +38,7 @@ const Timer: React.FC<TimerProps> = ({ onAddTime }) => {
   }, [isRunning, isInspecting]);
 
   useEffect(() => {
-    let holdTimer: NodeJS.Timeout;
+    let holdTimer: NodeJS.Timeout | undefined;
     if (isSpacePressed) {
       holdTimer = setTimeout(() => {
         setIsHoldingLongEnough(true);
@@ -48,24 +49,24 @@ const Timer: React.FC<TimerProps> = ({ onAddTime }) => {
     return () => clearTimeout(holdTimer);
   }, [isSpacePressed]);
 
-  const startInspection = () => {
+  const startInspection = (): void => {
     setIsInspecting(true);
     setInspectionTime(15);
   };
 
-  const startTimer = () => {
+  const startTimer = (): void => {
     timeRef.current = 0;
     setDisplayTime(0);
     setIsRunning(true);
   };
 
-  const stopTimer = () => {
+  const stopTimer = (): void => {
     setIsRunning(false);
     const finalTime = parseFloat(timeRef.current.toFixed(2));
     onAddTime(finalTime);
   };
 
-  const resetTimer = () => {
+  const resetTimer = (): void => {
     setIsInspecting(false);
     setIsRunning(false);
     setDisplayTime(0);
@@ -74,7 +75,7 @@ const Timer: React.FC<TimerProps> = ({ onAddTime }) => {
     setIsHoldingLongEnough(false);
   };
 
-  const formatTime = (time: number) => {
+  const formatTime = (time: number): string => {
     const minutes = Math.floor(time / 60);
     const seconds = time % 60;
     if (minutes > 0) {
@@ -84,7 +85,7 @@ const Timer: React.FC<TimerProps> = ({ onAddTime }) => {
     }
   };
 
-  const handleKeyDown = (event: KeyboardEvent) => {
+  const handleKeyDown = (event: KeyboardEvent): void => {
     if (event.code === "Space") {
       event.preventDefault();
       if (!isInspecting && !isRunning) {
@@ -98,7 +99,7 @@ const Timer: React.FC<TimerProps> = ({ onAddTime }) => {
     }
   };
 
-  const handleKeyUp = (event: KeyboardEvent) => {
+  const handleKeyUp = (event: KeyboardEvent): void => {
     if (event.code === "Space") {
       event.preventDefault();
       if (isInspecting && isSpacePressed) {
@@ -123,7 +124,7 @@ const Timer: React.FC<TimerProps> = ({ onAddTime }) => {
     };
   }, [isRunning, isInspecting, isSpacePressed, isHoldingLongEnough]);
 
-  const getInspectionColor = () => {
+  const getInspectionColor = (): string => {
     if (isHoldingLongEnough) {
       return "text-green-500";
     }

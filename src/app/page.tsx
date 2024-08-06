@@ -1,7 +1,7 @@
-import { Background } from '@/components/Background';
-import { HeroSection } from '@/components/ladingPage/HeroSection';
-import { FeaturesSection } from '@/components/ladingPage/FeaturesSection';
-import Footer from '@/components/ladingPage/Footer';
+import { Background } from "@/components/Background";
+import { HeroSection } from "@/components/ladingPage/HeroSection";
+import { FeaturesSection } from "@/components/ladingPage/FeaturesSection";
+import Footer from "@/components/ladingPage/Footer";
 
 export default function Home() {
   return (

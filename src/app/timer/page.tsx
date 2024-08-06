@@ -16,14 +16,24 @@ import Timer from "@/components/timer/Timer";
 import TimesPannel from "@/components/timer/TimesPannel";
 import { useScramble } from "@/components/timer/GenScramble";
 
-const TimerPage = () => {
-  const { scramble, refreshScramble } = useScramble();
-  const sessions = ["Session 1", "Session 2", "Session 3"];
-  const [times, setTimes] = useState<
-    { time: number; isDNF: boolean; isPlus2: boolean }[]
-  >([]);
+interface TimeEntry {
+  time: number;
+  isDNF: boolean;
+  isPlus2: boolean;
+}
 
-  const onAddTime = (time: number) => {
+interface StatisticItem {
+  label: string;
+  value: string;
+  color: string;
+}
+
+const TimerPage: React.FC = () => {
+  const { scramble, refreshScramble } = useScramble();
+  const sessions: string[] = ["Session 1", "Session 2", "Session 3"];
+  const [times, setTimes] = useState<TimeEntry[]>([]);
+
+  const onAddTime = (time: number): void => {
     setTimes((prevTimes) => [
       ...prevTimes,
       { time, isDNF: false, isPlus2: false },
@@ -31,24 +41,19 @@ const TimerPage = () => {
     refreshScramble();
   };
 
-  const onUpdateTime = (
-    index: number,
-    newTime: number,
-    isDNF: boolean,
-    isPlus2: boolean
-  ) => {
+  const onUpdateTime = (index: number, newTime: TimeEntry): void => {
     setTimes((prevTimes) => {
       const newTimes = [...prevTimes];
-      newTimes[index] = { time: newTime, isDNF, isPlus2 };
+      newTimes[index] = newTime;
       return newTimes;
     });
   };
 
-  const onDelete = (index: number) => {
+  const onDelete = (index: number): void => {
     setTimes((prevTimes) => prevTimes.filter((_, i) => i !== index));
   };
 
-  const renderSessionDropdown = () => (
+  const renderSessionDropdown = (): JSX.Element => (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
@@ -87,7 +92,7 @@ const TimerPage = () => {
     </DropdownMenu>
   );
 
-  const renderStatistics = () => (
+  const renderStatistics = (): JSX.Element => (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
       <div className="bg-white bg-opacity-10 rounded-lg p-4 transition-all duration-300 hover:bg-opacity-20 hover:shadow-lg">
         <h4 className="text-xl font-semibold text-white mb-3 border-b border-white border-opacity-20 pb-2">
@@ -110,7 +115,7 @@ const TimerPage = () => {
               value: calculateAverage(times, 100),
               color: "text-purple-400",
             },
-          ].map(({ label, value, color }) => (
+          ].map(({ label, value, color }: StatisticItem) => (
             <p
               key={label}
               className="text-lg text-white flex justify-between items-center"
@@ -146,7 +151,7 @@ const TimerPage = () => {
               value: calculateBestAverage(times, 12),
               color: "text-blue-400",
             },
-          ].map(({ label, value, color }) => (
+          ].map(({ label, value, color }: StatisticItem) => (
             <p
               key={label}
               className="text-lg text-white flex justify-between items-center"
@@ -212,10 +217,7 @@ const TimerPage = () => {
   );
 };
 
-const calculateAverage = (
-  times: { time: number; isDNF: boolean; isPlus2: boolean }[],
-  count: number
-) => {
+const calculateAverage = (times: TimeEntry[], count: number): string => {
   if (times.length < count) return "N/A";
 
   const validTimes = times.slice(0, count).filter((t) => !t.isDNF);
@@ -228,9 +230,7 @@ const calculateAverage = (
   return (sum / validTimes.length).toFixed(2);
 };
 
-const calculateBest = (
-  times: { time: number; isDNF: boolean; isPlus2: boolean }[]
-) => {
+const calculateBest = (times: TimeEntry[]): string => {
   if (times.length === 0) return "N/A";
   const validTimes = times.filter((t) => !t.isDNF);
   if (validTimes.length === 0) return "N/A";
@@ -241,13 +241,10 @@ const calculateBest = (
   return bestTime.toFixed(2);
 };
 
-const calculateBestAverage = (
-  times: { time: number; isDNF: boolean; isPlus2: boolean }[],
-  count: number
-) => {
+const calculateBestAverage = (times: TimeEntry[], count: number): string => {
   if (times.length < count) return "N/A";
 
-  const averages = [];
+  const averages: number[] = [];
   for (let i = 0; i <= times.length - count; i++) {
     const subset = times.slice(i, i + count);
     const validTimes = subset.filter((t) => !t.isDNF);

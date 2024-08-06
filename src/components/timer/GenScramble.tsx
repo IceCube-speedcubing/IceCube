@@ -1,36 +1,43 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
-const moves = ["R", "L", "U", "D", "F", "B"];
-const modifiers = ["", "'", "2"];
+type Move = "R" | "L" | "U" | "D" | "F" | "B";
+type Modifier = "" | "'" | "2";
+
+const moves: Move[] = ["R", "L", "U", "D", "F", "B"];
+const modifiers: Modifier[] = ["", "'", "2"];
 
 export function generateScramble(length: number = 20): string {
-  let scramble = [];
-  let lastMove = '';
+  const scramble: string[] = [];
+  let lastMove: Move | "" = "";
 
   for (let i = 0; i < length; i++) {
-    let move;
+    let move: Move;
     do {
       move = moves[Math.floor(Math.random() * moves.length)];
     } while (move === lastMove);
 
-    const modifier = modifiers[Math.floor(Math.random() * modifiers.length)];
+    const modifier: Modifier =
+      modifiers[Math.floor(Math.random() * modifiers.length)];
     scramble.push(move + modifier);
     lastMove = move;
   }
 
-  return scramble.join(' ');
+  return scramble.join(" ");
 }
 
-export function useScramble(length: number = 20) {
-  const [scramble, setScramble] = useState<string>('');
+export function useScramble(length: number = 20): {
+  scramble: string;
+  refreshScramble: () => void;
+} {
+  const [scramble, setScramble] = useState<string>("");
 
   useEffect(() => {
     setScramble(generateScramble(length));
   }, [length]);
 
-  const refreshScramble = () => {
+  const refreshScramble = (): void => {
     setScramble(generateScramble(length));
   };
 

@@ -9,6 +9,7 @@ import { UserAccountNav } from "@/components/UserAccountNav";
 const navItems = [
   { name: "Algorithms", href: "/algs" },
   { name: "Courses", href: "/courses" },
+  { name: "Timer", href: "/timer" },
   { name: "About", href: "/about" },
 ];
 

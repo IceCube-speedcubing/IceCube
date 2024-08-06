@@ -3,6 +3,7 @@ import CourseCard from "@/components/courses/CourseCard";
 import { courses } from "@/data/courses";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import { Background } from "@/components/Background";
+import ComingSoon from "@/components/ComingSoon"
 import Link from "next/link";
 
 const CoursesPage: React.FC = () => {
@@ -31,4 +32,18 @@ const CoursesPage: React.FC = () => {
   );
 };
 
-export default CoursesPage;
+
+const CoursesCommingPage: React.FC = () => {
+  return (
+    <ComingSoon
+      title="Courses Coming Soon"
+      message="We're working hard to bring you an amazing collection of courses. Stay tuned!"
+      emoji="📚"
+      linkText="Back to Home"
+      linkHref="/"
+    />
+  )
+}
+
+
+export default CoursesCommingPage;

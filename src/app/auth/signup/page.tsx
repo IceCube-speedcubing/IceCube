@@ -75,7 +75,7 @@ export default function SignUpPage() {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:8080/api/user/' || '/api/user/', {
+      const response = await fetch('http://localhost:8080/user/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -259,7 +259,7 @@ export default function SignUpPage() {
                       <FormLabel className="text-sm text-gray-200">
                         I agree to the{" "}
                         <Link
-                          href="/terms"
+                          href="/tos"
                           className="text-[#0A4779] hover:text-[#083A61]"
                         >
                           terms of service

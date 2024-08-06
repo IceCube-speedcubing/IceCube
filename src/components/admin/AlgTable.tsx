@@ -44,7 +44,7 @@ export function AlgTable() {
   const fetchAlgs = async () => {
     try {
       const response = await fetch(
-        "http://localhost:8080/api/algs/" || "/api/algs/",
+        "http://localhost:8080/algs/",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -82,7 +82,7 @@ export function AlgTable() {
 
     try {
       const response = await fetch(
-        "http://localhost:8080/api/algs/update/" || "/api/algs/update/",
+        "http://localhost:8080/algs/update/",
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -130,7 +130,7 @@ export function AlgTable() {
   const handleDeleteClick = async (alg: Alg) => {
     try {
       const response = await fetch(
-        "http://localhost:8080/api/algs/delete/" || "/api/algs/delete/",
+        "http://localhost:8080/algs/delete/",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

@@ -12,7 +12,17 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { Background } from "@/components/Background";
-import { BookOpenIcon, Box, LayersIcon, SearchIcon } from "lucide-react";
+import {
+  BookOpenIcon,
+  Box,
+  LayersIcon,
+  SearchIcon,
+  CheckCircle,
+  XCircle,
+} from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import AlgModal from "@/components/AlgModal";
 
 interface Alg {
   _id: string;
@@ -22,6 +32,7 @@ interface Alg {
   alg: string;
   data: string;
   img: string;
+  learned: boolean;
 }
 
 const AlgorithmsPage = () => {
@@ -34,6 +45,9 @@ const AlgorithmsPage = () => {
   const [selectedMethod, setSelectedMethod] = useState<string>("");
   const [selectedAlgSet, setSelectedAlgSet] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [selectedAlg, setSelectedAlg] = useState<Alg | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     fetchCubes();
@@ -58,22 +72,21 @@ const AlgorithmsPage = () => {
   }, [selectedCube, selectedMethod, selectedAlgSet]);
 
   useEffect(() => {
+    setLoading(true);
     const filtered = algs.filter((alg) =>
       alg.alg.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredAlgs(filtered);
+    setLoading(false);
   }, [algs, searchTerm]);
 
   const fetchCubes = async () => {
     try {
-      const response = await fetch(
-        "http://localhost:8080/api/algs/" || "/api/algs/",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({}),
-        }
-      );
+      const response = await fetch("http://localhost:8080/algs/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
       if (!response.ok) throw new Error("Failed to fetch cubes");
       const data = await response.json();
       const uniqueCubes = Array.from(
@@ -88,20 +101,19 @@ const AlgorithmsPage = () => {
 
   const fetchMethods = async () => {
     try {
-      const response = await fetch(
-        "http://localhost:8080/api/algs/" || "/api/algs/",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ cube: selectedCube }),
-        }
-      );
+      const response = await fetch("http://localhost:8080/algs/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cube: selectedCube }),
+      });
       if (!response.ok) throw new Error("Failed to fetch methods");
       const data = await response.json();
       const uniqueMethods = Array.from(
         new Set(data.data.map((alg: Alg) => alg.method))
       ) as string[];
       setMethods(uniqueMethods);
+      setSelectedMethod(""); // Reset selected method
+      setSelectedAlgSet(""); // Reset selected alg set
     } catch (error) {
       console.error("Error fetching methods:", error);
       setMethods([]);
@@ -110,20 +122,18 @@ const AlgorithmsPage = () => {
 
   const fetchAlgSets = async () => {
     try {
-      const response = await fetch(
-        "http://localhost:8080/api/algs/" || "/api/algs/",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ cube: selectedCube, method: selectedMethod }),
-        }
-      );
+      const response = await fetch("http://localhost:8080/algs/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cube: selectedCube, method: selectedMethod }),
+      });
       if (!response.ok) throw new Error("Failed to fetch alg sets");
       const data = await response.json();
       const uniqueAlgSets = Array.from(
         new Set(data.data.map((alg: Alg) => alg.set))
       ) as string[];
       setAlgSets(uniqueAlgSets);
+      setSelectedAlgSet(""); // Reset selected alg set
     } catch (error) {
       console.error("Error fetching alg sets:", error);
       setAlgSets([]);
@@ -131,28 +141,48 @@ const AlgorithmsPage = () => {
   };
 
   const fetchAlgs = async () => {
+    setLoading(true);
     try {
-      const response = await fetch(
-        "http://localhost:8080/api/algs/" || "/api/algs/",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            cube: selectedCube,
-            method: selectedMethod,
-            set: selectedAlgSet,
-          }),
-        }
-      );
+      const response = await fetch("http://localhost:8080/algs/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          cube: selectedCube,
+          method: selectedMethod,
+          set: selectedAlgSet,
+        }),
+      });
       if (!response.ok) throw new Error("Failed to fetch algs");
       const data = await response.json();
-      setAlgs(data.data);
-      setFilteredAlgs(data.data);
+      setAlgs(data.data.map((alg: Alg) => ({ ...alg, learned: false })));
+      setFilteredAlgs(
+        data.data.map((alg: Alg) => ({ ...alg, learned: false }))
+      );
     } catch (error) {
       console.error("Error fetching algs:", error);
       setAlgs([]);
       setFilteredAlgs([]);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const toggleLearned = (id: string) => {
+    setAlgs((prevAlgs) =>
+      prevAlgs.map((alg) =>
+        alg._id === id ? { ...alg, learned: !alg.learned } : alg
+      )
+    );
+    setFilteredAlgs((prevFilteredAlgs) =>
+      prevFilteredAlgs.map((alg) =>
+        alg._id === id ? { ...alg, learned: !alg.learned } : alg
+      )
+    );
+  };
+
+  const openAlgModal = (alg: Alg) => {
+    setSelectedAlg(alg);
+    setIsModalOpen(true);
   };
 
   return (
@@ -223,35 +253,89 @@ const AlgorithmsPage = () => {
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredAlgs.map((alg) => (
-            <Card
-              key={alg._id}
-              className="bg-black bg-opacity-60 border-none backdrop-filter backdrop-blur-lg rounded-lg overflow-hidden"
-            >
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-xl font-bold text-white">{alg.alg}</h3>
-                  <p className="text-sm text-gray-300">{`${alg.cube} - ${alg.method} - ${alg.set}`}</p>
-                </div>
-                <div className="relative h-48 mb-4">
-                  <Image
-                    src={alg.img}
-                    alt={alg.alg}
-                    layout="fill"
-                    objectFit="contain"
-                    className="rounded-md"
-                  />
-                </div>
-                <div className="bg-white/10 p-3 rounded-md">
-                  <p className="font-mono text-sm text-gray-200 break-words">
-                    {alg.data}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+          {loading
+            ? Array.from({ length: 6 }).map((_, index) => (
+                <Card
+                  key={index}
+                  className="bg-black bg-opacity-60 border-none backdrop-filter backdrop-blur-lg rounded-lg overflow-hidden"
+                >
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <Skeleton className="h-6 w-24 bg-gray-700" />
+                      <Skeleton className="h-4 w-32 bg-gray-700" />
+                    </div>
+                    <Skeleton className="h-48 w-full mb-4 bg-gray-700" />
+                    <Skeleton className="h-16 w-full bg-gray-700" />
+                  </CardContent>
+                </Card>
+              ))
+            : filteredAlgs.map((alg) => (
+                <Card
+                  key={alg._id}
+                  className="bg-black bg-opacity-60 border-none backdrop-filter backdrop-blur-lg rounded-lg overflow-hidden cursor-pointer"
+                  onClick={() => openAlgModal(alg)}
+                >
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-xl font-bold text-white">
+                        {alg.alg}
+                      </h3>
+                      <Button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleLearned(alg._id);
+                        }}
+                        className={`px-3 py-1 rounded-full transition-colors duration-300 ${
+                          alg.learned
+                            ? "bg-green-500 hover:bg-green-600"
+                            : "bg-gray-600 hover:bg-gray-700"
+                        }`}
+                      >
+                        {alg.learned ? (
+                          <span className="flex items-center">
+                            <CheckCircle className="w-4 h-4 mr-1" />
+                            Learned
+                          </span>
+                        ) : (
+                          <span className="flex items-center">
+                            <XCircle className="w-4 h-4 mr-1" />
+                            Not Learned
+                          </span>
+                        )}
+                      </Button>
+                    </div>
+                    <p className="text-sm text-gray-300 mb-2">{`${alg.cube} - ${alg.method} - ${alg.set}`}</p>
+                    <div className="relative h-48 mb-4">
+                      <Image
+                        src={alg.img}
+                        alt={alg.alg}
+                        layout="fill"
+                        objectFit="contain"
+                        className="rounded-md"
+                      />
+                    </div>
+                    <div className="bg-white/10 p-3 rounded-md mb-4">
+                      <p className="font-mono text-sm text-gray-200 break-words">
+                        {alg.data}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
         </div>
       </div>
+      {selectedAlg && (
+        <AlgModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          alg={{
+            name: selectedAlg.alg,
+            description: `${selectedAlg.cube} - ${selectedAlg.method} - ${selectedAlg.set}`,
+            notation: selectedAlg.data,
+            image: selectedAlg.img,
+          }}
+        />
+      )}
     </div>
   );
 };
