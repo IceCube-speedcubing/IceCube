@@ -1,5 +1,6 @@
 Todo list for backend
 - Get a user by name/id/search (response carefully)
+- User delete with oauth
 - Todo api (/api/todo res=todo array i think)
 - Get production .env and separate that from the dev .env and also then get a .env email auth that works all the time or update it more
 - Connect frontend and backend in one command and make them connected
