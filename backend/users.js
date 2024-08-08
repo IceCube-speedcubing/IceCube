@@ -24,7 +24,7 @@ String.prototype.shuffle = function() {
 // Make user
 router.post('/', async (req, res) => {
     try {
-        const authKey = (new Date()).getTime().toString(36) + Math.random().toString(36).slice(2) + req.body.email.shuffle();
+        const authKey = crypto.randomUUID();
         const name = req.body.username;
         const password = req.body.password;
         const email = req.body.email;
@@ -97,7 +97,7 @@ router.post('/', async (req, res) => {
         await newUser.save();
 
         return res.status(201).json({
-            message: "Succses"
+            message: "Email sent"
         });
     } catch(e) {
         console.error(e);
@@ -293,7 +293,7 @@ router.post('/delete/', async (req, res) => {
     if(await bcrypt.compare(password, loginUser.password)) {
         // send email to delete
         try {
-            const authKey = (new Date()).getTime().toString(36) + Math.random().toString(36).slice(2) + req.body.email.shuffle();
+            const authKey = crypto.randomUUID();
             loginUser.authKey = authKey;
             await loginUser.save();
             let transporter = nodemailer.createTransport({

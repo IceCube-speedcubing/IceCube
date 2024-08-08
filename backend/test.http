@@ -2,9 +2,9 @@ POST http://localhost:8080/user/
 Content-Type: application/json
 
 {
-    "username": "John",
-    "password": "John",
-    "email": "redcraft1234567890@gmail.com"
+    "username": "James",
+    "password": "James",
+    "email": "james@czak.me"
 }
 
 ###
@@ -23,9 +23,9 @@ POST http://localhost:8080/user/admin/
 Content-Type: application/json
 
 {
-    "password": "John",
-    "email": "redcraft1234567890@gmail.com",
-    "newEmail": "redcraft1234567890@gmail.com"
+    "password": "James",
+    "email": "james@czak.me",
+    "newEmail": "james@czak.me"
 }
 
 ###

@@ -2,4 +2,3 @@ Todo list for backend
 - Todo api (/api/todo res=todo array i think)
 - Connect frontend and backend in one command and make them connected
 - .env production and local
-- Better auth keys
