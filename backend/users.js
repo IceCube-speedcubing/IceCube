@@ -79,7 +79,7 @@ router.post('/', async (req, res) => {
                 <h3><p>Someone has tryed to use your email ${email} to get a IceCube account.
                 <br>If it was you hit the verify link below if its not ignore this email.</p></h3>
                 <hr>
-                <h3><a href="http://localhost:8080/api/user/verifiy/${authKey}">Verify email</a></h3>
+                <h3><a href="${process.env.LINK}/api/user/verifiy/${authKey}">Verify email</a></h3>
                 `
             };
 
