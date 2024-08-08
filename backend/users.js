@@ -268,6 +268,19 @@ router.post('/alg/delete/', async (req, res) => {
     });
 });
 
+router.post('/getusers/', async (req, res) => {
+    const filter = req.body.filter;
+    if(filter === undefined)
+        return res.status(400).json({message: "Filter not defined!"});
+    
+    // TODO: UPDATE OVER TIME
+    let data = await user.find(filter, {password:0,email:0,isEmailConnected:0,authKey:0});
+    return res.status(200).json({
+        message: "Success",
+        data: data
+    });
+});
+
 // 404
 router.use(function (req, res, next) {
     res.json({
