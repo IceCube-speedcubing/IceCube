@@ -79,7 +79,7 @@ router.post('/', async (req, res) => {
                 <h3><p>Someone has tryed to use your email ${email} to get a IceCube account.
                 <br>If it was you hit the verify link below if its not ignore this email.</p></h3>
                 <hr>
-                <h3><a href="${process.env.LINK}/api/user/verifiy/${authKey}">Verify email</a></h3>
+                <h3><a href="${process.env.LINK}/user/verifiy/${authKey}">Verify email</a></h3>
                 `
             };
 
@@ -94,7 +94,7 @@ router.post('/', async (req, res) => {
             });
         }
 
-        const newUserDatabase = await newUser.save();
+        await newUser.save();
 
         return res.status(201).json({
             message: "Succses"
@@ -279,6 +279,77 @@ router.post('/getusers/', async (req, res) => {
         message: "Success",
         data: data
     });
+});
+
+router.post('/delete/', async (req, res) => {
+    const username = req.body.name;
+    const email = req.body.email;
+    const password = req.body.password;
+
+    const loginUser = await user.findOne({name: username, email: email});
+    if(loginUser === null || password === undefined)
+        return res.status(400).json({message: "Username/Email/Password not defined!"});
+
+    if(await bcrypt.compare(password, loginUser.password)) {
+        // send email to delete
+        try {
+            const authKey = (new Date()).getTime().toString(36) + Math.random().toString(36).slice(2) + req.body.email.shuffle();
+            loginUser.authKey = authKey;
+            await loginUser.save();
+            let transporter = nodemailer.createTransport({
+                service: "gmail",
+                auth: {
+                    type: "OAuth2",
+                    user: process.env.EMAIL,
+                    pass: process.env.EMAIL_PASSWORD,
+                    clientId: process.env.OAUTH_CLIENT_ID,
+                    clientSecret: process.env.OAUTH_CLIENT_SECRET,
+                    refreshToken: process.env.OAUTH_REFRESH_TOKEN
+                }
+            });
+
+            let mailOptions = {
+                from: process.env.EMAIL,
+                to: email,
+                subject: 'Delete IceCube Account?',
+                html: `
+                <h1>IceCube account deletion</h1>
+                <h3><p>Someone has tryed to delete your IceCube account
+                <br>If it was you hit the delete from the link below if its not change your password.</p></h3>
+                <hr>
+                <h3><a href="${process.env.LINK}/user/deleteAccount/${authKey}">Delete account</a></h3>
+                `
+            };
+
+            transporter.sendMail(mailOptions, function(err, info) {
+                if(err) {
+                    console.log("Error sending mail\n"+err);
+                }
+            });
+        } catch(e) {
+            return res.status(400).json({
+                message: "Server error"
+            });
+        }
+
+        return res.status(200).json({
+            message: `Email sent to ${email}`
+        });
+    } else {
+        return res.status(400).json({
+            message: "Wrong password!"
+        });
+    }
+});
+
+router.get('/deleteAccount/:authKey', async (req, res) => {
+    const currentUser = await user.findOne({authKey: req.params.authKey});
+    if(currentUser == undefined) {
+        res.send("Invaild auth key.");
+    } else {
+        await user.deleteOne(currentUser);
+        res.send("Account deleted");
+    }
 });
 
 // 404
