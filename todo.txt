@@ -1,5 +1,4 @@
 Todo list for backend
-- User delete with oauth
 - Todo api (/api/todo res=todo array i think)
 - Connect frontend and backend in one command and make them connected
 - .env production and local
