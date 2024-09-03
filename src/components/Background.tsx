@@ -2,27 +2,29 @@
 
 import { useEffect, useState, useRef } from "react";
 
-export function Background() {
+export function Background({ animationEnabled = true }) {
   const [scrollY, setScrollY] = useState(0);
   const backgroundRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!animationEnabled) return;
+
     const handleScroll = () => {
       setScrollY(window.scrollY);
     };
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [animationEnabled]);
 
   const initialTransition = 500; // Scroll position where initial transition completes
   const fadeGrowth = 1500; // Additional scroll for fade to grow
 
-  const gradientProgress = Math.min(scrollY / initialTransition, 1);
-  const fadeSize = Math.max(
+  const gradientProgress = animationEnabled ? Math.min(scrollY / initialTransition, 1) : 0;
+  const fadeSize = animationEnabled ? Math.max(
     0,
     Math.min((scrollY - initialTransition) / fadeGrowth, 1)
-  );
+  ) : 0;
 
   const gradientStyle = {
     background: `

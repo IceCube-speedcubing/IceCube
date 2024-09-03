@@ -47,18 +47,12 @@ const privacyPolicy = [
       "We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page.",
     icon: <RefreshCw className="w-8 h-8 text-orange-400 mb-2" />,
   },
-  {
-    title: "7. Contact Us",
-    content:
-      "If you have any questions about this Privacy Policy, please contact us.",
-    icon: <HelpCircle className="w-8 h-8 text-indigo-400 mb-2" />,
-  },
 ];
 
 export default function PrivacyPolicy() {
   return (
     <>
-      <Background />
+      <Background animationEnabled={false} />
       <MaxWidthWrapper className="relative z-10">
         <div className="pt-24 md:pt-32 pb-12 md:pb-16 flex flex-col items-center">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-white mb-6 text-center">

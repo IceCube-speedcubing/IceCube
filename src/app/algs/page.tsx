@@ -187,7 +187,7 @@ const AlgorithmsPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white relative pt-16">
-      <Background />
+      <Background animationEnabled={false} />
       <div className="container mx-auto px-4 py-16 relative z-10">
         <div className="flex space-x-4 mb-8 items-center">
           <Select onValueChange={setSelectedCube} value={selectedCube}>

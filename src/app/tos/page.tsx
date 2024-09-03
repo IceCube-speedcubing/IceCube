@@ -47,17 +47,12 @@ const termsOfService = [
       "We reserve the right to modify or replace these Terms at any time. It is your responsibility to check these Terms periodically for changes.",
     icon: <Edit className="w-8 h-8 text-orange-400 mb-2" />,
   },
-  {
-    title: "7. Contact Us",
-    content: "If you have any questions about these Terms, please contact us.",
-    icon: <Mail className="w-8 h-8 text-indigo-400 mb-2" />,
-  },
 ];
 
 export default function TermsOfService() {
   return (
     <>
-      <Background />
+      <Background animationEnabled={false} />
       <MaxWidthWrapper className="relative z-10">
         <div className="pt-24 md:pt-32 pb-12 md:pb-16 flex flex-col items-center">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-white mb-6 text-center">
