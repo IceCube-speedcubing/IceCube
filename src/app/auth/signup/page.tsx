@@ -205,6 +205,7 @@ export default function SignUpPage() {
                           type="button"
                           onClick={togglePasswordVisibility}
                           className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors duration-300"
+                          tabIndex={-1}
                         >
                           {showPassword ? (
                             <EyeOff size={18} />
@@ -223,7 +224,7 @@ export default function SignUpPage() {
                 name="confirmPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-gray-200">
+                    <FormLabel className="text-gray-200"> 
                       Confirm Password
                     </FormLabel>
                     <FormControl>
