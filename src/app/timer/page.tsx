@@ -17,22 +17,37 @@ import {
   DialogHeader,
   DialogTitle,
   DialogClose,
+  DialogFooter,
 } from "@/components/ui/dialog"
 import { toast } from "sonner"
 import { Toaster } from "sonner"
+import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
+import { cn } from "@/lib/utils"
+import { WCAEvent, Session, WCA_EVENTS } from "@/types/WCAEvents"
+import { generateScramble } from "@/lib/scrambleGen"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 export default function Page() {
   // State management
   const [scramble, setScramble] = useState("");
   const [time, setTime] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
-  const [currentSession, setCurrentSession] = useState("Default");
-  const [times, setTimes] = useState<Array<{
-    time: number, 
-    penalty?: 'plus2' | 'dnf',
-    date: Date,
-    scramble: string
-  }>>([]);
+  const [sessions, setSessions] = useState<Session[]>([
+    {
+      id: 'default',
+      name: 'Default',
+      event: '333',
+      times: []
+    }
+  ]);
+  const [currentSessionId, setCurrentSessionId] = useState('default');
   const [isInspecting, setIsInspecting] = useState(false);
   const [inspectionTime, setInspectionTime] = useState(15);
   const [isSpacePressed, setIsSpacePressed] = useState(false);
@@ -44,10 +59,33 @@ export default function Page() {
     scramble: string
   } | null>(null);
   const timeRef = useRef<number>(0);
+  const [isNewSessionDialogOpen, setIsNewSessionDialogOpen] = useState(false);
+  const [isManageSessionsDialogOpen, setIsManageSessionsDialogOpen] = useState(false);
+  const [newSessionName, setNewSessionName] = useState('');
+  const [selectedEvent, setSelectedEvent] = useState('333');
+  const [editingSession, setEditingSession] = useState<Session | null>(null);
+  const selectedSessionRef = useRef<HTMLDivElement>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Get current session
+  const currentSession = useMemo(() => {
+    return sessions.find(s => s.id === currentSessionId) || sessions[0];
+  }, [sessions, currentSessionId]);
+
+  // Add these memoized values
+  const currentEvent = useMemo(() => 
+    WCA_EVENTS.find(e => e.id === currentSession.event), 
+    [currentSession.event]
+  );
+
+  const sortedTimes = useMemo(() => 
+    [...currentSession.times].reverse(),
+    [currentSession.times]
+  );
 
   // Memoized stats calculations
   const stats = useMemo(() => {
-    const validTimes = times.filter(t => t.penalty !== 'dnf')
+    const validTimes = currentSession.times.filter(t => t.penalty !== 'dnf')
       .map(t => t.penalty === 'plus2' ? t.time + 2000 : t.time);
     
     if (validTimes.length === 0) {
@@ -67,13 +105,19 @@ export default function Page() {
       ao5: validTimes.length >= 5 ? calculateTrimmedMean(validTimes.slice(-5), 1) : 0,
       ao12: validTimes.length >= 12 ? calculateTrimmedMean(validTimes.slice(-12), 1) : 0
     };
-  }, [times]);
+  }, [currentSession.times]);
 
-  // Timer functions
+  // Move generateNewScramble up before it's used
+  const generateNewScramble = useCallback(() => {
+    const newScramble = generateScramble(currentSession.event);
+    setScramble(newScramble);
+  }, [currentSession.event]);
+
+  // Timer functions - define these before the effects
   const startTimer = useCallback(() => {
-    timeRef.current = 0;
-    setTime(0);
     setIsRunning(true);
+    setTime(0);
+    timeRef.current = 0;
   }, []);
 
   const startInspection = useCallback(() => {
@@ -84,30 +128,98 @@ export default function Page() {
   const stopTimer = useCallback(() => {
     setIsRunning(false);
     const finalTime = timeRef.current;
-    setTimes(prev => [...prev, {
-      time: finalTime,
-      date: new Date(),
-      scramble
-    }]);
+    setSessions(prev => prev.map(s => 
+      s.id === currentSessionId ? {
+        ...s,
+        times: [...s.times, {
+          time: finalTime,
+          date: new Date(),
+          scramble
+        }]
+      } : s
+    ));
     generateNewScramble();
-  }, [scramble]);
+  }, [currentSessionId, scramble, generateNewScramble]);
 
-  const resetTimer = useCallback(() => {
-    setIsInspecting(false);
-    setIsRunning(false);
-    setTime(0);
-    timeRef.current = 0;
-    setInspectionTime(15);
-    setIsHoldingLongEnough(false);
-  }, []);
-
-  // Timer update effect
+  // Update the useEffect for keyboard events
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code === 'Space' && e.target === document.body) {
+        e.preventDefault();
+        
+        if (isRunning) {
+          stopTimer();
+          return;
+        }
+
+        if (!isSpacePressed) {
+          setIsSpacePressed(true);
+        }
+      }
+    };
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.code === 'Space' && e.target === document.body) {
+        e.preventDefault();
+        setIsSpacePressed(false);
+
+        if (isRunning) {
+          return;
+        }
+
+        if (isHoldingLongEnough) {
+          if (isInspecting) {
+            setIsInspecting(false);
+            startTimer();
+          } else {
+            startInspection();
+          }
+        }
+        setIsHoldingLongEnough(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [
+    isRunning,
+    isInspecting,
+    isHoldingLongEnough,
+    isSpacePressed,
+    stopTimer,
+    startTimer,
+    startInspection
+  ]);
+
+  // Space hold timer effect
+  useEffect(() => {
+    let holdTimer: NodeJS.Timeout;
     
+    if (isSpacePressed && !isRunning) {
+      holdTimer = setTimeout(() => {
+        setIsHoldingLongEnough(true);
+      }, 300);
+    }
+
+    return () => {
+      if (holdTimer) {
+        clearTimeout(holdTimer);
+      }
+    };
+  }, [isSpacePressed, isRunning]);
+
+  // Inspection timer effect
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+
     if (isInspecting) {
-      interval = setInterval(() => {
-        setInspectionTime(prev => {
+      intervalId = setInterval(() => {
+        setInspectionTime((prev) => {
           if (prev <= 1) {
             setIsInspecting(false);
             return 15;
@@ -115,88 +227,38 @@ export default function Page() {
           return prev - 1;
         });
       }, 1000);
-    } else if (isRunning) {
-      interval = setInterval(() => {
-        timeRef.current += 10;
-        setTime(timeRef.current);
-      }, 10);
     }
 
-    return () => clearInterval(interval);
-  }, [isRunning, isInspecting]);
-
-  // Space hold timer effect
-  useEffect(() => {
-    let holdTimer: NodeJS.Timeout;
-    
-    if (isSpacePressed) {
-      holdTimer = setTimeout(() => setIsHoldingLongEnough(true), 1000);
-    } else {
-      setIsHoldingLongEnough(false);
-    }
-
-    return () => clearTimeout(holdTimer);
-  }, [isSpacePressed]);
-
-  // Keyboard event handlers
-  const handleKeyDown = useCallback((event: KeyboardEvent) => {
-    if (event.code === "Space") {
-      event.preventDefault();
-      if (!isInspecting && !isRunning) {
-        startInspection();
-      } else if (isInspecting) {
-        setIsSpacePressed(true);
-      }
-    } else if (event.code === "KeyR") {
-      event.preventDefault();
-      resetTimer();
-    }
-  }, [isInspecting, isRunning, startInspection, resetTimer]);
-
-  const handleKeyUp = useCallback((event: KeyboardEvent) => {
-    if (event.code === "Space") {
-      event.preventDefault();
-      if (isInspecting && isSpacePressed) {
-        setIsInspecting(false);
-        if (isHoldingLongEnough) {
-          startTimer();
-        }
-      } else if (isRunning) {
-        stopTimer();
-      }
-      setIsSpacePressed(false);
-      setIsHoldingLongEnough(false);
-    }
-  }, [isInspecting, isRunning, isSpacePressed, isHoldingLongEnough, startTimer, stopTimer]);
-
-  // Keyboard event listeners
-  useEffect(() => {
-    document.addEventListener("keydown", handleKeyDown);
-    document.addEventListener("keyup", handleKeyUp);
     return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      document.removeEventListener("keyup", handleKeyUp);
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
     };
-  }, [handleKeyDown, handleKeyUp]);
+  }, [isInspecting]);
 
-  // Scramble generation
-  const generateNewScramble = useCallback(() => {
-    const moves = ["R", "U", "F", "L", "D", "B"];
-    const modifiers = ["", "'", "2"];
-    let lastMove = "";
-    let newScramble = Array(20).fill(null).map(() => {
-      let move;
-      do {
-        move = moves[Math.floor(Math.random() * moves.length)];
-      } while (move === lastMove);
-      
-      lastMove = move;
-      const modifier = modifiers[Math.floor(Math.random() * modifiers.length)];
-      return move + modifier;
-    }).join(" ");
-    
-    setScramble(newScramble);
-  }, []);
+  // Timer update effect
+  useEffect(() => {
+    let startTimeRef: number | null = null;
+    let animationFrameId: number;
+
+    const updateTimer = (currentTime: number) => {
+      if (!startTimeRef) startTimeRef = currentTime;
+      const elapsed = currentTime - startTimeRef;
+      timeRef.current = elapsed;
+      setTime(elapsed);
+      animationFrameId = requestAnimationFrame(updateTimer);
+    };
+
+    if (isRunning) {
+      animationFrameId = requestAnimationFrame(updateTimer);
+    }
+
+    return () => {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
+    };
+  }, [isRunning]);
 
   // Initial scramble generation
   useEffect(() => {
@@ -204,7 +266,7 @@ export default function Page() {
   }, [generateNewScramble]);
 
   // Time formatting
-  const formatTime = useCallback((ms: number, penalty?: 'plus2' | 'dnf') => {
+  const formatTime = useCallback((ms: number, penalty?: 'plus2' | 'dnf', showInspection: boolean = false) => {
     if (penalty === 'dnf') return 'DNF';
     
     const totalMs = penalty === 'plus2' ? ms + 2000 : ms;
@@ -213,7 +275,7 @@ export default function Page() {
     const seconds = Math.floor((totalMs % 60000) / 1000);
     const milliseconds = Math.floor((totalMs % 1000) / 10);
     
-    if (isInspecting) return `${inspectionTime}`;
+    if (showInspection && isInspecting) return `${inspectionTime}`;
     
     if (hours > 0) {
       return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(2, '0')}`;
@@ -228,14 +290,18 @@ export default function Page() {
 
   // Penalty management
   const addPenalty = useCallback((index: number, penalty: 'plus2' | 'dnf') => {
-    setTimes(prev => prev.map((t, i) => 
-      i === index ? { ...t, penalty: t.penalty === penalty ? undefined : penalty } : t
+    setSessions(prev => prev.map(s => 
+      s.id === currentSessionId ? { ...s, times: s.times.map((t, i) => 
+        i === index ? { ...t, penalty: t.penalty === penalty ? undefined : penalty } : t
+      )} : s
     ));
-  }, []);
+  }, [currentSessionId]);
 
   const deleteTime = useCallback((index: number) => {
-    setTimes(prev => prev.filter((_, i) => i !== index));
-  }, []);
+    setSessions(prev => prev.map(s => 
+      s.id === currentSessionId ? { ...s, times: s.times.filter((_, i) => i !== index) } : s
+    ));
+  }, [currentSessionId]);
 
   const getTimerColor = useCallback(() => {
     if (isRunning) return 'text-white';
@@ -254,6 +320,73 @@ export default function Page() {
     });
   }, []);
 
+  // Session management functions
+  const addSession = useCallback((name: string, event: string) => {
+    const newSessionId = crypto.randomUUID();
+    setSessions(prev => [...prev, {
+      id: newSessionId,
+      name,
+      event,
+      times: []
+    }]);
+    setCurrentSessionId(newSessionId);
+    generateNewScramble();
+  }, [generateNewScramble]);
+
+  const deleteSession = useCallback((id: string) => {
+    if (id === 'default') return; // Prevent deleting default session
+    setSessions(prev => prev.filter(s => s.id !== id));
+    if (currentSessionId === id) {
+      setCurrentSessionId('default');
+    }
+  }, [currentSessionId]);
+
+  const renameSession = useCallback((id: string, newName: string) => {
+    setSessions(prev => prev.map(s => 
+      s.id === id ? { ...s, name: newName } : s
+    ));
+  }, []);
+
+  const updateSession = useCallback((id: string, updates: Partial<Session>) => {
+    setSessions(prev => prev.map(s => 
+      s.id === id ? { ...s, ...updates } : s
+    ));
+  }, []);
+
+  // Add this effect after your other useEffects
+  useEffect(() => {
+    if (isManageSessionsDialogOpen && selectedSessionRef.current) {
+      const scrollContainer = selectedSessionRef.current.parentElement;
+      if (scrollContainer) {
+        setTimeout(() => {
+          selectedSessionRef.current?.scrollIntoView({
+            behavior: 'instant',
+            block: 'center'
+          });
+        }, 50);
+      }
+    }
+  }, [isManageSessionsDialogOpen]);
+
+  useEffect(() => {
+    if (isManageSessionsDialogOpen) {
+      // Wait for dialog animation to complete
+      const timer = setTimeout(() => {
+        const selectedElement = selectedSessionRef.current;
+        if (selectedElement) {
+          const scrollArea = selectedElement.closest('[role="presentation"]');
+          if (scrollArea) {
+            const containerRect = scrollArea.getBoundingClientRect();
+            const elementRect = selectedElement.getBoundingClientRect();
+            const scrollTop = elementRect.top - containerRect.top - (containerRect.height / 2) + (elementRect.height / 2);
+            scrollArea.scrollTop = scrollTop;
+          }
+        }
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isManageSessionsDialogOpen]);
+
   return (
     <div className="h-screen flex flex-col bg-background text-foreground overflow-hidden">
       <Toaster />
@@ -267,7 +400,7 @@ export default function Page() {
               transform: isSpacePressed ? 'scale(0.95)' : 'scale(1)'
             }}
           >
-            {formatTime(time)}
+            {formatTime(time, undefined, true)}
           </div>
           
           {/* Scramble */}
@@ -283,14 +416,14 @@ export default function Page() {
         <div className="rounded-lg border bg-card overflow-hidden">
           <div className="p-3 border-b font-medium bg-muted/10">Times</div>
           <ScrollArea className="h-48">
-            {times.map((t, index) => (
+            {sortedTimes.map((t, index) => (
               <div 
                 key={index} 
                 className="px-4 py-3 border-b hover:bg-muted/50 flex items-center justify-between group cursor-pointer"
                 onClick={() => setSelectedTime(t)}
               >
                 <div className="flex items-center gap-4">
-                  <span className="text-sm font-medium text-muted-foreground">#{times.length - index}</span>
+                  <span className="text-sm font-medium text-muted-foreground">#{sortedTimes.length - index}</span>
                   <span className="font-mono text-lg">{formatTime(t.time, t.penalty)}</span>
                 </div>
                 <div className="flex items-center gap-1">
@@ -300,7 +433,7 @@ export default function Page() {
                     className={`h-7 px-2 text-sm ${t.penalty === 'plus2' ? 'bg-yellow-500/10 text-yellow-500' : 'hover:text-yellow-500 hover:bg-yellow-500/10'}`}
                     onClick={(e) => {
                       e.stopPropagation();
-                      addPenalty(index, 'plus2');
+                      addPenalty(sortedTimes.length - 1 - index, 'plus2');
                     }}
                   >
                     +2
@@ -311,7 +444,7 @@ export default function Page() {
                     className={`h-7 px-2 text-sm ${t.penalty === 'dnf' ? 'bg-red-500/10 text-red-500' : 'hover:text-red-500 hover:bg-red-500/10'}`}
                     onClick={(e) => {
                       e.stopPropagation();
-                      addPenalty(index, 'dnf');
+                      addPenalty(sortedTimes.length - 1 - index, 'dnf');
                     }}
                   >
                     DNF
@@ -322,14 +455,14 @@ export default function Page() {
                     className="h-7 w-7 p-0 hover:bg-destructive/10"
                     onClick={(e) => {
                       e.stopPropagation();
-                      deleteTime(index);
+                      deleteTime(sortedTimes.length - 1 - index);
                     }}
                   >
                     <Trash2 className="h-4 w-4 text-destructive" />
                   </Button>
                 </div>
               </div>
-            )).reverse()}
+            ))}
           </ScrollArea>
         </div>
 
@@ -339,24 +472,61 @@ export default function Page() {
             <span>Statistics</span>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-8 px-2">
-                  <span className="font-medium text-muted-foreground">{currentSession}</span>
-                  <ChevronDown className="ml-1 h-4 w-4 text-muted-foreground" />
+                <Button variant="outline" className="w-[240px] justify-between">
+                  <div className="flex items-center gap-2 truncate">
+                    <div className="truncate">{currentSession.name}</div>
+                    <div className="px-1.5 py-0.5 rounded-md bg-muted text-xs font-medium shrink-0">
+                      {currentEvent?.name}
+                    </div>
+                  </div>
+                  <ChevronDown className="h-4 w-4 opacity-50" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuItem className="flex items-center">
-                  Default
-                  <span className="ml-auto text-xs text-muted-foreground">{times.length} solves</span>
-                </DropdownMenuItem>
+              <DropdownMenuContent 
+                align="end" 
+                className="w-[320px]" 
+                side="top"
+                sideOffset={8}
+              >
+                <div className="px-2 py-1.5">
+                  <h4 className="text-sm font-medium text-muted-foreground mb-1">Sessions</h4>
+                </div>
+                <ScrollArea className="h-[min(200px,calc(100vh-120px))]">
+                  {sessions.map((session) => (
+                    <DropdownMenuItem 
+                      key={session.id}
+                      className={cn(
+                        "flex items-center gap-2 px-3 py-2.5 cursor-pointer",
+                        currentSessionId === session.id && "bg-primary/5"
+                      )}
+                      onClick={() => setCurrentSessionId(session.id)}
+                    >
+                      <div className="flex-1 flex items-center gap-2 min-w-0">
+                        <div className="truncate font-medium">{session.name}</div>
+                        <div className="px-1.5 py-0.5 rounded-md bg-muted text-xs font-medium shrink-0">
+                          {currentEvent?.name}
+                        </div>
+                      </div>
+                      <span className="text-xs text-muted-foreground shrink-0">
+                        {session.times.length} solves
+                      </span>
+                    </DropdownMenuItem>
+                  ))}
+                </ScrollArea>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem 
+                  className="px-3 py-2.5 cursor-pointer hover:bg-primary/5"
+                  onClick={() => setIsNewSessionDialogOpen(true)}
+                >
                   <Plus className="mr-2 h-4 w-4" />
-                  New Session
+                  <span className="font-medium">New Session</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem 
+                  className="px-3 py-2.5 cursor-pointer hover:bg-primary/5"
+                  onClick={() => setIsManageSessionsDialogOpen(true)}
+                >
                   <Settings className="mr-2 h-4 w-4" />
-                  Manage Sessions
+                  <span className="font-medium">Manage Sessions</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -429,6 +599,202 @@ export default function Page() {
               </div>
             </div>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* New Session Dialog */}
+      <Dialog open={isNewSessionDialogOpen} onOpenChange={setIsNewSessionDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle className="text-xl">New Session</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-6 py-4">
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Session Name</Label>
+                <Input
+                  id="name"
+                  value={newSessionName}
+                  onChange={(e) => setNewSessionName(e.target.value)}
+                  placeholder="Enter session name..."
+                  type="text"
+                  autoComplete="off"
+                  spellCheck="false"
+                  className="font-medium"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="event">Event</Label>
+                <Select
+                  value={selectedEvent}
+                  onValueChange={setSelectedEvent}
+                >
+                  <SelectTrigger className="w-full font-medium">
+                    <SelectValue>
+                      {currentEvent?.name}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[300px]">
+                    <ScrollArea className="h-[min(250px,60vh)]">
+                      {WCA_EVENTS.map(event => (
+                        <SelectItem 
+                          key={event.id} 
+                          value={event.id}
+                          className="font-medium"
+                        >
+                          {event.name}
+                        </SelectItem>
+                      ))}
+                    </ScrollArea>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsNewSessionDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                if (newSessionName.trim()) {
+                  addSession(newSessionName.trim(), selectedEvent);
+                  setNewSessionName('');
+                  setSelectedEvent('333');
+                  setIsNewSessionDialogOpen(false);
+                }
+              }}
+            >
+              Create Session
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Manage Sessions Dialog */}
+      <Dialog open={isManageSessionsDialogOpen} onOpenChange={setIsManageSessionsDialogOpen}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle className="text-xl">Manage Sessions</DialogTitle>
+            <p className="text-sm text-muted-foreground mt-1">
+              Manage your solving sessions and their settings
+            </p>
+          </DialogHeader>
+          <ScrollArea className="h-[min(400px,calc(100vh-240px))]">
+            <div className="space-y-4 py-4 px-1">
+              {sessions.map((session) => (
+                <div
+                  key={session.id}
+                  ref={currentSessionId === session.id ? selectedSessionRef : null}
+                  className={cn(
+                    "flex items-center justify-between p-4 rounded-lg border transition-colors",
+                    currentSessionId === session.id ? "bg-primary/5 border-primary/20" : "hover:bg-muted/50"
+                  )}
+                >
+                  <div className="flex-1 min-w-0">
+                    {editingSession?.id === session.id ? (
+                      <div className="flex gap-3">
+                        <Input
+                          value={editingSession.name}
+                          onChange={(e) => setEditingSession({ ...editingSession, name: e.target.value })}
+                          className="max-w-[200px] font-medium"
+                          placeholder="Session name"
+                        />
+                        <Select
+                          value={editingSession.event}
+                          onValueChange={(value) => setEditingSession({ ...editingSession, event: value })}
+                        >
+                          <SelectTrigger className="w-full font-medium">
+                            <SelectValue>
+                              {currentEvent?.name}
+                            </SelectValue>
+                          </SelectTrigger>
+                          <SelectContent className="max-h-[300px]">
+                            <ScrollArea className="h-[min(250px,60vh)]">
+                              {WCA_EVENTS.map(event => (
+                                <SelectItem 
+                                  key={event.id} 
+                                  value={event.id}
+                                  className="font-medium"
+                                >
+                                  {event.name}
+                                </SelectItem>
+                              ))}
+                            </ScrollArea>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-4">
+                        <div className="font-medium truncate">{session.name}</div>
+                        <div className="px-2 py-1 rounded-md bg-muted text-sm font-medium">
+                          {currentEvent?.name}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          {session.times.length} solves
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 ml-4">
+                    {editingSession?.id === session.id ? (
+                      <>
+                        <Button
+                          variant="default"
+                          size="sm"
+                          onClick={() => {
+                            updateSession(session.id, {
+                              name: editingSession.name,
+                              event: editingSession.event
+                            });
+                            setEditingSession(null);
+                          }}
+                        >
+                          Save
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setEditingSession(null)}
+                        >
+                          Cancel
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Button
+                          variant={currentSessionId === session.id ? "secondary" : "ghost"}
+                          size="sm"
+                          onClick={() => setCurrentSessionId(session.id)}
+                        >
+                          {currentSessionId === session.id ? "Selected" : "Select"}
+                        </Button>
+                        {session.id !== 'default' && (
+                          <>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setEditingSession(session)}
+                            >
+                              Edit
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => deleteSession(session.id)}
+                              className="text-destructive hover:text-destructive"
+                            >
+                              Delete
+                            </Button>
+                          </>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
         </DialogContent>
       </Dialog>
     </div>
