@@ -3,6 +3,7 @@ import { Users, Github, Box, TestTube, MessageSquare, Lightbulb, ArrowRight, Sta
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import { useState, useEffect } from "react";
 
 const communityCards = [
   {
@@ -22,7 +23,24 @@ const communityCards = [
   }
 ];
 
+async function getGitHubStars() {
+  try {
+    const response = await fetch('https://api.github.com/repos/IceCube-speedcubing/IceCube');
+    const data = await response.json();
+    return data.stargazers_count;
+  } catch (error) {
+    console.error('Error fetching GitHub stars:', error);
+    return null;
+  }
+}
+
 export function CommunitySection() {
+  const [starCount, setStarCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    getGitHubStars().then(count => setStarCount(count));
+  }, []);
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -115,7 +133,7 @@ export function CommunitySection() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* GitHub Button */}
               <Link
-                href="https://github.com"
+                href="https://github.com/IceCube-speedcubing/IceCube"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -136,8 +154,10 @@ export function CommunitySection() {
                           </h3>
                         </div>
                         <div className="flex items-center gap-1.5 bg-[#1D2432] px-2.5 py-0.5 rounded-md text-zinc-300 group-hover:bg-[#24292F] transition-colors">
-                          <Star className="h-3.5 w-3.5 fill-yellow-400/90" />
-                          <span className="text-sm">Star</span>
+                          <Star className="h-3.5 w-3.5 fill-yellow-400 stroke-yellow-400/20" />
+                          <span className="text-sm">
+                            {starCount !== null ? starCount.toLocaleString() : '•••'}
+                          </span>
                         </div>
                       </div>
                       <div className="flex items-center justify-between">
