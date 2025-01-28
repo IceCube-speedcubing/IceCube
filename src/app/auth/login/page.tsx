@@ -126,7 +126,7 @@ export default function SignInPage() {
           className="text-center"
         >
           <p className="text-sm text-muted-foreground">
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <Link
               href="/auth/signup"
               className="text-primary hover:text-primary/90 font-medium transition-colors"

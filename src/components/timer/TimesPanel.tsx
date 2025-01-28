@@ -10,7 +10,12 @@ interface TimesPanelProps {
     scramble: string;
   }>;
   formatTime: (ms: number, penalty?: 'plus2' | 'dnf') => string;
-  setSelectedTime: (time: any) => void;
+  setSelectedTime: (time: {
+    time: number;
+    penalty?: 'plus2' | 'dnf';
+    date: Date;
+    scramble: string;
+  } | null) => void;
   addPenalty: (index: number, penalty: 'plus2' | 'dnf') => void;
   deleteTime: (index: number) => void;
 }

@@ -11,7 +11,6 @@ import { cn } from "@/lib/utils";
 
 export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const [passwordFocused, setPasswordFocused] = useState(false);
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
@@ -91,8 +90,6 @@ export default function SignUpPage() {
                   type={showPassword ? "text" : "password"}
                   placeholder="Create a password"
                   className="h-11 bg-card/50 focus:ring-2 focus:ring-primary/50 pr-10 transition-all duration-200"
-                  onFocus={() => setPasswordFocused(true)}
-                  onBlur={() => setPasswordFocused(false)}
                   suppressHydrationWarning
                 />
                 <button

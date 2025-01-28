@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { ChevronDown, Settings, Plus, Copy, Settings2, Maximize2, Keyboard, Timer as TimerIcon, Smartphone, Check, Type, X } from "lucide-react"
+import { ChevronDown, Settings, Plus, Copy, Settings2, Maximize2, Keyboard, Timer as TimerIcon, Smartphone, Check, Type } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useState, useEffect, useRef, useMemo, useCallback } from "react"
 import {
@@ -92,7 +92,6 @@ export default function Page() {
   const [selectedEvent, setSelectedEvent] = useState('333');
   const [editingSession, setEditingSession] = useState<Session | null>(null);
   const selectedSessionRef = useRef<HTMLDivElement>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [timerMode, setTimerMode] = useState<'keyboard' | 'typing' | 'stackmat'>(
     localStorage.getItem('timerMode') as 'keyboard' | 'typing' | 'stackmat' || 'keyboard'
   );
