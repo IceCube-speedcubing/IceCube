@@ -55,14 +55,20 @@ export function Navbar() {
               variant="ghost" 
               size="sm"
               className="text-sm font-medium text-foreground hover:text-foreground relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary after:transition-all hover:after:w-full"
+              asChild
             >
-              Sign In
+              <Link href="/auth/login">
+                Sign In
+              </Link>
             </Button>
             <Button 
               size="sm"
               className="bg-gradient-to-r from-primary/90 to-primary text-primary-foreground font-medium shadow-md shadow-primary/25 hover:shadow-primary/40 hover:scale-[1.02] transition-all duration-200"
+              asChild
             >
-              Get Started
+              <Link href="/auth/signup">
+                Get Started
+              </Link>
             </Button>
           </div>
 

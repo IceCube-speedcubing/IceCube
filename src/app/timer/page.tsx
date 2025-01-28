@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { ChevronDown, Settings, Plus, Trash2, Copy } from "lucide-react"
+import { ChevronDown, Settings, Plus, Copy, Settings2, Maximize2, Keyboard, Timer as TimerIcon, Smartphone, Check, Type, X } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useState, useEffect, useRef, useMemo, useCallback } from "react"
 import {
@@ -16,7 +16,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogClose,
   DialogFooter,
 } from "@/components/ui/dialog"
 import { toast } from "sonner"
@@ -24,7 +23,7 @@ import { Toaster } from "sonner"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
-import { WCAEvent, Session, WCA_EVENTS } from "@/types/WCAEvents"
+import { Session, WCA_EVENTS } from "@/types/WCAEvents"
 import { generateScramble } from "@/lib/scrambleGen"
 import {
   Select,
@@ -33,21 +32,49 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { TimerDisplay } from "@/components/timer/TimerDisplay"
+import { ScrambleDisplay } from "@/components/timer/ScrambleDisplay"
+import { TimesPanel } from "@/components/timer/TimesPanel"
+
+// Add these types at the top
+type SolveData = {
+  time: number;
+  scramble: string;
+  date: string;
+  solveNumber: number;
+};
+
+// Add after the types
+const LOCAL_STORAGE_KEYS = {
+  SESSIONS: 'cubing-sessions',
+  CURRENT_SESSION: 'cubing-current-session',
+  TIMER_MODE: 'cubing-timer-mode'
+} as const;
+
+// TODO: Replace localStorage with database storage
+// - Create database schema for sessions and solves
+// - Implement API endpoints for CRUD operations
+// - Add authentication to protect user data
+// - Sync local storage with database when online
 
 export default function Page() {
   // State management
   const [scramble, setScramble] = useState("");
   const [time, setTime] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
-  const [sessions, setSessions] = useState<Session[]>([
-    {
+  const [sessions, setSessions] = useState<Session[]>(() => {
+    const savedSessions = localStorage.getItem(LOCAL_STORAGE_KEYS.SESSIONS);
+    return savedSessions ? JSON.parse(savedSessions) : [{
       id: 'default',
       name: 'Default',
       event: '333',
       times: []
-    }
-  ]);
-  const [currentSessionId, setCurrentSessionId] = useState('default');
+    }];
+  });
+  const [currentSessionId, setCurrentSessionId] = useState(() => {
+    const savedSessionId = localStorage.getItem(LOCAL_STORAGE_KEYS.CURRENT_SESSION);
+    return savedSessionId || 'default';
+  });
   const [isInspecting, setIsInspecting] = useState(false);
   const [inspectionTime, setInspectionTime] = useState(15);
   const [isSpacePressed, setIsSpacePressed] = useState(false);
@@ -66,6 +93,10 @@ export default function Page() {
   const [editingSession, setEditingSession] = useState<Session | null>(null);
   const selectedSessionRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [timerMode, setTimerMode] = useState<'keyboard' | 'typing' | 'stackmat'>(
+    localStorage.getItem('timerMode') as 'keyboard' | 'typing' | 'stackmat' || 'keyboard'
+  );
+  const [timeInput, setTimeInput] = useState('');
 
   // Get current session
   const currentSession = useMemo(() => {
@@ -128,13 +159,18 @@ export default function Page() {
   const stopTimer = useCallback(() => {
     setIsRunning(false);
     const finalTime = timeRef.current;
+    const newTime = {
+      time: finalTime,
+      date: new Date().toISOString(), // Store as ISO string for better serialization
+      scramble
+    };
+    
     setSessions(prev => prev.map(s => 
       s.id === currentSessionId ? {
         ...s,
         times: [...s.times, {
-          time: finalTime,
-          date: new Date(),
-          scramble
+          ...newTime,
+          date: new Date(newTime.date) // Convert ISO string back to Date
         }]
       } : s
     ));
@@ -323,12 +359,13 @@ export default function Page() {
   // Session management functions
   const addSession = useCallback((name: string, event: string) => {
     const newSessionId = crypto.randomUUID();
-    setSessions(prev => [...prev, {
+    const newSession = {
       id: newSessionId,
       name,
       event,
       times: []
-    }]);
+    };
+    setSessions(prev => [...prev, newSession]);
     setCurrentSessionId(newSessionId);
     generateNewScramble();
   }, [generateNewScramble]);
@@ -341,11 +378,6 @@ export default function Page() {
     }
   }, [currentSessionId]);
 
-  const renameSession = useCallback((id: string, newName: string) => {
-    setSessions(prev => prev.map(s => 
-      s.id === id ? { ...s, name: newName } : s
-    ));
-  }, []);
 
   const updateSession = useCallback((id: string, updates: Partial<Session>) => {
     setSessions(prev => prev.map(s => 
@@ -387,84 +419,162 @@ export default function Page() {
     }
   }, [isManageSessionsDialogOpen]);
 
+  // Update the time parsing function
+  function parseTimeInput(input: string): number | null {
+    // Remove all non-numeric characters except decimal point and colon
+    const cleanInput = input.replace(/[^\d.:]/g, '');
+    
+    if (cleanInput.includes(':')) {
+      // Handle MM:SS.ms format
+      const [minutes, secondsPart] = cleanInput.split(':');
+      const [seconds, milliseconds = '0'] = secondsPart.split('.');
+      return (parseInt(minutes) * 60 + parseInt(seconds)) * 1000 + parseInt(milliseconds.padEnd(3, '0').slice(0, 3));
+    } else if (cleanInput.includes('.')) {
+      // Handle SS.ms format
+      const [seconds, milliseconds] = cleanInput.split('.');
+      return parseInt(seconds) * 1000 + parseInt(milliseconds.padEnd(3, '0').slice(0, 3));
+    } else if (cleanInput.length <= 2) {
+      // Handle SS format (under 1 minute)
+      return parseInt(cleanInput) * 1000;
+    } else if (cleanInput.length <= 4) {
+      // Handle SS.xx format (automatically add decimal point)
+      const seconds = cleanInput.slice(0, -2);
+      const milliseconds = cleanInput.slice(-2);
+      return parseInt(seconds) * 1000 + parseInt(milliseconds) * 10;
+    } else {
+      return null;
+    }
+  }
+
+  // Function to save timer mode
+  const saveTimerMode = (mode: 'keyboard' | 'typing' | 'stackmat') => {
+    setTimerMode(mode);
+    localStorage.setItem('timerMode', mode);
+  };
+
+  // Function to save solve data
+  const saveSolve = (time: number, scramble: string) => {
+    const solves: SolveData[] = JSON.parse(localStorage.getItem('solves') || '[]');
+    const newSolve: SolveData = {
+      time,
+      scramble,
+      date: new Date().toISOString(),
+      solveNumber: solves.length + 1
+    };
+    solves.push(newSolve);
+    localStorage.setItem('solves', JSON.stringify(solves));
+    
+    // Update sessions as before
+    setSessions(prevSessions => 
+      prevSessions.map(s => 
+        s.id === currentSession?.id 
+          ? { ...s, times: [...s.times, { time, date: new Date(), scramble }] }
+          : s
+      )
+    );
+  };
+
+  // Add effect to save sessions
+  useEffect(() => {
+    localStorage.setItem(LOCAL_STORAGE_KEYS.SESSIONS, JSON.stringify(sessions));
+  }, [sessions]);
+
+  // Add effect to save current session
+  useEffect(() => {
+    localStorage.setItem(LOCAL_STORAGE_KEYS.CURRENT_SESSION, currentSessionId);
+  }, [currentSessionId]);
+
   return (
     <div className="h-screen flex flex-col bg-background text-foreground overflow-hidden">
       <Toaster />
+      <div className="absolute right-8 top-20">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm" className="w-[180px] font-medium">
+              <Settings2 className="w-4 h-4 mr-2" />
+              Timer Settings
+              <ChevronDown className="h-4 w-4 opacity-50" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-[220px]" side="top" sideOffset={8}>
+            <div className="px-2 py-1.5">
+              <h4 className="text-sm font-medium text-muted-foreground mb-1">Display</h4>
+            </div>
+            <DropdownMenuItem onClick={() => document.documentElement.requestFullscreen()}>
+              <Maximize2 className="w-4 h-4 mr-2" />
+              Full Screen
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <div className="px-2 py-1.5">
+              <h4 className="text-sm font-medium text-muted-foreground mb-1">Timer Mode</h4>
+            </div>
+            <DropdownMenuItem 
+              onClick={() => saveTimerMode('keyboard')}
+              className="flex items-center justify-between"
+            >
+              <div className="flex items-center">
+                <Keyboard className="w-4 h-4 mr-2" />
+                Keyboard Timer
+              </div>
+              {timerMode === 'keyboard' && <Check className="w-4 h-4" />}
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={() => saveTimerMode('typing')}
+              className="flex items-center justify-between"
+            >
+              <div className="flex items-center">
+                <Type className="w-4 h-4 mr-2" />
+                Type In Times
+              </div>
+              {timerMode === 'typing' && <Check className="w-4 h-4" />}
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={() => saveTimerMode('stackmat')}
+              className="flex items-center justify-between"
+            >
+              <div className="flex items-center">
+                <TimerIcon className="w-4 h-4 mr-2" />
+                Stackmat Timer
+              </div>
+              {timerMode === 'stackmat' && <Check className="w-4 h-4" />}
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Smartphone className="w-4 h-4 mr-2" />
+              GAN Timer
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
       {/* Main timer area */}
       <div className="flex-1 flex flex-col items-center justify-center gap-8 p-4">
-        {/* Timer */}
-        <div className="flex-1 w-full max-w-3xl flex flex-col items-center justify-center gap-8">
-          <div 
-            className={`font-mono select-none transition-colors duration-300 text-8xl md:text-9xl ${getTimerColor()}`}
-            style={{
-              transform: isSpacePressed ? 'scale(0.95)' : 'scale(1)'
-            }}
-          >
-            {formatTime(time, undefined, true)}
-          </div>
+        <div className="w-full max-w-3xl flex flex-col items-center">
+          <TimerDisplay
+            timerMode={timerMode}
+            timeInput={timeInput}
+            setTimeInput={setTimeInput}
+            isSpacePressed={isSpacePressed}
+            getTimerColor={getTimerColor}
+            time={time}
+            formatTime={formatTime}
+            saveSolve={saveSolve}
+            scramble={scramble}
+            generateNewScramble={generateNewScramble}
+            parseTimeInput={parseTimeInput}
+          />
           
-          {/* Scramble */}
-          <div className="rounded-lg border bg-card p-4 w-full">
-            <p className="text-lg md:text-2xl font-mono text-center break-words">{scramble}</p>
-          </div>
+          <ScrambleDisplay scramble={scramble} />
         </div>
       </div>
 
       {/* Bottom panels */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
-        {/* Times panel */}
-        <div className="rounded-lg border bg-card overflow-hidden">
-          <div className="p-3 border-b font-medium bg-muted/10">Times</div>
-          <ScrollArea className="h-48">
-            {sortedTimes.map((t, index) => (
-              <div 
-                key={index} 
-                className="px-4 py-3 border-b hover:bg-muted/50 flex items-center justify-between group cursor-pointer"
-                onClick={() => setSelectedTime(t)}
-              >
-                <div className="flex items-center gap-4">
-                  <span className="text-sm font-medium text-muted-foreground">#{sortedTimes.length - index}</span>
-                  <span className="font-mono text-lg">{formatTime(t.time, t.penalty)}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className={`h-7 px-2 text-sm ${t.penalty === 'plus2' ? 'bg-yellow-500/10 text-yellow-500' : 'hover:text-yellow-500 hover:bg-yellow-500/10'}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      addPenalty(sortedTimes.length - 1 - index, 'plus2');
-                    }}
-                  >
-                    +2
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className={`h-7 px-2 text-sm ${t.penalty === 'dnf' ? 'bg-red-500/10 text-red-500' : 'hover:text-red-500 hover:bg-red-500/10'}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      addPenalty(sortedTimes.length - 1 - index, 'dnf');
-                    }}
-                  >
-                    DNF
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="h-7 w-7 p-0 hover:bg-destructive/10"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      deleteTime(sortedTimes.length - 1 - index);
-                    }}
-                  >
-                    <Trash2 className="h-4 w-4 text-destructive" />
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </ScrollArea>
-        </div>
+        <TimesPanel
+          sortedTimes={sortedTimes}
+          formatTime={formatTime}
+          setSelectedTime={setSelectedTime}
+          addPenalty={addPenalty}
+          deleteTime={deleteTime}
+        />
 
         {/* Stats panel */}
         <div className="rounded-lg border bg-card overflow-hidden">
@@ -503,8 +613,8 @@ export default function Page() {
                     >
                       <div className="flex-1 flex items-center gap-2 min-w-0">
                         <div className="truncate font-medium">{session.name}</div>
-                        <div className="px-1.5 py-0.5 rounded-md bg-muted text-xs font-medium shrink-0">
-                          {currentEvent?.name}
+                        <div className="px-2 py-1 rounded-md bg-muted text-sm font-medium">
+                          {WCA_EVENTS.find(e => e.id === session.event)?.name}
                         </div>
                       </div>
                       <span className="text-xs text-muted-foreground shrink-0">
@@ -631,7 +741,7 @@ export default function Page() {
                 >
                   <SelectTrigger className="w-full font-medium">
                     <SelectValue>
-                      {currentEvent?.name}
+                      {WCA_EVENTS.find(e => e.id === selectedEvent)?.name}
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent className="max-h-[300px]">
@@ -706,7 +816,7 @@ export default function Page() {
                         >
                           <SelectTrigger className="w-full font-medium">
                             <SelectValue>
-                              {currentEvent?.name}
+                              {WCA_EVENTS.find(e => e.id === editingSession.event)?.name}
                             </SelectValue>
                           </SelectTrigger>
                           <SelectContent className="max-h-[300px]">
@@ -728,7 +838,7 @@ export default function Page() {
                       <div className="flex items-center gap-4">
                         <div className="font-medium truncate">{session.name}</div>
                         <div className="px-2 py-1 rounded-md bg-muted text-sm font-medium">
-                          {currentEvent?.name}
+                          {WCA_EVENTS.find(e => e.id === session.event)?.name}
                         </div>
                         <div className="text-sm text-muted-foreground">
                           {session.times.length} solves

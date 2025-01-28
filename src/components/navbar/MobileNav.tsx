@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { NavItems } from "./NavItems";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 interface MobileNavProps {
   isOpen: boolean;
@@ -45,14 +46,20 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
             variant="ghost" 
             className="w-full justify-center text-base font-medium text-foreground hover:text-foreground relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary after:transition-all hover:after:w-full"
             onClick={onClose}
+            asChild
           >
-            Sign In
+            <Link href="/auth/login">
+              Sign In
+            </Link>
           </Button>
           <Button 
             className="w-full justify-center text-base bg-gradient-to-r from-primary/90 to-primary text-primary-foreground font-medium shadow-md shadow-primary/25 hover:shadow-primary/40 hover:scale-[1.02] transition-all duration-200"
             onClick={onClose}
+            asChild
           >
-            Get Started
+            <Link href="/auth/signup">
+              Get Started
+            </Link>
           </Button>
         </div>
       </div>

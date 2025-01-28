@@ -1,4 +1,3 @@
-import { WCAEvent } from "@/types/WCAEvents";
 
 const MOVES_333 = ["R", "U", "F", "L", "D", "B"];
 const MOVES_222 = ["R", "U", "F"];
