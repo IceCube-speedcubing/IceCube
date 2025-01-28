@@ -62,19 +62,13 @@ export default function Page() {
   const [scramble, setScramble] = useState("");
   const [time, setTime] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
-  const [sessions, setSessions] = useState<Session[]>(() => {
-    const savedSessions = localStorage.getItem(LOCAL_STORAGE_KEYS.SESSIONS);
-    return savedSessions ? JSON.parse(savedSessions) : [{
-      id: 'default',
-      name: 'Default',
-      event: '333',
-      times: []
-    }];
-  });
-  const [currentSessionId, setCurrentSessionId] = useState(() => {
-    const savedSessionId = localStorage.getItem(LOCAL_STORAGE_KEYS.CURRENT_SESSION);
-    return savedSessionId || 'default';
-  });
+  const [sessions, setSessions] = useState<Session[]>([{
+    id: 'default',
+    name: 'Default',
+    event: '333',
+    times: []
+  }]);
+  const [currentSessionId, setCurrentSessionId] = useState('default');
   const [isInspecting, setIsInspecting] = useState(false);
   const [inspectionTime, setInspectionTime] = useState(15);
   const [isSpacePressed, setIsSpacePressed] = useState(false);
@@ -92,10 +86,25 @@ export default function Page() {
   const [selectedEvent, setSelectedEvent] = useState('333');
   const [editingSession, setEditingSession] = useState<Session | null>(null);
   const selectedSessionRef = useRef<HTMLDivElement>(null);
-  const [timerMode, setTimerMode] = useState<'keyboard' | 'typing' | 'stackmat'>(
-    localStorage.getItem('timerMode') as 'keyboard' | 'typing' | 'stackmat' || 'keyboard'
-  );
+  const [timerMode, setTimerMode] = useState<'keyboard' | 'typing' | 'stackmat'>('keyboard');
   const [timeInput, setTimeInput] = useState('');
+
+  // Load data from localStorage on mount
+  useEffect(() => {
+    const savedSessions = localStorage.getItem(LOCAL_STORAGE_KEYS.SESSIONS);
+    const savedSessionId = localStorage.getItem(LOCAL_STORAGE_KEYS.CURRENT_SESSION);
+    const savedTimerMode = localStorage.getItem(LOCAL_STORAGE_KEYS.TIMER_MODE);
+
+    if (savedSessions) {
+      setSessions(JSON.parse(savedSessions));
+    }
+    if (savedSessionId) {
+      setCurrentSessionId(savedSessionId);
+    }
+    if (savedTimerMode) {
+      setTimerMode(savedTimerMode as 'keyboard' | 'typing' | 'stackmat');
+    }
+  }, []);
 
   // Get current session
   const currentSession = useMemo(() => {

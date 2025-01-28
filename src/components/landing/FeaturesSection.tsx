@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Timer, LineChart, Trophy } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 const features = [
   {
@@ -23,8 +24,11 @@ const features = [
 ];
 
 export function FeaturesSection() {
+  const pathname = usePathname();
+  
   return (
     <motion.div
+      key={pathname + "-features"}
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       viewport={{ once: true }}

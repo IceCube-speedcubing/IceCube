@@ -2,8 +2,11 @@ import { motion } from "framer-motion";
 import { Box, Star, ArrowRight, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { usePathname } from "next/navigation";
 
 export function HeroSection() {
+  const pathname = usePathname();
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -31,6 +34,7 @@ export function HeroSection() {
     <div className="relative min-h-[90vh] flex flex-col items-center justify-center px-4 overflow-hidden">
       {/* Background */}
       <motion.div
+        key={pathname + "-hero-bg"}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
@@ -42,6 +46,7 @@ export function HeroSection() {
       </motion.div>
 
       <motion.div
+        key={pathname + "-hero-content"}
         variants={containerVariants}
         initial="hidden"
         animate="visible"

@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Users, Github, Box, TestTube, MessageSquare, Lightbulb, ArrowRight, Star } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 const communityCards = [
   {
@@ -33,6 +34,7 @@ async function getGitHubStars() {
 }
 
 export function CommunitySection() {
+  const pathname = usePathname();
   const [starCount, setStarCount] = useState<number | null>(null);
 
   useEffect(() => {
@@ -58,11 +60,12 @@ export function CommunitySection() {
 
   return (
     <motion.div
+      key={pathname + "-community"}
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true }}
       variants={containerVariants}
-      className="relative py-24"
+      className="relative py-24 bg-gradient-to-b from-card/50 to-background"
     >
       <div className="max-w-6xl mx-auto px-4">
         {/* Header */}
