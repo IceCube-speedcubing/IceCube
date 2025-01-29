@@ -3,8 +3,10 @@ import { Box, Star, ArrowRight, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
+import { useAnimationReset } from '@/hooks/useAnimationReset';
 
 export function HeroSection() {
+  const animationKey = useAnimationReset();
   const pathname = usePathname();
 
   const containerVariants = {
@@ -34,14 +36,13 @@ export function HeroSection() {
     <div className="relative min-h-[90vh] flex flex-col items-center justify-center px-4 overflow-hidden">
       {/* Background */}
       <motion.div
-        key={pathname + "-hero-bg"}
+        key={`hero-bg-${animationKey}`}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
         className="absolute inset-0"
       >
         <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-background to-background animate-gradient" />
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5" />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
       </motion.div>
 
@@ -60,7 +61,7 @@ export function HeroSection() {
           <div className="relative group">
             <div className="relative bg-card/50 backdrop-blur-sm border rounded-full py-2 px-6 text-sm text-muted-foreground inline-flex items-center gap-2 transition-all duration-300 hover:bg-card/80">
               <Box className="h-4 w-4" />
-              <span>Precision Timer for Speedcubing</span>
+              <span>Track Your Speedcubing Progress</span>
               <Star className="h-4 w-4 text-primary" />
             </div>
           </div>
@@ -72,12 +73,12 @@ export function HeroSection() {
           className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight"
         >
           <span className="text-primary">
-            Master
+            Time
           </span>
-          {" "}the Cube,{" "}
+          {" "}Your Solves,{" "}
           <span className="block mt-2">
-            Break Your{" "}
-            <span className="text-primary">Records</span>
+            Track Your{" "}
+            <span className="text-primary">Journey</span>
           </span>
         </motion.h1>
 
@@ -86,7 +87,7 @@ export function HeroSection() {
           variants={itemVariants}
           className="text-xl sm:text-2xl text-muted-foreground max-w-2xl mx-auto mt-6 leading-relaxed"
         >
-          Advanced analytics and precision timing to elevate your speedcubing journey.
+          Track your solves, analyze your progress, and join a community of speedcubers.
         </motion.p>
 
         {/* CTA buttons */}

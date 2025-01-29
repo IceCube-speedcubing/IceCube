@@ -1,3 +1,4 @@
+import { useAnimationReset } from "@/hooks/useAnimationReset";
 import { motion } from "framer-motion";
 import { Timer, LineChart, Trophy } from "lucide-react";
 import { usePathname } from "next/navigation";
@@ -5,30 +6,30 @@ import { usePathname } from "next/navigation";
 const features = [
   {
     icon: Timer,
-    title: "Precision Timer",
-    description: "Competition-grade timing with inspection mode and penalties.",
+    title: "Timer",
+    description: "Time your solves with inspection and penalties.",
     color: "from-blue-500/20 to-blue-500/10"
   },
   {
     icon: LineChart,
-    title: "Advanced Analytics",
-    description: "Track your progress with detailed statistics and insights.",
-    color: "from-green-500/20 to-green-500/10"
+    title: "Statistics",
+    description: "View your averages, best times, and solve distribution.",
+    color: "from-purple-500/20 to-purple-500/10"
   },
   {
     icon: Trophy,
-    title: "Competitions",
-    description: "Join online competitions and compare with others.",
-    color: "from-yellow-500/20 to-yellow-500/10"
+    title: "Personal Records",
+    description: "Keep track of your best solves and celebrate milestones.",
+    color: "from-orange-500/20 to-orange-500/10"
   }
 ];
 
 export function FeaturesSection() {
-  const pathname = usePathname();
+  const animationKey = useAnimationReset();
   
   return (
     <motion.div
-      key={pathname + "-features"}
+      key={`features-${animationKey}`}
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       viewport={{ once: true }}

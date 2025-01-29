@@ -1,4 +1,5 @@
 import { Input } from "@/components/ui/input";
+import { useEffect, useState } from "react";
 
 interface TimerDisplayProps {
   timerMode: 'keyboard' | 'typing' | 'stackmat';
@@ -12,6 +13,11 @@ interface TimerDisplayProps {
   scramble: string;
   generateNewScramble: () => void;
   parseTimeInput: (input: string) => number | null;
+  startTimer: () => void;
+  stopTimer: () => void;
+  startInspection: () => void;
+  isRunning: boolean;
+  isInspecting: boolean;
 }
 
 export function TimerDisplay({
@@ -25,21 +31,66 @@ export function TimerDisplay({
   saveSolve,
   scramble,
   generateNewScramble,
-  parseTimeInput
+  parseTimeInput,
+  startTimer,
+  stopTimer,
+  startInspection,
+  isRunning,
+  isInspecting
 }: TimerDisplayProps) {
+  const [touchStart, setTouchStart] = useState<number>(0);
+  const [isHolding, setIsHolding] = useState(false);
+  const [readyToStart, setReadyToStart] = useState(false);
+
+  const handleTouchStart = () => {
+    if (timerMode !== 'keyboard') return;
+    setTouchStart(Date.now());
+    setIsHolding(true);
+  };
+
+  const handleTouchEnd = () => {
+    if (timerMode !== 'keyboard' || !isHolding) return;
+    
+    const holdDuration = Date.now() - touchStart;
+    setIsHolding(false);
+
+    if (isRunning) {
+      stopTimer();
+      return;
+    }
+
+    if (holdDuration >= 300 && readyToStart) {
+      if (isInspecting) {
+        startTimer();
+      } else {
+        startInspection();
+      }
+      setReadyToStart(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isHolding) {
+      const timer = setTimeout(() => {
+        setReadyToStart(true);
+      }, 300);
+      return () => clearTimeout(timer);
+    } else {
+      setReadyToStart(false);
+    }
+  }, [isHolding]);
+
   return (
-    <div className="flex-1 flex items-center justify-center min-h-[200px]">
+    <div className="flex-1 flex items-center justify-center min-h-[200px] w-full touch-none select-none">
       {timerMode === 'typing' ? (
-        <div className="flex flex-col items-center gap-6">
-          <div className="relative">
+        <div className="flex flex-col items-center gap-6 w-full px-4">
+          <div className="relative w-full max-w-[20rem] sm:max-w-[32rem]">
             <Input
               type="text"
               value={timeInput}
-              onChange={(e) => {
-                setTimeInput(e.target.value);
-              }}
+              onChange={(e) => setTimeInput(e.target.value)}
               placeholder="0.00"
-              className="text-center text-8xl w-[32rem] h-28 font-mono tracking-wider"
+              className="text-center text-4xl sm:text-8xl h-20 sm:h-28 font-mono tracking-wider"
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && timeInput) {
                   const parsedTime = parseTimeInput(timeInput);
@@ -61,12 +112,13 @@ export function TimerDisplay({
         </div>
       ) : (
         <div 
-          className={`font-mono select-none transition-colors duration-300 text-8xl md:text-9xl ${getTimerColor()}`}
-          style={{
-            transform: isSpacePressed ? 'scale(0.95)' : 'scale(1)'
-          }}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          className={`w-full h-full flex items-center justify-center font-mono select-none transition-colors duration-300 ${getTimerColor()}`}
         >
-          {formatTime(time, undefined, true)}
+          <div className={`text-5xl sm:text-8xl md:text-9xl transition-transform ${isHolding ? 'scale-95' : 'scale-100'}`}>
+            {formatTime(time, undefined, true)}
+          </div>
         </div>
       )}
     </div>

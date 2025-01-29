@@ -1,28 +1,29 @@
 'use client';
 
+import { useAnimationReset } from "@/hooks/useAnimationReset";
 import { motion } from "framer-motion";
 import { Timer, Book, Code2, Users, Database } from "lucide-react";
 
 const features = [
-    {
-      icon: Timer,
-      title: "Speedcubing Timer",
-      description: "A precise timer with inspection mode and solve statistics",
-      color: "from-blue-500/20 to-blue-500/10"
-    },
-    {
-      icon: Code2,
-      title: "Scramble Generator", 
-      description: "WCA-compliant scrambles for all puzzle types",
-      color: "from-green-500/20 to-green-500/10"
-    },
-    {
-      icon: Users,
-      title: "User Accounts",
-      description: "Save your solves and access them anywhere",
-      color: "from-purple-500/20 to-purple-500/10"
-    }
-  ];
+  {
+    icon: Timer,
+    title: "Speedcubing Timer",
+    description: "A precise timer with inspection mode and solve statistics",
+    color: "from-blue-500/20 to-blue-500/10"
+  },
+  {
+    icon: Code2,
+    title: "Scramble Generator",
+    description: "WCA-compliant scrambles for all puzzle types",
+    color: "from-green-500/20 to-green-500/10"
+  },
+  {
+    icon: Users,
+    title: "User Accounts",
+    description: "Save your solves and access them anywhere",
+    color: "from-purple-500/20 to-purple-500/10"
+  }
+];
 
 const upcomingFeatures = [
   {
@@ -32,7 +33,7 @@ const upcomingFeatures = [
   },
   {
     icon: Book,
-    label: "Cubing Courses", 
+    label: "Cubing Courses",
     description: "Structured learning paths for all skill levels"
   }
 ];
@@ -44,6 +45,7 @@ export default function AboutPage() {
       <div className="relative py-24 bg-gradient-to-b from-background to-card/50">
         <div className="max-w-6xl mx-auto px-4">
           <motion.div
+            key={useAnimationReset()}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}

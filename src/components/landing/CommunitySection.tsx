@@ -3,17 +3,18 @@ import { Users, Github, Box, TestTube, MessageSquare, Lightbulb, ArrowRight, Sta
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { useAnimationReset } from '@/hooks/useAnimationReset';
 
 const communityCards = [
   {
     icon: TestTube,
     title: "Beta Testing",
-    description: "Be among the first to test new features and shape the future of our timer",
+    description: "Be among the first to test new features and shape the future of IceCube",
   },
   {
     icon: MessageSquare,
     title: "Share Feedback",
-    description: "Your feedback matters! Help us improve and build the best cube timer possible",
+    description: "Your feedback matters! Help us improve and build the best cubing tools possible",
   },
   {
     icon: Lightbulb,
@@ -34,6 +35,7 @@ async function getGitHubStars() {
 }
 
 export function CommunitySection() {
+  const animationKey = useAnimationReset();
   const pathname = usePathname();
   const [starCount, setStarCount] = useState<number | null>(null);
 

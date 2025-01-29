@@ -30,15 +30,15 @@ export function Navbar() {
   return (
     <nav
       className={cn(
-        "fixed top-0 w-full z-50 transition-all duration-300",
+        "fixed top-0 w-full z-[99] transition-all duration-300",
         isScrolled && "bg-background/80 backdrop-blur-md border-b"
       )}
     >
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link 
-            href="/" 
+          <Link
+            href="/"
             className="flex items-center space-x-2 shrink-0"
           >
             <div className="font-bold text-xl">Logo</div>
@@ -51,8 +51,8 @@ export function Navbar() {
 
           {/* Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               size="sm"
               className="text-sm font-medium text-foreground hover:text-foreground relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary after:transition-all hover:after:w-full"
               asChild
@@ -61,7 +61,7 @@ export function Navbar() {
                 Sign In
               </Link>
             </Button>
-            <Button 
+            <Button
               size="sm"
               className="bg-gradient-to-r from-primary/90 to-primary text-primary-foreground font-medium shadow-md shadow-primary/25 hover:shadow-primary/40 hover:scale-[1.02] transition-all duration-200"
               asChild
@@ -73,9 +73,9 @@ export function Navbar() {
           </div>
 
           {/* Mobile Menu Button */}
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant="ghost"
+            size="icon"
             className="md:hidden"
             onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
             aria-label="Toggle mobile menu"
@@ -86,9 +86,9 @@ export function Navbar() {
       </div>
 
       {/* Mobile Navigation */}
-      <MobileNav 
-        isOpen={isMobileNavOpen} 
-        onClose={() => setIsMobileNavOpen(false)} 
+      <MobileNav
+        isOpen={isMobileNavOpen}
+        onClose={() => setIsMobileNavOpen(false)}
       />
     </nav>
   );
