@@ -1,11 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Menu, Settings2, ChevronDown, Plus, Settings, Check, Maximize2, Keyboard, Type, TimerIcon, Smartphone, Trash2 } from "lucide-react";
+import { Menu, Settings2, ChevronDown, Plus, Settings, Check, Keyboard, Type, Smartphone, Trash2 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { MobileTimerDisplay } from "./MobileTimerDisplay";
 import { ScrambleDisplay } from "./ScrambleDisplay";
-import { TimesPanel } from "./TimesPanel";
 import { Session, WCA_EVENTS } from "@/types/WCAEvents";
 import {
   DropdownMenu,
@@ -16,7 +15,6 @@ import {
   DropdownMenuGroup,
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 interface MobileLayoutProps {
   time: number;
@@ -38,7 +36,12 @@ interface MobileLayoutProps {
     ao5: number;
     ao12: number;
   };
-  setSelectedTime: (time: any) => void;
+  setSelectedTime: (time: {
+    time: number;
+    penalty?: 'plus2' | 'dnf';
+    date: Date;
+    scramble: string;
+  } | null) => void;
   addPenalty: (index: number, penalty: 'plus2' | 'dnf') => void;
   deleteTime: (index: number) => void;
   onTouchStart: (e: React.TouchEvent) => void;

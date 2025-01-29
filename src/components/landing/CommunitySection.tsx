@@ -3,7 +3,6 @@ import { Users, Github, Box, TestTube, MessageSquare, Lightbulb, ArrowRight, Sta
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { useAnimationReset } from '@/hooks/useAnimationReset';
 
 const communityCards = [
   {
@@ -35,7 +34,6 @@ async function getGitHubStars() {
 }
 
 export function CommunitySection() {
-  const animationKey = useAnimationReset();
   const pathname = usePathname();
   const [starCount, setStarCount] = useState<number | null>(null);
 

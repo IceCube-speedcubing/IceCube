@@ -5,7 +5,6 @@ interface TimerDisplayProps {
   timerMode: 'keyboard' | 'typing' | 'stackmat';
   timeInput: string;
   setTimeInput: (value: string) => void;
-  isSpacePressed: boolean;
   getTimerColor: () => string;
   time: number;
   formatTime: (ms: number, penalty?: 'plus2' | 'dnf', showInspection?: boolean) => string;
@@ -24,7 +23,6 @@ export function TimerDisplay({
   timerMode,
   timeInput,
   setTimeInput,
-  isSpacePressed,
   getTimerColor,
   time,
   formatTime,

@@ -1,7 +1,6 @@
 import { useAnimationReset } from "@/hooks/useAnimationReset";
 import { motion } from "framer-motion";
 import { Timer, LineChart, Trophy } from "lucide-react";
-import { usePathname } from "next/navigation";
 
 const features = [
   {

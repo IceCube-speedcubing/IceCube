@@ -91,7 +91,6 @@ export default function Page() {
   const [timeInput, setTimeInput] = useState('');
   const [isTouchHolding, setIsTouchHolding] = useState(false);
   const [touchHoldingLongEnough, setTouchHoldingLongEnough] = useState(false);
-  const [recentlyStopped, setRecentlyStopped] = useState(false);
 
   // Load data from localStorage on mount
   useEffect(() => {
@@ -638,7 +637,6 @@ export default function Page() {
               timerMode={timerMode}
               timeInput={timeInput}
               setTimeInput={setTimeInput}
-              isSpacePressed={isSpacePressed}
               getTimerColor={getTimerColor}
               time={time}
               formatTime={formatTime}
