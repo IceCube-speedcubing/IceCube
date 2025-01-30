@@ -131,7 +131,7 @@ export function CommunitySection() {
             variants={itemVariants}
             className="relative p-8 rounded-2xl border bg-card/95 backdrop-blur-sm"
           >
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {/* GitHub Button */}
               <Link
                 href="https://github.com/IceCube-speedcubing/IceCube"
@@ -208,6 +208,55 @@ export function CommunitySection() {
                       </div>
                     </div>
                     <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-[#5865F2]/10 via-[#5865F2]/5 to-[#5865F2]/10 opacity-0 group-hover:opacity-100 transition-opacity blur-xl pointer-events-none" />
+                  </div>
+                </motion.div>
+              </Link>
+
+              {/* Ko-fi Button */}
+              <Link
+                href="https://ko-fi.com/icecubespeedcubing"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="group"
+                >
+                  <div className="relative rounded-xl border border-zinc-800 bg-[#0D1117] p-6 transition-all duration-300 hover:bg-[#29ABE0]/10 hover:border-[#29ABE0]/50">
+                    <div className="flex flex-col gap-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2.5 rounded-lg bg-white/5 ring-1 ring-white/10 group-hover:ring-white/20 transition-all">
+                            <svg
+                              className="h-5 w-5 text-white"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <path d="M18 8h1a4 4 0 0 1 0 8h-1" />
+                              <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" />
+                              <line x1="6" y1="1" x2="6" y2="4" />
+                              <line x1="10" y1="1" x2="10" y2="4" />
+                              <line x1="14" y1="1" x2="14" y2="4" />
+                            </svg>
+                          </div>
+                          <h3 className="text-lg font-semibold text-white">
+                            Support on Ko-fi
+                          </h3>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-zinc-400">
+                          Buy me a coffee
+                        </span>
+                        <ArrowRight className="h-4 w-4 text-zinc-500 group-hover:text-zinc-400 group-hover:translate-x-1 transition-all" />
+                      </div>
+                    </div>
+                    <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-[#29ABE0]/10 via-[#29ABE0]/5 to-[#29ABE0]/10 opacity-0 group-hover:opacity-100 transition-opacity blur-xl pointer-events-none" />
                   </div>
                 </motion.div>
               </Link>
