@@ -7,7 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { NavItems } from "./NavItems";
 import { MobileNav } from "./MobileNav";
+import { UserNav } from "./UserNav";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
+
+// Add this for testing purposes
+const isLoggedIn = true;
+const isAdmin = true;
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -41,7 +47,7 @@ export function Navbar() {
             href="/"
             className="flex items-center space-x-2 shrink-0"
           >
-            <div className="font-bold text-xl">Logo</div>
+            <Image src="/images/IceCube-logo.webp" alt="IceCube Logo" width={32} height={32} />
           </Link>
 
           {/* Desktop Navigation */}
@@ -49,27 +55,33 @@ export function Navbar() {
             <NavItems />
           </div>
 
-          {/* Auth Buttons */}
+          {/* Auth Buttons or User Avatar */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-sm font-medium text-foreground hover:text-foreground relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary after:transition-all hover:after:w-full"
-              asChild
-            >
-              <Link href="/auth/login">
-                Sign In
-              </Link>
-            </Button>
-            <Button
-              size="sm"
-              className="bg-gradient-to-r from-primary/90 to-primary text-primary-foreground font-medium shadow-md shadow-primary/25 hover:shadow-primary/40 hover:scale-[1.02] transition-all duration-200"
-              asChild
-            >
-              <Link href="/auth/signup">
-                Get Started
-              </Link>
-            </Button>
+            {isLoggedIn ? (
+              <UserNav isAdmin={true} user={{ name: "User Name", email: "user@example.com" }} />
+            ) : (
+              <>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-sm font-medium text-foreground hover:text-foreground relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary after:transition-all hover:after:w-full"
+                  asChild
+                >
+                  <Link href="/auth/login">
+                    Sign In
+                  </Link>
+                </Button>
+                <Button
+                  size="sm"
+                  className="bg-gradient-to-r from-primary/90 to-primary text-primary-foreground font-medium shadow-md shadow-primary/25 hover:shadow-primary/40 hover:scale-[1.02] transition-all duration-200"
+                  asChild
+                >
+                  <Link href="/auth/signup">
+                    Get Started
+                  </Link>
+                </Button>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -89,6 +101,8 @@ export function Navbar() {
       <MobileNav
         isOpen={isMobileNavOpen}
         onClose={() => setIsMobileNavOpen(false)}
+        isLoggedIn={isLoggedIn}
+        isAdmin={true}
       />
     </nav>
   );

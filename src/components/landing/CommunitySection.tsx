@@ -251,7 +251,7 @@ export function CommunitySection() {
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-zinc-400">
-                          Buy me a coffee
+                        Support the project
                         </span>
                         <ArrowRight className="h-4 w-4 text-zinc-500 group-hover:text-zinc-400 group-hover:translate-x-1 transition-all" />
                       </div>

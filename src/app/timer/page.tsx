@@ -36,6 +36,7 @@ import { TimerDisplay } from "@/components/timer/TimerDisplay"
 import { ScrambleDisplay } from "@/components/timer/ScrambleDisplay"
 import { TimesPanel } from "@/components/timer/TimesPanel"
 import { MobileLayout } from "@/components/timer/MobileLayout"
+import { Badge } from "@/components/ui/badge";
 
 // Add these types at the top
 type SolveData = {
@@ -619,13 +620,15 @@ export default function Page() {
               >
                 <div className="flex items-center">
                   <TimerIcon className="w-4 h-4 mr-2" />
-                  Stackmat Timer
+                  Stackmat Timer 
+                  <Badge className="ml-2">Soon</Badge>
                 </div>
-                {timerMode === 'stackmat' && <Check className="w-4 h-4" />}
+                {/* {timerMode === 'stackmat' && <Check className="w-4 h-4" />} */}
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <Smartphone className="w-4 h-4 mr-2" />
-                GAN Timer
+                GAN Timer 
+                <Badge className="ml-2">Soon</Badge>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
