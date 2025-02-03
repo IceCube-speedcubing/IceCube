@@ -12,8 +12,7 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 
 // Add this for testing purposes
-const isLoggedIn = true;
-const isAdmin = true;
+const isLoggedIn = false;
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
