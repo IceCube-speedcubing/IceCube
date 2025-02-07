@@ -200,9 +200,15 @@ export default function Page() {
           return;
         }
 
-        if (!isSpacePressed) {
+        if (!isInspecting) {
+          startInspection();
+        } else {
           setIsSpacePressed(true);
         }
+      } else if (e.code === 'Escape' && isInspecting) {
+        setIsInspecting(false);
+        setIsSpacePressed(false);
+        setIsHoldingLongEnough(false);
       }
     };
 
@@ -211,17 +217,9 @@ export default function Page() {
         e.preventDefault();
         setIsSpacePressed(false);
 
-        if (isRunning) {
-          return;
-        }
-
-        if (isHoldingLongEnough) {
-          if (isInspecting) {
-            setIsInspecting(false);
-            startTimer();
-          } else {
-            startInspection();
-          }
+        if (isInspecting && isHoldingLongEnough) {
+          setIsInspecting(false);
+          startTimer();
         }
         setIsHoldingLongEnough(false);
       }
@@ -238,7 +236,9 @@ export default function Page() {
     isRunning,
     isInspecting,
     isHoldingLongEnough,
-    isSpacePressed,
+    setIsSpacePressed,
+    setIsHoldingLongEnough,
+    setIsInspecting,
     stopTimer,
     startTimer,
     startInspection
@@ -248,7 +248,7 @@ export default function Page() {
   useEffect(() => {
     let holdTimer: NodeJS.Timeout;
     
-    if (isSpacePressed && !isRunning) {
+    if (isSpacePressed && !isRunning && isInspecting) {
       holdTimer = setTimeout(() => {
         setIsHoldingLongEnough(true);
       }, 300);
@@ -259,7 +259,7 @@ export default function Page() {
         clearTimeout(holdTimer);
       }
     };
-  }, [isSpacePressed, isRunning]);
+  }, [isSpacePressed, isRunning, isInspecting]);
 
   // Inspection timer effect
   useEffect(() => {
@@ -497,37 +497,28 @@ export default function Page() {
   }, [currentSessionId]);
 
   // Add touch event handlers
-  const handleTouchStart = useCallback(() => {
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
     if (isRunning) {
       stopTimer();
       return;
     }
+    
+    if (!isInspecting) {
+      startInspection();
+    }
     setIsTouchHolding(true);
-  }, [isRunning, stopTimer]);
+  }, [isRunning, isInspecting, stopTimer, startInspection]);
 
-  const handleTouchEnd = useCallback(() => {
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
     setIsTouchHolding(false);
-
-    if (isRunning) {
-      return;
-    }
-
-    if (touchHoldingLongEnough) {
-      if (isInspecting) {
-        setIsInspecting(false);
-        startTimer();
-      } else {
-        startInspection();
-      }
-    }
     setTouchHoldingLongEnough(false);
-  }, [isRunning, touchHoldingLongEnough, isInspecting, startTimer, startInspection]);
+  }, []);
 
-  // Add effect for touch holding (similar to space holding)
+  // Update the touch holding effect
   useEffect(() => {
     let holdTimer: NodeJS.Timeout;
     
-    if (isTouchHolding && !isRunning) {
+    if (isTouchHolding && isInspecting) {
       holdTimer = setTimeout(() => {
         setTouchHoldingLongEnough(true);
       }, 300);
@@ -538,7 +529,7 @@ export default function Page() {
         clearTimeout(holdTimer);
       }
     };
-  }, [isTouchHolding, isRunning]);
+  }, [isTouchHolding, isInspecting, setTouchHoldingLongEnough]);
 
   return (
     <>
@@ -567,6 +558,12 @@ export default function Page() {
           saveTimerMode={saveTimerMode}
           setIsNewSessionDialogOpen={setIsNewSessionDialogOpen}
           setIsManageSessionsDialogOpen={setIsManageSessionsDialogOpen}
+          stopTimer={stopTimer}
+          startTimer={startTimer}
+          startInspection={startInspection}
+          setIsInspecting={setIsInspecting}
+          setIsTouchHolding={setIsTouchHolding}
+          setTouchHoldingLongEnough={setTouchHoldingLongEnough}
         />
       </div>
 
@@ -652,6 +649,7 @@ export default function Page() {
               startInspection={startInspection}
               isRunning={isRunning}
               isInspecting={isInspecting}
+              setIsInspecting={setIsInspecting}
             />
             
             <ScrambleDisplay scramble={scramble} />

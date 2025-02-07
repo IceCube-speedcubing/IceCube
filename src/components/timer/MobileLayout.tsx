@@ -54,6 +54,12 @@ interface MobileLayoutProps {
   saveTimerMode: (mode: 'keyboard' | 'typing' | 'stackmat') => void;
   setIsNewSessionDialogOpen: (open: boolean) => void;
   setIsManageSessionsDialogOpen: (open: boolean) => void;
+  stopTimer: () => void;
+  startTimer: () => void;
+  startInspection: () => void;
+  setIsInspecting: (isInspecting: boolean) => void;
+  setIsTouchHolding: (isHolding: boolean) => void;
+  setTouchHoldingLongEnough: (isLongEnough: boolean) => void;
 }
 
 export function MobileLayout({
@@ -79,6 +85,12 @@ export function MobileLayout({
   saveTimerMode,
   setIsNewSessionDialogOpen,
   setIsManageSessionsDialogOpen,
+  stopTimer,
+  startTimer,
+  startInspection,
+  setIsInspecting,
+  setIsTouchHolding,
+  setTouchHoldingLongEnough,
 }: MobileLayoutProps) {
   return (
     <div className="h-[100dvh] flex flex-col bg-background select-none">
@@ -94,6 +106,16 @@ export function MobileLayout({
           onTouchEnd={onTouchEnd}
           isTouchHolding={isTouchHolding}
           touchHoldingLongEnough={touchHoldingLongEnough}
+          timerMode={timerMode}
+          stopTimer={stopTimer}
+          startTimer={startTimer}
+          startInspection={startInspection}
+          setIsInspecting={setIsInspecting}
+          setIsTouchHolding={setIsTouchHolding}
+          setTouchHoldingLongEnough={setTouchHoldingLongEnough}
+          addPenalty={addPenalty}
+          deleteTime={deleteTime}
+          sortedTimes={sortedTimes}
         />
       </div>
 
@@ -156,6 +178,46 @@ export function MobileLayout({
             </DropdownMenuContent>
           </DropdownMenu>
 
+          <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1">
+            {sortedTimes.length > 0 && (
+              <>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-7 px-2 text-sm hover:text-yellow-500 hover:bg-yellow-500/10"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    addPenalty(sortedTimes.length - 1, 'plus2');
+                  }}
+                >
+                  +2
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-7 px-2 text-sm hover:text-red-500 hover:bg-red-500/10"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    addPenalty(sortedTimes.length - 1, 'dnf');
+                  }}
+                >
+                  DNF
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-7 w-7 p-0 hover:bg-destructive/10"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    deleteTime(sortedTimes.length - 1);
+                  }}
+                >
+                  <Trash2 className="h-4 w-4 text-destructive" />
+                </Button>
+              </>
+            )}
+          </div>
+
           <div className="flex items-center gap-2">
             <Sheet>
               <SheetTrigger asChild>
@@ -186,7 +248,7 @@ export function MobileLayout({
                     {sortedTimes.map((solve, index) => (
                       <div
                         key={solve.date.getTime()}
-                        className="flex items-center justify-between px-4 py-3 border-b hover:bg-muted/50 cursor-pointer group"
+                        className="flex items-center px-4 py-3 border-b hover:bg-muted/50 cursor-pointer"
                         onClick={() => setSelectedTime(solve)}
                       >
                         <div className="flex items-center gap-3">
@@ -196,47 +258,6 @@ export function MobileLayout({
                           <div className="font-mono text-xl">
                             {formatTime(solve.time, solve.penalty)}
                           </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className={cn(
-                              "h-7 px-2 text-sm",
-                              solve.penalty === 'plus2' ? 'bg-yellow-500/10 text-yellow-500' : 'hover:text-yellow-500 hover:bg-yellow-500/10'
-                            )}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              addPenalty(sortedTimes.length - 1 - index, 'plus2');
-                            }}
-                          >
-                            +2
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className={cn(
-                              "h-7 px-2 text-sm",
-                              solve.penalty === 'dnf' ? 'bg-red-500/10 text-red-500' : 'hover:text-red-500 hover:bg-red-500/10'
-                            )}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              addPenalty(sortedTimes.length - 1 - index, 'dnf');
-                            }}
-                          >
-                            DNF
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-7 w-7 p-0 hover:bg-destructive/10"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              deleteTime(sortedTimes.length - 1 - index);
-                            }}
-                          >
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                          </Button>
                         </div>
                       </div>
                     ))}

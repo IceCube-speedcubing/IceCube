@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 
 interface MobileTimerDisplayProps {
   time: number;
@@ -9,6 +10,21 @@ interface MobileTimerDisplayProps {
   onTouchEnd: (e: React.TouchEvent) => void;
   isTouchHolding: boolean;
   touchHoldingLongEnough: boolean;
+  timerMode: string;
+  stopTimer: () => void;
+  startTimer: () => void;
+  startInspection: () => void;
+  setIsInspecting: (isInspecting: boolean) => void;
+  setIsTouchHolding: (isTouchHolding: boolean) => void;
+  setTouchHoldingLongEnough: (touchHoldingLongEnough: boolean) => void;
+  addPenalty: (index: number, penalty: 'plus2' | 'dnf') => void;
+  deleteTime: (index: number) => void;
+  sortedTimes: Array<{
+    time: number;
+    date: Date;
+    scramble: string;
+    penalty?: 'plus2' | 'dnf';
+  }>;
 }
 
 export function MobileTimerDisplay({
@@ -20,7 +36,17 @@ export function MobileTimerDisplay({
   onTouchStart,
   onTouchEnd,
   isTouchHolding,
-  touchHoldingLongEnough
+  touchHoldingLongEnough,
+  timerMode,
+  stopTimer,
+  startTimer,
+  startInspection,
+  setIsInspecting,
+  setIsTouchHolding,
+  setTouchHoldingLongEnough,
+  addPenalty,
+  deleteTime,
+  sortedTimes
 }: MobileTimerDisplayProps) {
   const getDisplayColor = () => {
     if (isRunning) return getTimerColor();
@@ -32,22 +58,38 @@ export function MobileTimerDisplay({
     return touchHoldingLongEnough ? "text-green-500" : (isTouchHolding ? "text-yellow-500" : getTimerColor());
   };
 
-  return (
-    <div 
-      className="flex-1 flex flex-col items-center justify-center touch-none select-none relative"
-    >
-      <div className="absolute top-8 left-0 right-0 text-center pointer-events-none">
-        <div className="text-sm text-muted-foreground">
-          {isTouchHolding ? (touchHoldingLongEnough ? "Release to start" : "Hold to ready") : 
-           isRunning ? "Tap to stop" : "Hold to start"}
-        </div>
-      </div>
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (timerMode !== 'keyboard') return;
+    onTouchStart(e);
+  };
 
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (timerMode !== 'keyboard') return;
+    onTouchEnd(e);
+    
+    if (isInspecting && touchHoldingLongEnough) {
+      setIsInspecting(false);
+      startTimer();
+    }
+  };
+
+  return (
+    <div className="flex-1 flex flex-col items-center justify-center touch-none select-none relative">
       <div 
-        className="w-full h-full flex items-center justify-center"
-        onTouchStart={onTouchStart}
-        onTouchEnd={onTouchEnd}
+        className="w-full h-full flex flex-col items-center justify-center"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
       >
+        {isInspecting && (
+          <Button
+            variant="outline"
+            size="sm"
+            className="absolute bottom-8 text-muted-foreground hover:text-destructive hover:border-destructive"
+            onClick={() => setIsInspecting(false)}
+          >
+            Cancel Inspection
+          </Button>
+        )}
         <div 
           className={`font-mono text-8xl transition-all duration-300 select-none ${getDisplayColor()}`}
           style={{
@@ -62,6 +104,11 @@ export function MobileTimerDisplay({
           }}
         >
           {formatTime(time, undefined, isInspecting && !isRunning)}
+        </div>
+        
+        <div className="text-sm text-muted-foreground mt-8 mb-20 pointer-events-none">
+          {isTouchHolding ? (touchHoldingLongEnough ? "Release to start" : "Hold to ready") : 
+           isRunning ? "Tap to stop" : "Hold to start"}
         </div>
       </div>
     </div>

@@ -17,6 +17,7 @@ interface TimerDisplayProps {
   startInspection: () => void;
   isRunning: boolean;
   isInspecting: boolean;
+  setIsInspecting: (isInspecting: boolean) => void;
 }
 
 export function TimerDisplay({
@@ -34,7 +35,8 @@ export function TimerDisplay({
   stopTimer,
   startInspection,
   isRunning,
-  isInspecting
+  isInspecting,
+  setIsInspecting
 }: TimerDisplayProps) {
   const [touchStart, setTouchStart] = useState<number>(0);
   const [isHolding, setIsHolding] = useState(false);
@@ -57,12 +59,17 @@ export function TimerDisplay({
       return;
     }
 
-    if (holdDuration >= 300 && readyToStart) {
-      if (isInspecting) {
+    if (isInspecting) {
+      setIsInspecting(false);
+      setReadyToStart(false);
+      if (holdDuration >= 300 && readyToStart) {
         startTimer();
-      } else {
-        startInspection();
       }
+      return;
+    }
+
+    if (holdDuration >= 300 && readyToStart) {
+      startInspection();
       setReadyToStart(false);
     }
   };
