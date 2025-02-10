@@ -18,6 +18,9 @@ interface TimerDisplayProps {
   isRunning: boolean;
   isInspecting: boolean;
   setIsInspecting: (isInspecting: boolean) => void;
+  inspectionEnabled: boolean;
+  touchHoldingLongEnough: boolean;
+  isTouchHolding: boolean;
 }
 
 export function TimerDisplay({
@@ -36,7 +39,10 @@ export function TimerDisplay({
   startInspection,
   isRunning,
   isInspecting,
-  setIsInspecting
+  setIsInspecting,
+  inspectionEnabled,
+  touchHoldingLongEnough,
+  isTouchHolding
 }: TimerDisplayProps) {
   const [touchStart, setTouchStart] = useState<number>(0);
   const [isHolding, setIsHolding] = useState(false);
@@ -85,6 +91,19 @@ export function TimerDisplay({
     }
   }, [isHolding]);
 
+  const getDisplayColor = () => {
+    if (isRunning) return getTimerColor();
+    if (isInspecting) {
+      if (time >= 15000) return "text-red-500";
+      if (time >= 8000) return "text-yellow-500";
+      return touchHoldingLongEnough ? "text-green-500" : (isTouchHolding ? "text-yellow-500" : "text-foreground");
+    }
+    if (!inspectionEnabled) {
+      return touchHoldingLongEnough ? "text-green-500" : (isTouchHolding ? "text-yellow-500" : "text-foreground");
+    }
+    return touchHoldingLongEnough ? "text-green-500" : (isTouchHolding ? "text-yellow-500" : getTimerColor());
+  };
+
   return (
     <div className="flex-1 flex items-center justify-center min-h-[200px] w-full touch-none select-none">
       {timerMode === 'typing' ? (
@@ -119,7 +138,7 @@ export function TimerDisplay({
         <div 
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
-          className={`w-full h-full flex items-center justify-center font-mono select-none transition-colors duration-300 ${getTimerColor()}`}
+          className={`w-full h-full flex items-center justify-center font-mono select-none transition-colors duration-300 ${getDisplayColor()}`}
         >
           <div className={`text-5xl sm:text-8xl md:text-9xl transition-transform ${isHolding ? 'scale-95' : 'scale-100'}`}>
             {formatTime(time, undefined, true)}

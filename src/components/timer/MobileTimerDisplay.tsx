@@ -25,6 +25,7 @@ interface MobileTimerDisplayProps {
     scramble: string;
     penalty?: 'plus2' | 'dnf';
   }>;
+  inspectionEnabled: boolean;
 }
 
 export function MobileTimerDisplay({
@@ -46,7 +47,8 @@ export function MobileTimerDisplay({
   setTouchHoldingLongEnough,
   addPenalty,
   deleteTime,
-  sortedTimes
+  sortedTimes,
+  inspectionEnabled
 }: MobileTimerDisplayProps) {
   const getDisplayColor = () => {
     if (isRunning) return getTimerColor();
@@ -107,8 +109,11 @@ export function MobileTimerDisplay({
         </div>
         
         <div className="text-sm text-muted-foreground mt-8 mb-20 pointer-events-none">
-          {isTouchHolding ? (touchHoldingLongEnough ? "Release to start" : "Hold to ready") : 
-           isRunning ? "Tap to stop" : "Hold to start"}
+          {isTouchHolding ? 
+            (touchHoldingLongEnough ? "Release to start" : "Hold to ready") : 
+            isRunning ? "Tap to stop" : 
+            isInspecting ? "Hold to start solve" : 
+            inspectionEnabled ? "Hold to start inspection" : "Hold to start"}
         </div>
       </div>
     </div>

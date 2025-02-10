@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Menu, Settings2, ChevronDown, Plus, Settings, Check, Keyboard, Type, Smartphone, Trash2 } from "lucide-react";
+import { Menu, Settings2, ChevronDown, Plus, Settings, Check, Keyboard, Type, Smartphone, Trash2, Timer } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { MobileTimerDisplay } from "./MobileTimerDisplay";
@@ -60,6 +60,8 @@ interface MobileLayoutProps {
   setIsInspecting: (isInspecting: boolean) => void;
   setIsTouchHolding: (isHolding: boolean) => void;
   setTouchHoldingLongEnough: (isLongEnough: boolean) => void;
+  inspectionEnabled: boolean;
+  saveInspectionEnabled: (enabled: boolean) => void;
 }
 
 export function MobileLayout({
@@ -91,6 +93,8 @@ export function MobileLayout({
   setIsInspecting,
   setIsTouchHolding,
   setTouchHoldingLongEnough,
+  inspectionEnabled,
+  saveInspectionEnabled,
 }: MobileLayoutProps) {
   return (
     <div className="h-[100dvh] flex flex-col bg-background select-none">
@@ -116,6 +120,7 @@ export function MobileLayout({
           addPenalty={addPenalty}
           deleteTime={deleteTime}
           sortedTimes={sortedTimes}
+          inspectionEnabled={inspectionEnabled}
         />
       </div>
 
@@ -313,6 +318,24 @@ export function MobileLayout({
                           <Smartphone className="w-4 h-4 mr-2" />
                           GAN Timer
                         </div>
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="py-6">
+                    <div>
+                      <div className="px-2 py-1.5">
+                        <h4 className="text-sm font-medium text-muted-foreground mb-1">Timer Settings</h4>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-between"
+                        onClick={() => saveInspectionEnabled(!inspectionEnabled)}
+                      >
+                        <div className="flex items-center">
+                          <Timer className="w-4 h-4 mr-2" />
+                          Inspection
+                        </div>
+                        {inspectionEnabled && <Check className="w-4 h-4" />}
                       </Button>
                     </div>
                   </div>

@@ -50,7 +50,8 @@ type SolveData = {
 const LOCAL_STORAGE_KEYS = {
   SESSIONS: 'cubing-sessions',
   CURRENT_SESSION: 'cubing-current-session',
-  TIMER_MODE: 'cubing-timer-mode'
+  TIMER_MODE: 'cubing-timer-mode',
+  INSPECTION_ENABLED: 'cubing-inspection-enabled'
 } as const;
 
 // TODO: Replace localStorage with database storage
@@ -92,21 +93,35 @@ export default function Page() {
   const [timeInput, setTimeInput] = useState('');
   const [isTouchHolding, setIsTouchHolding] = useState(false);
   const [touchHoldingLongEnough, setTouchHoldingLongEnough] = useState(false);
+  const [inspectionEnabled, setInspectionEnabled] = useState(true);
 
   // Load data from localStorage on mount
   useEffect(() => {
     const savedSessions = localStorage.getItem(LOCAL_STORAGE_KEYS.SESSIONS);
     const savedSessionId = localStorage.getItem(LOCAL_STORAGE_KEYS.CURRENT_SESSION);
     const savedTimerMode = localStorage.getItem(LOCAL_STORAGE_KEYS.TIMER_MODE);
+    const savedInspectionEnabled = localStorage.getItem(LOCAL_STORAGE_KEYS.INSPECTION_ENABLED);
 
     if (savedSessions) {
-      setSessions(JSON.parse(savedSessions));
+      // Convert ISO strings back to Date objects when loading from localStorage
+      const parsedSessions = JSON.parse(savedSessions);
+      const sessionsWithDates = parsedSessions.map((session: any) => ({
+        ...session,
+        times: session.times.map((time: any) => ({
+          ...time,
+          date: new Date(time.date)
+        }))
+      }));
+      setSessions(sessionsWithDates);
     }
     if (savedSessionId) {
       setCurrentSessionId(savedSessionId);
     }
     if (savedTimerMode) {
       setTimerMode(savedTimerMode as 'keyboard' | 'typing' | 'stackmat');
+    }
+    if (savedInspectionEnabled !== null) {
+      setInspectionEnabled(savedInspectionEnabled === 'true');
     }
   }, []);
 
@@ -173,17 +188,14 @@ export default function Page() {
     const finalTime = timeRef.current;
     const newTime = {
       time: finalTime,
-      date: new Date().toISOString(), // Store as ISO string for better serialization
+      date: new Date(),  // Store as Date object directly
       scramble
     };
     
     setSessions(prev => prev.map(s => 
       s.id === currentSessionId ? {
         ...s,
-        times: [...s.times, {
-          ...newTime,
-          date: new Date(newTime.date) // Convert ISO string back to Date
-        }]
+        times: [...s.times, newTime]
       } : s
     ));
     generateNewScramble();
@@ -201,7 +213,11 @@ export default function Page() {
         }
 
         if (!isInspecting) {
-          startInspection();
+          if (inspectionEnabled) {
+            startInspection();
+          } else {
+            setIsSpacePressed(true);
+          }
         } else {
           setIsSpacePressed(true);
         }
@@ -219,6 +235,8 @@ export default function Page() {
 
         if (isInspecting && isHoldingLongEnough) {
           setIsInspecting(false);
+          startTimer();
+        } else if (!inspectionEnabled && isHoldingLongEnough) {
           startTimer();
         }
         setIsHoldingLongEnough(false);
@@ -241,17 +259,20 @@ export default function Page() {
     setIsInspecting,
     stopTimer,
     startTimer,
-    startInspection
+    startInspection,
+    inspectionEnabled
   ]);
 
   // Space hold timer effect
   useEffect(() => {
     let holdTimer: NodeJS.Timeout;
     
-    if (isSpacePressed && !isRunning && isInspecting) {
-      holdTimer = setTimeout(() => {
-        setIsHoldingLongEnough(true);
-      }, 300);
+    if (isSpacePressed && !isRunning) {
+      if (isInspecting || !inspectionEnabled) {
+        holdTimer = setTimeout(() => {
+          setIsHoldingLongEnough(true);
+        }, 300);
+      }
     }
 
     return () => {
@@ -259,7 +280,7 @@ export default function Page() {
         clearTimeout(holdTimer);
       }
     };
-  }, [isSpacePressed, isRunning, isInspecting]);
+  }, [isSpacePressed, isRunning, isInspecting, inspectionEnabled]);
 
   // Inspection timer effect
   useEffect(() => {
@@ -476,7 +497,7 @@ export default function Page() {
     solves.push(newSolve);
     localStorage.setItem('solves', JSON.stringify(solves));
     
-    // Update sessions as before
+    // Update sessions with Date object
     setSessions(prevSessions => 
       prevSessions.map(s => 
         s.id === currentSession?.id 
@@ -504,24 +525,34 @@ export default function Page() {
     }
     
     if (!isInspecting) {
-      startInspection();
+      if (inspectionEnabled) {
+        startInspection();
+      }
     }
     setIsTouchHolding(true);
-  }, [isRunning, isInspecting, stopTimer, startInspection]);
+  }, [isRunning, isInspecting, stopTimer, startInspection, inspectionEnabled]);
 
   const handleTouchEnd = useCallback((e: React.TouchEvent) => {
     setIsTouchHolding(false);
+    if (isInspecting && touchHoldingLongEnough) {
+      setIsInspecting(false);
+      startTimer();
+    } else if (!inspectionEnabled && touchHoldingLongEnough) {
+      startTimer();
+    }
     setTouchHoldingLongEnough(false);
-  }, []);
+  }, [isInspecting, touchHoldingLongEnough, startTimer, inspectionEnabled]);
 
   // Update the touch holding effect
   useEffect(() => {
     let holdTimer: NodeJS.Timeout;
     
-    if (isTouchHolding && isInspecting) {
-      holdTimer = setTimeout(() => {
-        setTouchHoldingLongEnough(true);
-      }, 300);
+    if (isTouchHolding && !isRunning) {
+      if (isInspecting || !inspectionEnabled) {
+        holdTimer = setTimeout(() => {
+          setTouchHoldingLongEnough(true);
+        }, 300);
+      }
     }
 
     return () => {
@@ -529,7 +560,13 @@ export default function Page() {
         clearTimeout(holdTimer);
       }
     };
-  }, [isTouchHolding, isInspecting, setTouchHoldingLongEnough]);
+  }, [isTouchHolding, isInspecting, isRunning, inspectionEnabled]);
+
+  // Add function to save inspection setting
+  const saveInspectionEnabled = useCallback((enabled: boolean) => {
+    setInspectionEnabled(enabled);
+    localStorage.setItem(LOCAL_STORAGE_KEYS.INSPECTION_ENABLED, enabled.toString());
+  }, []);
 
   return (
     <>
@@ -564,6 +601,8 @@ export default function Page() {
           setIsInspecting={setIsInspecting}
           setIsTouchHolding={setIsTouchHolding}
           setTouchHoldingLongEnough={setTouchHoldingLongEnough}
+          inspectionEnabled={inspectionEnabled}
+          saveInspectionEnabled={saveInspectionEnabled}
         />
       </div>
 
@@ -586,6 +625,20 @@ export default function Page() {
               <DropdownMenuItem onClick={() => document.documentElement.requestFullscreen()}>
                 <Maximize2 className="w-4 h-4 mr-2" />
                 Full Screen
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <div className="px-2 py-1.5">
+                <h4 className="text-sm font-medium text-muted-foreground mb-1">Timer Settings</h4>
+              </div>
+              <DropdownMenuItem 
+                onClick={() => saveInspectionEnabled(!inspectionEnabled)}
+                className="flex items-center justify-between"
+              >
+                <div className="flex items-center">
+                  <TimerIcon className="w-4 h-4 mr-2" />
+                  Inspection
+                </div>
+                {inspectionEnabled && <Check className="w-4 h-4" />}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <div className="px-2 py-1.5">
@@ -650,6 +703,9 @@ export default function Page() {
               isRunning={isRunning}
               isInspecting={isInspecting}
               setIsInspecting={setIsInspecting}
+              inspectionEnabled={inspectionEnabled}
+              touchHoldingLongEnough={isHoldingLongEnough}
+              isTouchHolding={isSpacePressed}
             />
             
             <ScrambleDisplay scramble={scramble} />
