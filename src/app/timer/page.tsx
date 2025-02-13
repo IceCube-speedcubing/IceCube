@@ -1,177 +1,88 @@
 'use client';
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { ChevronDown, Settings, Plus, Copy, Settings2, Maximize2, Keyboard, Timer as TimerIcon, Smartphone, Check, Type } from "lucide-react"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { ChevronDown, Copy, Settings2, Maximize2, Keyboard, Timer as TimerIcon, Smartphone, Check, Type } from "lucide-react"
 import { useState, useEffect, useRef, useMemo, useCallback } from "react"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { toast } from "sonner"
 import { Toaster } from "sonner"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
-import { cn } from "@/lib/utils"
-import { Session, WCA_EVENTS } from "@/types/WCAEvents"
-import { generateScramble } from "@/lib/scrambleGen"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { generateWCAScramble } from "@/lib/scrambleGen"
 import { TimerDisplay } from "@/components/timer/TimerDisplay"
 import { ScrambleDisplay } from "@/components/timer/ScrambleDisplay"
 import { TimesPanel } from "@/components/timer/TimesPanel"
 import { MobileLayout } from "@/components/timer/MobileLayout"
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge"
+import { ScrambleVisual } from "@/components/timer/ScrambleVisual"
+import { StatsPanel } from "@/components/timer/StatsPanel"
+import { WCAEventId, WCA_EVENTS } from "@/types/WCAEvents"
 
-// Add these types at the top
-type SolveData = {
+type SolveTime = {
   time: number;
+  date: Date;
   scramble: string;
-  date: string;
-  solveNumber: number;
+  penalty?: 'plus2' | 'dnf';
 };
-
-// Add after the types
-const LOCAL_STORAGE_KEYS = {
-  SESSIONS: 'cubing-sessions',
-  CURRENT_SESSION: 'cubing-current-session',
-  TIMER_MODE: 'cubing-timer-mode',
-  INSPECTION_ENABLED: 'cubing-inspection-enabled'
-} as const;
-
-// TODO: Replace localStorage with database storage
-// - Create database schema for sessions and solves
-// - Implement API endpoints for CRUD operations
-// - Add authentication to protect user data
-// - Sync local storage with database when online
 
 export default function Page() {
   // State management
   const [scramble, setScramble] = useState("");
   const [time, setTime] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
-  const [sessions, setSessions] = useState<Session[]>([{
-    id: 'default',
-    name: 'Default',
-    event: '333',
-    times: []
-  }]);
-  const [currentSessionId, setCurrentSessionId] = useState('default');
+  const [times, setTimes] = useState<SolveTime[]>([]);
   const [isInspecting, setIsInspecting] = useState(false);
   const [inspectionTime, setInspectionTime] = useState(15);
   const [isSpacePressed, setIsSpacePressed] = useState(false);
   const [isHoldingLongEnough, setIsHoldingLongEnough] = useState(false);
-  const [selectedTime, setSelectedTime] = useState<{
-    time: number,
-    penalty?: 'plus2' | 'dnf',
-    date: Date,
-    scramble: string
-  } | null>(null);
+  const [selectedTime, setSelectedTime] = useState<SolveTime | null>(null);
   const timeRef = useRef<number>(0);
-  const [isNewSessionDialogOpen, setIsNewSessionDialogOpen] = useState(false);
-  const [isManageSessionsDialogOpen, setIsManageSessionsDialogOpen] = useState(false);
-  const [newSessionName, setNewSessionName] = useState('');
-  const [selectedEvent, setSelectedEvent] = useState('333');
-  const [editingSession, setEditingSession] = useState<Session | null>(null);
-  const selectedSessionRef = useRef<HTMLDivElement>(null);
   const [timerMode, setTimerMode] = useState<'keyboard' | 'typing' | 'stackmat'>('keyboard');
   const [timeInput, setTimeInput] = useState('');
   const [isTouchHolding, setIsTouchHolding] = useState(false);
   const [touchHoldingLongEnough, setTouchHoldingLongEnough] = useState(false);
   const [inspectionEnabled, setInspectionEnabled] = useState(true);
+  const [event, setEvent] = useState<WCAEventId>('333');
 
   // Load data from localStorage on mount
   useEffect(() => {
-    const savedSessions = localStorage.getItem(LOCAL_STORAGE_KEYS.SESSIONS);
-    const savedSessionId = localStorage.getItem(LOCAL_STORAGE_KEYS.CURRENT_SESSION);
-    const savedTimerMode = localStorage.getItem(LOCAL_STORAGE_KEYS.TIMER_MODE);
-    const savedInspectionEnabled = localStorage.getItem(LOCAL_STORAGE_KEYS.INSPECTION_ENABLED);
+    const savedTimerMode = localStorage.getItem('timerMode');
+    const savedInspectionEnabled = localStorage.getItem('inspectionEnabled');
+    const savedTimes = localStorage.getItem('times');
+    const savedEvent = localStorage.getItem('event');
 
-    if (savedSessions) {
-      // Convert ISO strings back to Date objects when loading from localStorage
-      const parsedSessions = JSON.parse(savedSessions);
-      const sessionsWithDates = parsedSessions.map((session: any) => ({
-        ...session,
-        times: session.times.map((time: any) => ({
-          ...time,
-          date: new Date(time.date)
-        }))
-      }));
-      setSessions(sessionsWithDates);
-    }
-    if (savedSessionId) {
-      setCurrentSessionId(savedSessionId);
-    }
     if (savedTimerMode) {
       setTimerMode(savedTimerMode as 'keyboard' | 'typing' | 'stackmat');
     }
     if (savedInspectionEnabled !== null) {
       setInspectionEnabled(savedInspectionEnabled === 'true');
     }
+    if (savedTimes) {
+      setTimes(JSON.parse(savedTimes));
+    }
+    if (savedEvent) {
+      setEvent(savedEvent as WCAEventId);
+    }
   }, []);
 
-  // Get current session
-  const currentSession = useMemo(() => {
-    return sessions.find(s => s.id === currentSessionId) || sessions[0];
-  }, [sessions, currentSessionId]);
+  // Save to localStorage
+  useEffect(() => {
+    localStorage.setItem('times', JSON.stringify(times));
+  }, [times]);
 
-  // Add these memoized values
-  const currentEvent = useMemo(() => 
-    WCA_EVENTS.find(e => e.id === currentSession.event), 
-    [currentSession.event]
-  );
+  useEffect(() => {
+    localStorage.setItem('event', event);
+  }, [event]);
 
-  const sortedTimes = useMemo(() => 
-    [...currentSession.times].reverse(),
-    [currentSession.times]
-  );
+  useEffect(() => {
+    generateNewScramble();
+  }, [event]);
 
-  // Memoized stats calculations
-  const stats = useMemo(() => {
-    const validTimes = currentSession.times.filter(t => t.penalty !== 'dnf')
-      .map(t => t.penalty === 'plus2' ? t.time + 2000 : t.time);
-    
-    if (validTimes.length === 0) {
-      return { best: 0, average: 0, ao5: 0, ao12: 0 };
-    }
-
-    const calculateTrimmedMean = (arr: number[], trim: number) => {
-      if (arr.length < trim * 2 + 1) return 0;
-      const sorted = [...arr].sort((a, b) => a - b);
-      const trimmed = sorted.slice(trim, -trim);
-      return trimmed.reduce((a, b) => a + b, 0) / trimmed.length;
-    };
-
-    return {
-      best: Math.min(...validTimes),
-      average: validTimes.reduce((a, b) => a + b, 0) / validTimes.length,
-      ao5: validTimes.length >= 5 ? calculateTrimmedMean(validTimes.slice(-5), 1) : 0,
-      ao12: validTimes.length >= 12 ? calculateTrimmedMean(validTimes.slice(-12), 1) : 0
-    };
-  }, [currentSession.times]);
-
-  // Move generateNewScramble up before it's used
   const generateNewScramble = useCallback(() => {
-    const newScramble = generateScramble(currentSession.event);
-    setScramble(newScramble);
-  }, [currentSession.event]);
+    const scramble = generateWCAScramble(event);
+    setScramble(scramble);
+  }, [event]);
 
-  // Timer functions - define these before the effects
+  // Timer functions
   const startTimer = useCallback(() => {
     setIsRunning(true);
     setTime(0);
@@ -188,18 +99,13 @@ export default function Page() {
     const finalTime = timeRef.current;
     const newTime = {
       time: finalTime,
-      date: new Date(),  // Store as Date object directly
+      date: new Date(),
       scramble
     };
     
-    setSessions(prev => prev.map(s => 
-      s.id === currentSessionId ? {
-        ...s,
-        times: [...s.times, newTime]
-      } : s
-    ));
+    setTimes(prev => [...prev, newTime]);
     generateNewScramble();
-  }, [currentSessionId, scramble, generateNewScramble]);
+  }, [scramble, generateNewScramble]);
 
   // Update the useEffect for keyboard events
   useEffect(() => {
@@ -329,11 +235,6 @@ export default function Page() {
     };
   }, [isRunning]);
 
-  // Initial scramble generation
-  useEffect(() => {
-    generateNewScramble();
-  }, [generateNewScramble]);
-
   // Time formatting
   const formatTime = useCallback((ms: number, penalty?: 'plus2' | 'dnf', showInspection: boolean = false) => {
     if (penalty === 'dnf') return 'DNF';
@@ -359,18 +260,20 @@ export default function Page() {
 
   // Penalty management
   const addPenalty = useCallback((index: number, penalty: 'plus2' | 'dnf') => {
-    setSessions(prev => prev.map(s => 
-      s.id === currentSessionId ? { ...s, times: s.times.map((t, i) => 
-        i === index ? { ...t, penalty: t.penalty === penalty ? undefined : penalty } : t
-      )} : s
-    ));
-  }, [currentSessionId]);
+    setTimes(prev => prev.map((time, i) => {
+      if (i === index) {
+        return {
+          ...time,
+          penalty: time.penalty === penalty ? undefined : penalty
+        };
+      }
+      return time;
+    }));
+  }, []);
 
   const deleteTime = useCallback((index: number) => {
-    setSessions(prev => prev.map(s => 
-      s.id === currentSessionId ? { ...s, times: s.times.filter((_, i) => i !== index) } : s
-    ));
-  }, [currentSessionId]);
+    setTimes(prev => prev.filter((_, i) => i !== index));
+  }, []);
 
   const getTimerColor = useCallback(() => {
     if (isRunning) return 'text-white';
@@ -389,183 +292,42 @@ export default function Page() {
     });
   }, []);
 
-  // Session management functions
-  const addSession = useCallback((name: string, event: string) => {
-    const newSessionId = crypto.randomUUID();
-    const newSession = {
-      id: newSessionId,
-      name,
-      event,
-      times: []
+  // Modify the stats calculation
+  const stats = useMemo(() => {
+    const validTimes = times.filter(t => t.penalty !== 'dnf')
+      .map(t => t.penalty === 'plus2' ? t.time + 2000 : t.time);
+    
+    if (validTimes.length === 0) {
+      return { best: 0, average: 0, ao5: 0, ao12: 0 };
+    }
+
+    const calculateTrimmedMean = (arr: number[], trim: number) => {
+      if (arr.length < trim * 2 + 1) return 0;
+      const sorted = [...arr].sort((a, b) => a - b);
+      const trimmed = sorted.slice(trim, -trim);
+      return trimmed.reduce((a, b) => a + b, 0) / trimmed.length;
     };
-    setSessions(prev => [...prev, newSession]);
-    setCurrentSessionId(newSessionId);
-    generateNewScramble();
-  }, [generateNewScramble]);
 
-  const deleteSession = useCallback((id: string) => {
-    if (id === 'default') return; // Prevent deleting default session
-    setSessions(prev => prev.filter(s => s.id !== id));
-    if (currentSessionId === id) {
-      setCurrentSessionId('default');
-    }
-  }, [currentSessionId]);
-
-
-  const updateSession = useCallback((id: string, updates: Partial<Session>) => {
-    setSessions(prev => prev.map(s => 
-      s.id === id ? { ...s, ...updates } : s
-    ));
-  }, []);
-
-  // Add this effect after your other useEffects
-  useEffect(() => {
-    if (isManageSessionsDialogOpen && selectedSessionRef.current) {
-      const scrollContainer = selectedSessionRef.current.parentElement;
-      if (scrollContainer) {
-        setTimeout(() => {
-          selectedSessionRef.current?.scrollIntoView({
-            behavior: 'instant',
-            block: 'center'
-          });
-        }, 50);
-      }
-    }
-  }, [isManageSessionsDialogOpen]);
-
-  useEffect(() => {
-    if (isManageSessionsDialogOpen) {
-      // Wait for dialog animation to complete
-      const timer = setTimeout(() => {
-        const selectedElement = selectedSessionRef.current;
-        if (selectedElement) {
-          const scrollArea = selectedElement.closest('[role="presentation"]');
-          if (scrollArea) {
-            const containerRect = scrollArea.getBoundingClientRect();
-            const elementRect = selectedElement.getBoundingClientRect();
-            const scrollTop = elementRect.top - containerRect.top - (containerRect.height / 2) + (elementRect.height / 2);
-            scrollArea.scrollTop = scrollTop;
-          }
-        }
-      }, 100);
-      return () => clearTimeout(timer);
-    }
-  }, [isManageSessionsDialogOpen]);
-
-  // Update the time parsing function
-  function parseTimeInput(input: string): number | null {
-    // Remove all non-numeric characters except decimal point and colon
-    const cleanInput = input.replace(/[^\d.:]/g, '');
-    
-    if (cleanInput.includes(':')) {
-      // Handle MM:SS.ms format
-      const [minutes, secondsPart] = cleanInput.split(':');
-      const [seconds, milliseconds = '0'] = secondsPart.split('.');
-      return (parseInt(minutes) * 60 + parseInt(seconds)) * 1000 + parseInt(milliseconds.padEnd(3, '0').slice(0, 3));
-    } else if (cleanInput.includes('.')) {
-      // Handle SS.ms format
-      const [seconds, milliseconds] = cleanInput.split('.');
-      return parseInt(seconds) * 1000 + parseInt(milliseconds.padEnd(3, '0').slice(0, 3));
-    } else if (cleanInput.length <= 2) {
-      // Handle SS format (under 1 minute)
-      return parseInt(cleanInput) * 1000;
-    } else if (cleanInput.length <= 4) {
-      // Handle SS.xx format (automatically add decimal point)
-      const seconds = cleanInput.slice(0, -2);
-      const milliseconds = cleanInput.slice(-2);
-      return parseInt(seconds) * 1000 + parseInt(milliseconds) * 10;
-    } else {
-      return null;
-    }
-  }
-
-  // Function to save timer mode
-  const saveTimerMode = (mode: 'keyboard' | 'typing' | 'stackmat') => {
-    setTimerMode(mode);
-    localStorage.setItem('timerMode', mode);
-  };
-
-  // Function to save solve data
-  const saveSolve = (time: number, scramble: string) => {
-    const solves: SolveData[] = JSON.parse(localStorage.getItem('solves') || '[]');
-    const newSolve: SolveData = {
-      time,
-      scramble,
-      date: new Date().toISOString(),
-      solveNumber: solves.length + 1
+    return {
+      best: Math.min(...validTimes),
+      average: validTimes.reduce((a, b) => a + b, 0) / validTimes.length,
+      ao5: validTimes.length >= 5 ? calculateTrimmedMean(validTimes.slice(-5), 1) : 0,
+      ao12: validTimes.length >= 12 ? calculateTrimmedMean(validTimes.slice(-12), 1) : 0
     };
-    solves.push(newSolve);
-    localStorage.setItem('solves', JSON.stringify(solves));
+  }, [times]);
+
+  const parseTimeInput = useCallback((input: string): number | null => {
+    // Remove any non-numeric characters except dots
+    const cleanInput = input.replace(/[^\d.]/g, '');
     
-    // Update sessions with Date object
-    setSessions(prevSessions => 
-      prevSessions.map(s => 
-        s.id === currentSession?.id 
-          ? { ...s, times: [...s.times, { time, date: new Date(), scramble }] }
-          : s
-      )
-    );
-  };
-
-  // Add effect to save sessions
-  useEffect(() => {
-    localStorage.setItem(LOCAL_STORAGE_KEYS.SESSIONS, JSON.stringify(sessions));
-  }, [sessions]);
-
-  // Add effect to save current session
-  useEffect(() => {
-    localStorage.setItem(LOCAL_STORAGE_KEYS.CURRENT_SESSION, currentSessionId);
-  }, [currentSessionId]);
-
-  // Add touch event handlers
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    if (isRunning) {
-      stopTimer();
-      return;
-    }
+    // Parse the input as a float
+    const seconds = parseFloat(cleanInput);
     
-    if (!isInspecting) {
-      if (inspectionEnabled) {
-        startInspection();
-      }
-    }
-    setIsTouchHolding(true);
-  }, [isRunning, isInspecting, stopTimer, startInspection, inspectionEnabled]);
-
-  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
-    setIsTouchHolding(false);
-    if (isInspecting && touchHoldingLongEnough) {
-      setIsInspecting(false);
-      startTimer();
-    } else if (!inspectionEnabled && touchHoldingLongEnough) {
-      startTimer();
-    }
-    setTouchHoldingLongEnough(false);
-  }, [isInspecting, touchHoldingLongEnough, startTimer, inspectionEnabled]);
-
-  // Update the touch holding effect
-  useEffect(() => {
-    let holdTimer: NodeJS.Timeout;
+    // Check if the parsed value is valid
+    if (isNaN(seconds)) return null;
     
-    if (isTouchHolding && !isRunning) {
-      if (isInspecting || !inspectionEnabled) {
-        holdTimer = setTimeout(() => {
-          setTouchHoldingLongEnough(true);
-        }, 300);
-      }
-    }
-
-    return () => {
-      if (holdTimer) {
-        clearTimeout(holdTimer);
-      }
-    };
-  }, [isTouchHolding, isInspecting, isRunning, inspectionEnabled]);
-
-  // Add function to save inspection setting
-  const saveInspectionEnabled = useCallback((enabled: boolean) => {
-    setInspectionEnabled(enabled);
-    localStorage.setItem(LOCAL_STORAGE_KEYS.INSPECTION_ENABLED, enabled.toString());
+    // Convert to milliseconds
+    return Math.floor(seconds * 1000);
   }, []);
 
   return (
@@ -579,30 +341,43 @@ export default function Page() {
           isInspecting={isInspecting}
           getTimerColor={getTimerColor}
           scramble={scramble}
-          currentSession={currentSession}
-          sortedTimes={sortedTimes}
+          sortedTimes={times}
           stats={stats}
           setSelectedTime={setSelectedTime}
           addPenalty={addPenalty}
           deleteTime={deleteTime}
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
+          onTouchStart={() => {
+            if (isRunning) {
+              stopTimer();
+            } else if (inspectionEnabled) {
+              startInspection();
+            }
+            setIsTouchHolding(true);
+          }}
+          onTouchEnd={() => {
+            setIsTouchHolding(false);
+            if (isInspecting && isHoldingLongEnough) {
+              setIsInspecting(false);
+              startTimer();
+            } else if (!inspectionEnabled && isHoldingLongEnough) {
+              startTimer();
+            }
+            setIsHoldingLongEnough(false);
+          }}
           isTouchHolding={isTouchHolding}
           touchHoldingLongEnough={touchHoldingLongEnough}
-          sessions={sessions}
-          setCurrentSessionId={setCurrentSessionId}
           timerMode={timerMode}
-          saveTimerMode={saveTimerMode}
-          setIsNewSessionDialogOpen={setIsNewSessionDialogOpen}
-          setIsManageSessionsDialogOpen={setIsManageSessionsDialogOpen}
+          setTimerMode={setTimerMode}
           stopTimer={stopTimer}
           startTimer={startTimer}
           startInspection={startInspection}
           setIsInspecting={setIsInspecting}
           setIsTouchHolding={setIsTouchHolding}
-          setTouchHoldingLongEnough={setTouchHoldingLongEnough}
+          setTouchHoldingLongEnough={setIsHoldingLongEnough}
           inspectionEnabled={inspectionEnabled}
-          saveInspectionEnabled={saveInspectionEnabled}
+          saveInspectionEnabled={setInspectionEnabled}
+          event={event}
+          setEvent={setEvent}
         />
       </div>
 
@@ -620,6 +395,22 @@ export default function Page() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[220px]" side="top" sideOffset={8}>
               <div className="px-2 py-1.5">
+                <h4 className="text-sm font-medium text-muted-foreground mb-1">Event</h4>
+              </div>
+              {WCA_EVENTS.map((wcaEvent) => (
+                <DropdownMenuItem 
+                  key={wcaEvent.id}
+                  onClick={() => setEvent(wcaEvent.id as WCAEventId)}
+                  className="flex items-center justify-between"
+                >
+                  <div className="flex items-center">
+                    {wcaEvent.name}
+                  </div>
+                  {event === wcaEvent.id && <Check className="w-4 h-4" />}
+                </DropdownMenuItem>
+              ))}
+              <DropdownMenuSeparator />
+              <div className="px-2 py-1.5">
                 <h4 className="text-sm font-medium text-muted-foreground mb-1">Display</h4>
               </div>
               <DropdownMenuItem onClick={() => document.documentElement.requestFullscreen()}>
@@ -631,7 +422,7 @@ export default function Page() {
                 <h4 className="text-sm font-medium text-muted-foreground mb-1">Timer Settings</h4>
               </div>
               <DropdownMenuItem 
-                onClick={() => saveInspectionEnabled(!inspectionEnabled)}
+                onClick={() => setInspectionEnabled(!inspectionEnabled)}
                 className="flex items-center justify-between"
               >
                 <div className="flex items-center">
@@ -645,7 +436,7 @@ export default function Page() {
                 <h4 className="text-sm font-medium text-muted-foreground mb-1">Timer Mode</h4>
               </div>
               <DropdownMenuItem 
-                onClick={() => saveTimerMode('keyboard')}
+                onClick={() => setTimerMode('keyboard')}
                 className="flex items-center justify-between"
               >
                 <div className="flex items-center">
@@ -655,7 +446,7 @@ export default function Page() {
                 {timerMode === 'keyboard' && <Check className="w-4 h-4" />}
               </DropdownMenuItem>
               <DropdownMenuItem 
-                onClick={() => saveTimerMode('typing')}
+                onClick={() => setTimerMode('typing')}
                 className="flex items-center justify-between"
               >
                 <div className="flex items-center">
@@ -665,7 +456,7 @@ export default function Page() {
                 {timerMode === 'typing' && <Check className="w-4 h-4" />}
               </DropdownMenuItem>
               <DropdownMenuItem 
-                onClick={() => saveTimerMode('stackmat')}
+                onClick={() => setTimerMode('stackmat')}
                 className="flex items-center justify-between"
               >
                 <div className="flex items-center">
@@ -693,7 +484,9 @@ export default function Page() {
               getTimerColor={getTimerColor}
               time={time}
               formatTime={formatTime}
-              saveSolve={saveSolve}
+              saveSolve={(time, scramble) => {
+                setTimes(prev => [...prev, { time, date: new Date(), scramble }]);
+              }}
               scramble={scramble}
               generateNewScramble={generateNewScramble}
               parseTimeInput={parseTimeInput}
@@ -708,113 +501,39 @@ export default function Page() {
               isTouchHolding={isSpacePressed}
             />
             
-            <ScrambleDisplay scramble={scramble} />
+            <ScrambleDisplay 
+              scramble={scramble} 
+              event={event}
+            />
           </div>
         </div>
 
         {/* Bottom panels */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 p-4 auto-rows-[250px]">
           <TimesPanel
-            sortedTimes={sortedTimes}
+            sortedTimes={times}
             formatTime={formatTime}
             setSelectedTime={setSelectedTime}
             addPenalty={addPenalty}
             deleteTime={deleteTime}
+            event={event}
+            setEvent={setEvent}
           />
 
           {/* Stats panel */}
-          <div className="rounded-lg border bg-card overflow-hidden">
-            <div className="p-3 border-b font-medium bg-muted/10 flex items-center justify-between">
-              <span>Statistics</span>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="w-[240px] justify-between">
-                    <div className="flex items-center gap-2 truncate">
-                      <div className="truncate">{currentSession.name}</div>
-                      <div className="px-1.5 py-0.5 rounded-md bg-muted text-xs font-medium shrink-0">
-                        {currentEvent?.name}
-                      </div>
-                    </div>
-                    <ChevronDown className="h-4 w-4 opacity-50" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent 
-                  align="end" 
-                  className="w-[320px]" 
-                  side="top"
-                  sideOffset={8}
-                >
-                  <div className="px-2 py-1.5">
-                    <h4 className="text-sm font-medium text-muted-foreground mb-1">Sessions</h4>
-                  </div>
-                  <ScrollArea className="h-[min(200px,calc(100vh-120px))]">
-                    {sessions.map((session) => (
-                      <DropdownMenuItem 
-                        key={session.id}
-                        className={cn(
-                          "flex items-center gap-2 px-3 py-2.5 cursor-pointer",
-                          currentSessionId === session.id && "bg-primary/5"
-                        )}
-                        onClick={() => setCurrentSessionId(session.id)}
-                      >
-                        <div className="flex-1 flex items-center gap-2 min-w-0">
-                          <div className="truncate font-medium">{session.name}</div>
-                          <div className="px-2 py-1 rounded-md bg-muted text-sm font-medium">
-                            {WCA_EVENTS.find(e => e.id === session.event)?.name}
-                          </div>
-                        </div>
-                        <span className="text-xs text-muted-foreground shrink-0">
-                          {session.times.length} solves
-                        </span>
-                      </DropdownMenuItem>
-                    ))}
-                  </ScrollArea>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem 
-                    className="px-3 py-2.5 cursor-pointer hover:bg-primary/5"
-                    onClick={() => setIsNewSessionDialogOpen(true)}
-                  >
-                    <Plus className="mr-2 h-4 w-4" />
-                    <span className="font-medium">New Session</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem 
-                    className="px-3 py-2.5 cursor-pointer hover:bg-primary/5"
-                    onClick={() => setIsManageSessionsDialogOpen(true)}
-                  >
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span className="font-medium">Manage Sessions</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-            <div className="p-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="rounded-md bg-muted/50 p-3">
-                  <div className="text-sm text-muted-foreground mb-1">Best</div>
-                  <div className="font-mono text-xl">{formatTime(stats.best)}</div>
-                </div>
-                <div className="rounded-md bg-muted/50 p-3">
-                  <div className="text-sm text-muted-foreground mb-1">Average</div>
-                  <div className="font-mono text-xl">{formatTime(stats.average)}</div>
-                </div>
-                <div className="rounded-md bg-muted/50 p-3">
-                  <div className="text-sm text-muted-foreground mb-1">Ao5</div>
-                  <div className="font-mono text-xl">{formatTime(stats.ao5)}</div>
-                </div>
-                <div className="rounded-md bg-muted/50 p-3">
-                  <div className="text-sm text-muted-foreground mb-1">Ao12</div>
-                  <div className="font-mono text-xl">{formatTime(stats.ao12)}</div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <StatsPanel 
+            times={times} 
+            formatTime={formatTime}
+            setSelectedTime={setSelectedTime}
+          />
 
           {/* Scramble visualization */}
           <div className="rounded-lg border bg-card overflow-hidden">
             <div className="p-3 border-b font-medium bg-muted/10">Scramble Visual</div>
-            <div className="h-48 flex items-center justify-center text-muted-foreground">
-              Scramble Visual
-            </div>
+            <ScrambleVisual 
+              scramble={scramble} 
+              event={event} 
+            />
           </div>
         </div>
 
@@ -850,207 +569,12 @@ export default function Page() {
               </div>
               <div className="space-y-2">
                 <div className="text-sm font-medium text-muted-foreground">Scramble Visual</div>
-                <div className="h-48 border rounded-lg flex items-center justify-center text-muted-foreground bg-muted/50">
-                  Scramble Visual
-                </div>
+                <ScrambleVisual 
+                  scramble={selectedTime?.scramble || ''} 
+                  event={event} 
+                />
               </div>
             </div>
-          </DialogContent>
-        </Dialog>
-
-        {/* New Session Dialog */}
-        <Dialog open={isNewSessionDialogOpen} onOpenChange={setIsNewSessionDialogOpen}>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle className="text-xl">New Session</DialogTitle>
-            </DialogHeader>
-            <div className="grid gap-6 py-4">
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Session Name</Label>
-                  <Input
-                    id="name"
-                    value={newSessionName}
-                    onChange={(e) => setNewSessionName(e.target.value)}
-                    placeholder="Enter session name..."
-                    type="text"
-                    autoComplete="off"
-                    spellCheck="false"
-                    className="font-medium"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="event">Event</Label>
-                  <Select
-                    value={selectedEvent}
-                    onValueChange={setSelectedEvent}
-                  >
-                    <SelectTrigger className="w-full font-medium">
-                      <SelectValue>
-                        {WCA_EVENTS.find(e => e.id === selectedEvent)?.name}
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent className="max-h-[300px]">
-                      <ScrollArea className="h-[min(250px,60vh)]">
-                        {WCA_EVENTS.map(event => (
-                          <SelectItem 
-                            key={event.id} 
-                            value={event.id}
-                            className="font-medium"
-                          >
-                            {event.name}
-                          </SelectItem>
-                        ))}
-                      </ScrollArea>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setIsNewSessionDialogOpen(false)}>
-                Cancel
-              </Button>
-              <Button
-                onClick={() => {
-                  if (newSessionName.trim()) {
-                    addSession(newSessionName.trim(), selectedEvent);
-                    setNewSessionName('');
-                    setSelectedEvent('333');
-                    setIsNewSessionDialogOpen(false);
-                  }
-                }}
-              >
-                Create Session
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-
-        {/* Manage Sessions Dialog */}
-        <Dialog open={isManageSessionsDialogOpen} onOpenChange={setIsManageSessionsDialogOpen}>
-          <DialogContent className="sm:max-w-[600px]">
-            <DialogHeader>
-              <DialogTitle className="text-xl">Manage Sessions</DialogTitle>
-              <p className="text-sm text-muted-foreground mt-1">
-                Manage your solving sessions and their settings
-              </p>
-            </DialogHeader>
-            <ScrollArea className="h-[min(400px,calc(100vh-240px))]">
-              <div className="space-y-4 py-4 px-1">
-                {sessions.map((session) => (
-                  <div
-                    key={session.id}
-                    ref={currentSessionId === session.id ? selectedSessionRef : null}
-                    className={cn(
-                      "flex items-center justify-between p-4 rounded-lg border transition-colors",
-                      currentSessionId === session.id ? "bg-primary/5 border-primary/20" : "hover:bg-muted/50"
-                    )}
-                  >
-                    <div className="flex-1 min-w-0">
-                      {editingSession?.id === session.id ? (
-                        <div className="flex gap-3">
-                          <Input
-                            value={editingSession.name}
-                            onChange={(e) => setEditingSession({ ...editingSession, name: e.target.value })}
-                            className="max-w-[200px] font-medium"
-                            placeholder="Session name"
-                          />
-                          <Select
-                            value={editingSession.event}
-                            onValueChange={(value) => setEditingSession({ ...editingSession, event: value })}
-                          >
-                            <SelectTrigger className="w-full font-medium">
-                              <SelectValue>
-                                {WCA_EVENTS.find(e => e.id === editingSession.event)?.name}
-                              </SelectValue>
-                            </SelectTrigger>
-                            <SelectContent className="max-h-[300px]">
-                              <ScrollArea className="h-[min(250px,60vh)]">
-                                {WCA_EVENTS.map(event => (
-                                  <SelectItem 
-                                    key={event.id} 
-                                    value={event.id}
-                                    className="font-medium"
-                                  >
-                                    {event.name}
-                                  </SelectItem>
-                                ))}
-                              </ScrollArea>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-4">
-                          <div className="font-medium truncate">{session.name}</div>
-                          <div className="px-2 py-1 rounded-md bg-muted text-sm font-medium">
-                            {WCA_EVENTS.find(e => e.id === session.event)?.name}
-                          </div>
-                          <div className="text-sm text-muted-foreground">
-                            {session.times.length} solves
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2 ml-4">
-                      {editingSession?.id === session.id ? (
-                        <>
-                          <Button
-                            variant="default"
-                            size="sm"
-                            onClick={() => {
-                              updateSession(session.id, {
-                                name: editingSession.name,
-                                event: editingSession.event
-                              });
-                              setEditingSession(null);
-                            }}
-                          >
-                            Save
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setEditingSession(null)}
-                          >
-                            Cancel
-                          </Button>
-                        </>
-                      ) : (
-                        <>
-                          <Button
-                            variant={currentSessionId === session.id ? "secondary" : "ghost"}
-                            size="sm"
-                            onClick={() => setCurrentSessionId(session.id)}
-                          >
-                            {currentSessionId === session.id ? "Selected" : "Select"}
-                          </Button>
-                          {session.id !== 'default' && (
-                            <>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setEditingSession(session)}
-                              >
-                                Edit
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => deleteSession(session.id)}
-                                className="text-destructive hover:text-destructive"
-                              >
-                                Delete
-                              </Button>
-                            </>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </ScrollArea>
           </DialogContent>
         </Dialog>
       </div>

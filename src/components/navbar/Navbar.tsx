@@ -66,7 +66,7 @@ export function Navbar() {
                   className="text-sm font-medium text-foreground hover:text-foreground relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary after:transition-all hover:after:w-full"
                   asChild
                 >
-                  <Link href="/auth/login">
+                  <Link href="/auth/signin">
                     Sign In
                   </Link>
                 </Button>

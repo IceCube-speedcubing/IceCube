@@ -102,7 +102,7 @@ export function MobileNav({ isOpen, onClose, isLoggedIn, isAdmin, user = { name:
                     onClick={onClose}
                     asChild
                   >
-                    <Link href="/auth/login">
+                    <Link href="/auth/signin">
                       Sign In
                     </Link>
                   </Button>

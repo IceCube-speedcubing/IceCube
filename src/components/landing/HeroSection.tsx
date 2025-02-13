@@ -34,18 +34,6 @@ export function HeroSection() {
 
   return (
     <div className="relative min-h-[90vh] flex flex-col items-center justify-center px-4 overflow-hidden">
-      {/* Background */}
-      <motion.div
-        key={`hero-bg-${animationKey}`}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
-        className="absolute inset-0"
-      >
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-background to-background animate-gradient" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
-      </motion.div>
-
       <motion.div
         key={pathname + "-hero-content"}
         variants={containerVariants}

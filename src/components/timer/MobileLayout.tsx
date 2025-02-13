@@ -1,20 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Menu, Settings2, ChevronDown, Plus, Settings, Check, Keyboard, Type, Smartphone, Trash2, Timer } from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { cn } from "@/lib/utils";
+import { Menu, Settings2, Check, Keyboard, Type, Trash2, Timer } from "lucide-react";
 import { MobileTimerDisplay } from "./MobileTimerDisplay";
 import { ScrambleDisplay } from "./ScrambleDisplay";
-import { Session, WCA_EVENTS } from "@/types/WCAEvents";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-  DropdownMenuGroup,
-  DropdownMenuLabel,
-} from "@/components/ui/dropdown-menu";
+import { WCAEventId } from "@/types/WCAEvents";
 
 interface MobileLayoutProps {
   time: number;
@@ -23,7 +12,6 @@ interface MobileLayoutProps {
   isInspecting: boolean;
   getTimerColor: () => string;
   scramble: string;
-  currentSession: Session;
   sortedTimes: Array<{
     time: number;
     date: Date;
@@ -48,12 +36,8 @@ interface MobileLayoutProps {
   onTouchEnd: (e: React.TouchEvent) => void;
   isTouchHolding: boolean;
   touchHoldingLongEnough: boolean;
-  sessions: Session[];
-  setCurrentSessionId: (id: string) => void;
   timerMode: 'keyboard' | 'typing' | 'stackmat';
-  saveTimerMode: (mode: 'keyboard' | 'typing' | 'stackmat') => void;
-  setIsNewSessionDialogOpen: (open: boolean) => void;
-  setIsManageSessionsDialogOpen: (open: boolean) => void;
+  setTimerMode: (mode: 'keyboard' | 'typing' | 'stackmat') => void;
   stopTimer: () => void;
   startTimer: () => void;
   startInspection: () => void;
@@ -62,6 +46,8 @@ interface MobileLayoutProps {
   setTouchHoldingLongEnough: (isLongEnough: boolean) => void;
   inspectionEnabled: boolean;
   saveInspectionEnabled: (enabled: boolean) => void;
+  event: WCAEventId;
+  setEvent: (event: WCAEventId) => void;
 }
 
 export function MobileLayout({
@@ -71,7 +57,6 @@ export function MobileLayout({
   isInspecting,
   getTimerColor,
   scramble,
-  currentSession,
   sortedTimes,
   stats,
   setSelectedTime,
@@ -81,12 +66,8 @@ export function MobileLayout({
   onTouchEnd,
   isTouchHolding,
   touchHoldingLongEnough,
-  sessions,
-  setCurrentSessionId,
   timerMode,
-  saveTimerMode,
-  setIsNewSessionDialogOpen,
-  setIsManageSessionsDialogOpen,
+  setTimerMode,
   stopTimer,
   startTimer,
   startInspection,
@@ -95,6 +76,8 @@ export function MobileLayout({
   setTouchHoldingLongEnough,
   inspectionEnabled,
   saveInspectionEnabled,
+  event,
+  setEvent,
 }: MobileLayoutProps) {
   return (
     <div className="h-[100dvh] flex flex-col bg-background select-none">
@@ -117,9 +100,6 @@ export function MobileLayout({
           setIsInspecting={setIsInspecting}
           setIsTouchHolding={setIsTouchHolding}
           setTouchHoldingLongEnough={setTouchHoldingLongEnough}
-          addPenalty={addPenalty}
-          deleteTime={deleteTime}
-          sortedTimes={sortedTimes}
           inspectionEnabled={inspectionEnabled}
         />
       </div>
@@ -128,61 +108,11 @@ export function MobileLayout({
       <div className="border-t shrink-0">
         {/* Scramble */}
         <div className="p-4 border-b bg-card/50">
-          <ScrambleDisplay scramble={scramble} />
+          <ScrambleDisplay scramble={scramble} event={event} />
         </div>
 
         {/* Navigation buttons */}
         <div className="flex items-center justify-between px-4 py-3 border-b bg-card/50">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-9 gap-1 px-3">
-                <div className="flex items-center gap-2 truncate">
-                  <div className="truncate">{currentSession.name}</div>
-                  <div className="px-1.5 py-0.5 rounded-md bg-muted text-xs font-medium shrink-0">
-                    {WCA_EVENTS.find(e => e.id === currentSession.event)?.name}
-                  </div>
-                </div>
-                <ChevronDown className="h-4 w-4 opacity-50" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-[320px]">
-              <DropdownMenuLabel className="text-sm text-muted-foreground">Sessions</DropdownMenuLabel>
-              <ScrollArea className="h-[min(200px,calc(100vh-120px))]">
-                <DropdownMenuGroup>
-                  {sessions.map((session) => (
-                    <DropdownMenuItem
-                      key={session.id}
-                      className={cn(
-                        "flex items-center gap-2 px-3 py-2.5 cursor-pointer",
-                        currentSession.id === session.id && "bg-primary/5"
-                      )}
-                      onClick={() => setCurrentSessionId(session.id)}
-                    >
-                      <div className="flex-1 flex items-center gap-2 min-w-0">
-                        <div className="truncate font-medium">{session.name}</div>
-                        <div className="px-2 py-1 rounded-md bg-muted text-sm font-medium">
-                          {WCA_EVENTS.find(e => e.id === session.event)?.name}
-                        </div>
-                      </div>
-                      <span className="text-xs text-muted-foreground shrink-0">
-                        {session.times.length} solves
-                      </span>
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuGroup>
-              </ScrollArea>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => setIsNewSessionDialogOpen(true)}>
-                <Plus className="mr-2 h-4 w-4" />
-                <span className="font-medium">New Session</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setIsManageSessionsDialogOpen(true)}>
-                <Settings className="mr-2 h-4 w-4" />
-                <span className="font-medium">Manage Sessions</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
           <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1">
             {sortedTimes.length > 0 && (
               <>
@@ -290,7 +220,7 @@ export function MobileLayout({
                       <Button
                         variant="ghost"
                         className="w-full justify-between"
-                        onClick={() => saveTimerMode('keyboard')}
+                        onClick={() => setTimerMode('keyboard')}
                       >
                         <div className="flex items-center">
                           <Keyboard className="w-4 h-4 mr-2" />
@@ -301,23 +231,13 @@ export function MobileLayout({
                       <Button
                         variant="ghost"
                         className="w-full justify-between"
-                        onClick={() => saveTimerMode('typing')}
+                        onClick={() => setTimerMode('typing')}
                       >
                         <div className="flex items-center">
                           <Type className="w-4 h-4 mr-2" />
                           Type In Times
                         </div>
                         {timerMode === 'typing' && <Check className="w-4 h-4" />}
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        className="w-full justify-between"
-                        disabled
-                      >
-                        <div className="flex items-center">
-                          <Smartphone className="w-4 h-4 mr-2" />
-                          GAN Timer
-                        </div>
                       </Button>
                     </div>
                   </div>

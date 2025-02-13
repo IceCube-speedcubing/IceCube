@@ -4,17 +4,7 @@ export type WCAEvent = {
     icon?: string;
   };
   
-  export type Session = {
-    id: string;
-    name: string;
-    event: string; // WCA event ID
-    times: Array<{
-      time: number;
-      penalty?: 'plus2' | 'dnf';
-      date: Date;
-      scramble: string;
-    }>;
-  };
+  export type WCAEventId = '333' | '222' | '444' | '555' | '666' | '777' | '333bf' | '333oh' | 'clock' | 'minx' | 'pyram' | 'skewb' | 'sq1';
   
   export const WCA_EVENTS: WCAEvent[] = [
     { id: '333', name: '3x3x3 Cube' },

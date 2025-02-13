@@ -1,6 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Trash2 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useState, useEffect } from "react";
+import { WCAEventId } from "@/types/WCAEvents";
 
 interface TimesPanelProps {
   sortedTimes: Array<{
@@ -18,6 +21,8 @@ interface TimesPanelProps {
   } | null) => void;
   addPenalty: (index: number, penalty: 'plus2' | 'dnf') => void;
   deleteTime: (index: number) => void;
+  event: WCAEventId;
+  setEvent: (event: WCAEventId) => void;
 }
 
 export function TimesPanel({
@@ -27,13 +32,40 @@ export function TimesPanel({
   addPenalty,
   deleteTime
 }: TimesPanelProps) {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const reversedTimes = [...sortedTimes].reverse();
+
+  if (isLoading) {
+    return (
+      <div className="rounded-lg border bg-card overflow-hidden">
+        <div className="p-3 border-b">
+          <Skeleton className="h-9 w-full" />
+        </div>
+        <div className="p-4 space-y-3">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="flex items-center justify-between">
+              <Skeleton className="h-6 w-16" />
+              <Skeleton className="h-6 w-24" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="rounded-lg border bg-card overflow-hidden">
       <div className="p-3 border-b font-medium bg-muted/10">Times</div>
       <ScrollArea className="h-48">
-        {sortedTimes.map((t, index) => (
+        {reversedTimes.map((t, index) => (
           <div 
-            key={index} 
+            key={t.date.getTime()} 
             className="px-4 py-3 border-b hover:bg-muted/50 flex items-center justify-between group cursor-pointer"
             onClick={() => setSelectedTime(t)}
           >
@@ -67,7 +99,7 @@ export function TimesPanel({
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="h-7 w-7 p-0 hover:bg-destructive/10"
+                className="h-7 w-7 p-0 hover:bg-destructive/10 transition-opacity"
                 onClick={(e) => {
                   e.stopPropagation();
                   deleteTime(sortedTimes.length - 1 - index);

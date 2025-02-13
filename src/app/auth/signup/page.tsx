@@ -9,23 +9,14 @@ import { motion } from "framer-motion";
 import { Eye, EyeOff, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAnimationReset } from "@/hooks/useAnimationReset";
+import { AnimatedBackground } from "@/components/animatedBackground";
 
 export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden z-[1]">
-      {/* Animated Background */}
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-background" />
-        <motion.div
-          key={useAnimationReset()}
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1 }}
-          className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent"
-        />
-      </div>
+     <AnimatedBackground variant="primary" />
 
       <div className="relative w-full max-w-md space-y-8">
         {/* Header Section */}

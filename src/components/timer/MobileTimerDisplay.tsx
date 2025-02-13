@@ -10,21 +10,13 @@ interface MobileTimerDisplayProps {
   onTouchEnd: (e: React.TouchEvent) => void;
   isTouchHolding: boolean;
   touchHoldingLongEnough: boolean;
-  timerMode: string;
+  timerMode: 'keyboard' | 'typing' | 'stackmat';
   stopTimer: () => void;
   startTimer: () => void;
   startInspection: () => void;
   setIsInspecting: (isInspecting: boolean) => void;
-  setIsTouchHolding: (isTouchHolding: boolean) => void;
-  setTouchHoldingLongEnough: (touchHoldingLongEnough: boolean) => void;
-  addPenalty: (index: number, penalty: 'plus2' | 'dnf') => void;
-  deleteTime: (index: number) => void;
-  sortedTimes: Array<{
-    time: number;
-    date: Date;
-    scramble: string;
-    penalty?: 'plus2' | 'dnf';
-  }>;
+  setIsTouchHolding: (isHolding: boolean) => void;
+  setTouchHoldingLongEnough: (isLongEnough: boolean) => void;
   inspectionEnabled: boolean;
 }
 
@@ -45,9 +37,6 @@ export function MobileTimerDisplay({
   setIsInspecting,
   setIsTouchHolding,
   setTouchHoldingLongEnough,
-  addPenalty,
-  deleteTime,
-  sortedTimes,
   inspectionEnabled
 }: MobileTimerDisplayProps) {
   const getDisplayColor = () => {
