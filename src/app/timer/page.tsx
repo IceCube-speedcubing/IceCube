@@ -14,28 +14,37 @@ import { TimesPanel } from "@/components/timer/TimesPanel"
 import { MobileLayout } from "@/components/timer/MobileLayout"
 import { Badge } from "@/components/ui/badge"
 import { ScrambleVisual } from "@/components/timer/ScrambleVisual"
-import { StatsPanel } from "@/components/timer/StatsPanel"
+import { StatsPanel, DEFAULT_STATS } from "@/components/timer/StatsPanel"
 import { WCAEventId, WCA_EVENTS } from "@/types/WCAEvents"
 import { Session } from "@/types/Sessions";
 
 type SolveTime = {
   time: number;
-  date: Date;
+  date: string;
   scramble: string;
   penalty?: 'plus2' | 'dnf';
 };
 
 export default function Page() {
-  // State management
+  // State management with local storage
   const [scramble, setScramble] = useState("");
   const [time, setTime] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
-  const [times, setTimes] = useState<SolveTime[]>([]);
+  const [times, setTimes] = useState<SolveTime[]>(() => {
+    if (typeof window === 'undefined') return [];
+    const saved = localStorage.getItem('cubeTimes');
+    return saved ? JSON.parse(saved) : [];
+  });
   const [isInspecting, setIsInspecting] = useState(false);
   const [inspectionTime, setInspectionTime] = useState(15);
   const [isSpacePressed, setIsSpacePressed] = useState(false);
   const [isHoldingLongEnough, setIsHoldingLongEnough] = useState(false);
-  const [selectedTime, setSelectedTime] = useState<SolveTime | null>(null);
+  const [selectedTime, setSelectedTime] = useState<{
+    time: number;
+    date: string;
+    scramble: string;
+    penalty?: 'plus2' | 'dnf';
+  } | null>(null);
   const timeRef = useRef<number>(0);
   const [timerMode, setTimerMode] = useState<'keyboard' | 'typing' | 'stackmat'>('keyboard');
   const [timeInput, setTimeInput] = useState('');
@@ -43,18 +52,39 @@ export default function Page() {
   const [touchHoldingLongEnough, setTouchHoldingLongEnough] = useState(false);
   const [inspectionEnabled, setInspectionEnabled] = useState(true);
   const [event, setEvent] = useState<WCAEventId>('333');
-  const [sessions, setSessions] = useState<Session[]>([{
-    id: 'default',
-    name: 'Default Session',
-    event: '333',
-    createdAt: new Date(),
-    times: []
-  }]);
-  const [currentSessionId, setCurrentSessionId] = useState<string>('default');
+  const [sessions, setSessions] = useState<Session[]>(() => {
+    const defaultSession = { 
+      id: 'default', 
+      name: 'Default', 
+      event: '333',
+      createdAt: new Date().toISOString(),
+      times: []
+    };
+    
+    if (typeof window === 'undefined') return [defaultSession];
+    
+    const saved = localStorage.getItem('cubeSessions');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return parsed;
+    }
+    
+    return [defaultSession];
+  });
+  const [currentSessionId, setCurrentSessionId] = useState(() => {
+    if (typeof window === 'undefined') return 'default';
+    return localStorage.getItem('currentSessionId') || 'default';
+  });
 
   const currentSession = useMemo(() => {
     return sessions.find(s => s.id === currentSessionId) || sessions[0];
   }, [sessions, currentSessionId]);
+
+  const [customStats, setCustomStats] = useState(() => {
+    if (typeof window === 'undefined') return DEFAULT_STATS.slice(0, 4);
+    const saved = localStorage.getItem('customStats');
+    return saved ? JSON.parse(saved) : DEFAULT_STATS.slice(0, 4);
+  });
 
   // Load data from localStorage on mount
   useEffect(() => {
@@ -77,14 +107,33 @@ export default function Page() {
     }
   }, []);
 
-  // Save to localStorage
+  // Save times to localStorage whenever they change
   useEffect(() => {
-    localStorage.setItem('times', JSON.stringify(times));
+    if (typeof window === 'undefined') return;
+    localStorage.setItem('cubeTimes', JSON.stringify(times));
   }, [times]);
 
   useEffect(() => {
     localStorage.setItem('event', event);
   }, [event]);
+
+  // Save sessions to localStorage whenever they change
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    localStorage.setItem('cubeSessions', JSON.stringify(sessions));
+  }, [sessions]);
+
+  // Save current session ID whenever it changes
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    localStorage.setItem('currentSessionId', currentSessionId);
+  }, [currentSessionId]);
+
+  // Save custom stats whenever they change
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    localStorage.setItem('customStats', JSON.stringify(customStats));
+  }, [customStats]);
 
   const generateNewScramble = useCallback(() => {
     const scramble = generateWCAScramble(event);
@@ -110,9 +159,9 @@ export default function Page() {
   const stopTimer = useCallback(() => {
     setIsRunning(false);
     const finalTime = timeRef.current;
-    const newTime = {
+    const newTime: SolveTime = {
       time: finalTime,
-      date: new Date(),
+      date: new Date().toISOString(),
       scramble
     };
     
@@ -348,7 +397,7 @@ export default function Page() {
       id: crypto.randomUUID(),
       name,
       event: eventId,
-      createdAt: new Date(),
+      createdAt: new Date().toISOString(),
       times: []
     };
     setSessions(prev => [...prev, newSession]);
@@ -429,22 +478,6 @@ export default function Page() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[220px]" side="top" sideOffset={8}>
               <div className="px-2 py-1.5">
-                <h4 className="text-sm font-medium text-muted-foreground mb-1">Event</h4>
-              </div>
-              {WCA_EVENTS.map((wcaEvent) => (
-                <DropdownMenuItem 
-                  key={wcaEvent.id}
-                  onClick={() => setEvent(wcaEvent.id as WCAEventId)}
-                  className="flex items-center justify-between"
-                >
-                  <div className="flex items-center">
-                    {wcaEvent.name}
-                  </div>
-                  {event === wcaEvent.id && <Check className="w-4 h-4" />}
-                </DropdownMenuItem>
-              ))}
-              <DropdownMenuSeparator />
-              <div className="px-2 py-1.5">
                 <h4 className="text-sm font-medium text-muted-foreground mb-1">Display</h4>
               </div>
               <DropdownMenuItem onClick={() => document.documentElement.requestFullscreen()}>
@@ -519,7 +552,8 @@ export default function Page() {
               time={time}
               formatTime={formatTime}
               saveSolve={(time, scramble) => {
-                setTimes(prev => [...prev, { time, date: new Date(), scramble }]);
+                const newTime: SolveTime = { time, date: new Date().toISOString(), scramble };
+                setTimes(prev => [...prev, newTime]);
               }}
               scramble={scramble}
               generateNewScramble={generateNewScramble}
@@ -566,9 +600,13 @@ export default function Page() {
 
           {/* Stats panel */}
           <StatsPanel 
-            times={times} 
+            times={times.map(t => ({...t, date: new Date(t.date)}))} 
             formatTime={formatTime}
-            setSelectedTime={setSelectedTime}
+            setSelectedTime={(time) => setSelectedTime(time && {...time, date: time.date.toISOString()})}
+            customStats={customStats}
+            onCustomize={(newStats) => {
+              setCustomStats(newStats);
+            }}
           />
 
           {/* Scramble visualization */}
@@ -597,10 +635,11 @@ export default function Page() {
                       className="h-6 w-6 hover:bg-muted/50"
                       onClick={() => {
                         if (!selectedTime) return;
-                        const date = selectedTime.date.toLocaleString('en-US', {
+                        const date = new Date(selectedTime.date).toLocaleDateString('en-US', {
                           year: 'numeric',
                           month: '2-digit',
                           day: '2-digit',
+                        }) + ' ' + new Date(selectedTime.date).toLocaleTimeString('en-US', {
                           hour: '2-digit',
                           minute: '2-digit',
                         });

@@ -4,6 +4,7 @@ import { Menu, Settings2, Check, Keyboard, Type, Trash2, Timer } from "lucide-re
 import { MobileTimerDisplay } from "./MobileTimerDisplay";
 import { ScrambleDisplay } from "./ScrambleDisplay";
 import { WCAEventId } from "@/types/WCAEvents";
+import { SolveTime } from "@/types/Sessions";
 
 interface MobileLayoutProps {
   time: number;
@@ -12,24 +13,14 @@ interface MobileLayoutProps {
   isInspecting: boolean;
   getTimerColor: () => string;
   scramble: string;
-  sortedTimes: Array<{
-    time: number;
-    date: Date;
-    scramble: string;
-    penalty?: 'plus2' | 'dnf';
-  }>;
+  sortedTimes: SolveTime[];
   stats: {
     best: number;
     average: number;
     ao5: number;
     ao12: number;
   };
-  setSelectedTime: (time: {
-    time: number;
-    penalty?: 'plus2' | 'dnf';
-    date: Date;
-    scramble: string;
-  } | null) => void;
+  setSelectedTime: (time: SolveTime | null) => void;
   addPenalty: (index: number, penalty: 'plus2' | 'dnf') => void;
   deleteTime: (index: number) => void;
   onTouchStart: (e: React.TouchEvent) => void;
@@ -77,8 +68,12 @@ export function MobileLayout({
   inspectionEnabled,
   saveInspectionEnabled,
   event,
-  setEvent,
 }: MobileLayoutProps) {
+  const reversedTimes = sortedTimes.map(t => ({
+    ...t,
+    date: new Date(t.date)
+  })).reverse();
+
   return (
     <div className="h-[100dvh] flex flex-col bg-background select-none">
       {/* Timer */}
@@ -180,11 +175,11 @@ export function MobileLayout({
                     </div>
                   </div>
                   <div className="flex-1 overflow-y-auto">
-                    {sortedTimes.map((solve, index) => (
+                    {reversedTimes.map((solve, index) => (
                       <div
                         key={solve.date.getTime()}
                         className="flex items-center px-4 py-3 border-b hover:bg-muted/50 cursor-pointer"
-                        onClick={() => setSelectedTime(solve)}
+                        onClick={() => setSelectedTime({...solve, date: solve.date.toISOString()})}
                       >
                         <div className="flex items-center gap-3">
                           <div className="text-sm text-muted-foreground">

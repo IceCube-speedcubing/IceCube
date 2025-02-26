@@ -79,6 +79,7 @@ export function SessionManager({
       setSessionToDelete(null);
       setIsDeleteConfirmOpen(false);
       setIsManageDialogOpen(false);
+      setIsDropdownOpen(false);
     }
   };
 
@@ -126,7 +127,7 @@ export function SessionManager({
                   </Badge>
                 </div>
                 <span className="text-xs text-muted-foreground shrink-0">
-                  {session.times.length} solves
+                  {session.times?.length || 0} solves
                 </span>
               </DropdownMenuItem>
             ))}
@@ -278,9 +279,9 @@ export function SessionManager({
                             {WCA_EVENTS.find(e => e.id === session.event)?.name}
                           </Badge>
                           <span>•</span>
-                          <span>{session.times.length} solves</span>
+                          <span>{session.times?.length || 0} solves</span>
                           <span>•</span>
-                          <span>{session.createdAt.toLocaleDateString()}</span>
+                          <span>{new Date(session.createdAt).toLocaleDateString()}</span>
                         </div>
                       </div>
                     )}
@@ -323,7 +324,17 @@ export function SessionManager({
         </DialogContent>
       </Dialog>
 
-      <AlertDialog open={isDeleteConfirmOpen} onOpenChange={setIsDeleteConfirmOpen}>
+      <AlertDialog 
+        open={isDeleteConfirmOpen} 
+        onOpenChange={(open) => {
+          setIsDeleteConfirmOpen(open);
+          if (!open) {
+            setSessionToDelete(null);
+            setIsManageDialogOpen(false);
+            setIsDropdownOpen(false);
+          }
+        }}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Session</AlertDialogTitle>
@@ -332,10 +343,11 @@ export function SessionManager({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setIsDeleteConfirmOpen(false)}>
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete}>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

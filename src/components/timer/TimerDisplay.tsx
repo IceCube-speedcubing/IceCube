@@ -1,6 +1,13 @@
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 
+interface SolveTime {
+  time: number;
+  date: string;
+  scramble: string;
+  penalty?: 'plus2' | 'dnf';
+}
+
 interface TimerDisplayProps {
   timerMode: 'keyboard' | 'typing' | 'stackmat';
   timeInput: string;

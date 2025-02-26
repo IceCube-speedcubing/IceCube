@@ -5,22 +5,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useState, useEffect } from "react";
 import { WCAEventId } from "@/types/WCAEvents";
 import { SessionManager } from "./SessionManager";
-import { Session } from "@/types/Sessions";
+import { Session, SolveTime } from "@/types/Sessions";
 
 interface TimesPanelProps {
-  sortedTimes: Array<{
-    time: number;
-    penalty?: 'plus2' | 'dnf';
-    date: Date;
-    scramble: string;
-  }>;
+  sortedTimes: SolveTime[];
   formatTime: (ms: number, penalty?: 'plus2' | 'dnf') => string;
-  setSelectedTime: (time: {
-    time: number;
-    penalty?: 'plus2' | 'dnf';
-    date: Date;
-    scramble: string;
-  } | null) => void;
+  setSelectedTime: (time: SolveTime | null) => void;
   addPenalty: (index: number, penalty: 'plus2' | 'dnf') => void;
   deleteTime: (index: number) => void;
   event: WCAEventId;
@@ -39,7 +29,7 @@ export function TimesPanel({
   setSelectedTime,
   addPenalty,
   deleteTime,
-  sessions: initialSessions,
+  sessions: initialSessions = [],
   currentSession: initialCurrentSession,
   onSessionChange,
   onSessionCreate,
@@ -95,7 +85,7 @@ export function TimesPanel({
           <div 
             key={t.date.getTime()} 
             className="px-4 py-3 border-b hover:bg-muted/50 flex items-center justify-between group cursor-pointer"
-            onClick={() => setSelectedTime(t)}
+            onClick={() => setSelectedTime({...t, date: t.date.toISOString()})}
           >
             <div className="flex items-center gap-4">
               <span className="text-sm font-medium text-muted-foreground">#{sortedTimes.length - index}</span>
