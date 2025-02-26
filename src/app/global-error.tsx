@@ -6,7 +6,6 @@ import { RefreshCcw, XCircle } from "lucide-react";
 import { AnimatedBackground } from "@/components/animatedBackground";
 
 export default function GlobalError({
-  error,
   reset,
 }: {
   error: Error & { digest?: string };

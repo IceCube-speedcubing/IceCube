@@ -6,7 +6,6 @@ import { RefreshCcw } from "lucide-react";
 import { AnimatedBackground } from "@/components/animatedBackground";
 
 export default function Error({
-  error,
   reset,
 }: {
   error: Error & { digest?: string };

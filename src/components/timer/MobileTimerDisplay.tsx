@@ -11,8 +11,8 @@ interface MobileTimerDisplayProps {
   isTouchHolding: boolean;
   touchHoldingLongEnough: boolean;
   timerMode: 'keyboard' | 'typing' | 'stackmat';
-  stopTimer: () => void;
   startTimer: () => void;
+  stopTimer: () => void;
   startInspection: () => void;
   setIsInspecting: (isInspecting: boolean) => void;
   setIsTouchHolding: (isHolding: boolean) => void;
@@ -31,12 +31,8 @@ export function MobileTimerDisplay({
   isTouchHolding,
   touchHoldingLongEnough,
   timerMode,
-  stopTimer,
   startTimer,
-  startInspection,
   setIsInspecting,
-  setIsTouchHolding,
-  setTouchHoldingLongEnough,
   inspectionEnabled
 }: MobileTimerDisplayProps) {
   const getDisplayColor = () => {

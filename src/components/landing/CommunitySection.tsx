@@ -12,13 +12,13 @@ const communityCards = [
   },
   {
     icon: MessageSquare,
-    title: "Share Feedback",
-    description: "Your feedback matters! Help us improve and build the best cubing tools possible",
+    title: "Community Feedback",
+    description: "Share your thoughts and help us improve through our active community discussions",
   },
   {
     icon: Lightbulb,
-    title: "Share Ideas",
-    description: "Got ideas? Join our community discussions and help innovate together",
+    title: "Feature Requests",
+    description: "Suggest new features and vote on what gets built next",
   }
 ];
 

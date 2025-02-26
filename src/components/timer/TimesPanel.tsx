@@ -4,6 +4,10 @@ import { Trash2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useState, useEffect } from "react";
 import { WCAEventId } from "@/types/WCAEvents";
+import { SessionManager } from "./SessionManager";
+import { Session } from "@/types/Sessions";
+import { Copy } from "lucide-react";
+import { toast } from "sonner";
 
 interface TimesPanelProps {
   sortedTimes: Array<{
@@ -23,6 +27,12 @@ interface TimesPanelProps {
   deleteTime: (index: number) => void;
   event: WCAEventId;
   setEvent: (event: WCAEventId) => void;
+  sessions: Session[];
+  currentSession: Session;
+  onSessionChange: (session: Session) => void;
+  onSessionCreate: (name: string, event: WCAEventId) => void;
+  onSessionDelete: (id: string) => void;
+  onSessionRename: (id: string, newName: string) => void;
 }
 
 export function TimesPanel({
@@ -30,16 +40,27 @@ export function TimesPanel({
   formatTime,
   setSelectedTime,
   addPenalty,
-  deleteTime
+  deleteTime,
+  sessions: initialSessions,
+  currentSession: initialCurrentSession,
+  onSessionChange,
+  onSessionCreate,
+  onSessionDelete,
+  onSessionRename
 }: TimesPanelProps) {
   const [isLoading, setIsLoading] = useState(true);
+  const [forceUpdate, setForceUpdate] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 500);
+    const timer = setTimeout(() => setIsLoading(false), 200);
     return () => clearTimeout(timer);
   }, []);
 
-  const reversedTimes = [...sortedTimes].reverse();
+  // Ensure dates are properly instantiated
+  const reversedTimes = [...sortedTimes].map(t => ({
+    ...t,
+    date: new Date(t.date)
+  })).reverse();
 
   if (isLoading) {
     return (
@@ -61,7 +82,20 @@ export function TimesPanel({
 
   return (
     <div className="rounded-lg border bg-card overflow-hidden">
-      <div className="p-3 border-b font-medium bg-muted/10">Times</div>
+      <div className="p-3 border-b font-medium bg-muted/10 flex items-center justify-between">
+        <span>Times</span>
+        <SessionManager
+          sessions={initialSessions}
+          currentSession={initialCurrentSession}
+          onSessionChange={onSessionChange}
+          onSessionCreate={onSessionCreate}
+          onSessionDelete={onSessionDelete}
+          onSessionRename={onSessionRename}
+          onDialogClose={() => {
+            setForceUpdate(prev => !prev);
+          }}
+        />
+      </div>
       <ScrollArea className="h-48">
         {reversedTimes.map((t, index) => (
           <div 
@@ -99,7 +133,7 @@ export function TimesPanel({
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="h-7 w-7 p-0 hover:bg-destructive/10 transition-opacity"
+                className="h-7 w-7 p-0 hover:bg-destructive/10"
                 onClick={(e) => {
                   e.stopPropagation();
                   deleteTime(sortedTimes.length - 1 - index);

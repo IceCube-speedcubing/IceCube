@@ -7,7 +7,7 @@ interface ScrambleDisplayProps {
 }
 
 export function ScrambleDisplay({ scramble, event }: ScrambleDisplayProps) {
-  const moves = scramble?.split(' ').filter(move => move.trim()) || [];
+  const moves = scramble?.split('  ').filter(move => move.trim()) || [];
   
   // Update event checks to match WCAEventId format
   const getTextSize = () => {

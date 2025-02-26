@@ -13,7 +13,6 @@ import { AnimatedBackground } from "@/components/animatedBackground";
 
 export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const animationKey = useAnimationReset();
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden z-[1]">

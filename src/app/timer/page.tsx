@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/badge"
 import { ScrambleVisual } from "@/components/timer/ScrambleVisual"
 import { StatsPanel } from "@/components/timer/StatsPanel"
 import { WCAEventId, WCA_EVENTS } from "@/types/WCAEvents"
+import { Session } from "@/types/Sessions";
 
 type SolveTime = {
   time: number;
@@ -42,6 +43,18 @@ export default function Page() {
   const [touchHoldingLongEnough, setTouchHoldingLongEnough] = useState(false);
   const [inspectionEnabled, setInspectionEnabled] = useState(true);
   const [event, setEvent] = useState<WCAEventId>('333');
+  const [sessions, setSessions] = useState<Session[]>([{
+    id: 'default',
+    name: 'Default Session',
+    event: '333',
+    createdAt: new Date(),
+    times: []
+  }]);
+  const [currentSessionId, setCurrentSessionId] = useState<string>('default');
+
+  const currentSession = useMemo(() => {
+    return sessions.find(s => s.id === currentSessionId) || sessions[0];
+  }, [sessions, currentSessionId]);
 
   // Load data from localStorage on mount
   useEffect(() => {
@@ -73,14 +86,14 @@ export default function Page() {
     localStorage.setItem('event', event);
   }, [event]);
 
-  useEffect(() => {
-    generateNewScramble();
-  }, [event]);
-
   const generateNewScramble = useCallback(() => {
     const scramble = generateWCAScramble(event);
     setScramble(scramble);
   }, [event]);
+
+  useEffect(() => {
+    generateNewScramble();
+  }, [event, generateNewScramble]);
 
   // Timer functions
   const startTimer = useCallback(() => {
@@ -330,6 +343,27 @@ export default function Page() {
     return Math.floor(seconds * 1000);
   }, []);
 
+  const addSession = useCallback((name: string, eventId: WCAEventId) => {
+    const newSession: Session = {
+      id: crypto.randomUUID(),
+      name,
+      event: eventId,
+      createdAt: new Date(),
+      times: []
+    };
+    setSessions(prev => [...prev, newSession]);
+    setCurrentSessionId(newSession.id);
+    setEvent(eventId);
+  }, []);
+
+  const deleteSession = useCallback((id: string) => {
+    setSessions(prev => prev.filter(s => s.id !== id));
+    if (currentSessionId === id) setCurrentSessionId('default');
+  }, [currentSessionId]);
+  const updateSession = useCallback((id: string, updates: Partial<Session>) => {
+    setSessions((prev) => prev.map(s => s.id === id ? { ...s, ...updates } : s));
+  }, []);
+
   return (
     <>
       {/* Mobile Layout */}
@@ -373,7 +407,7 @@ export default function Page() {
           startInspection={startInspection}
           setIsInspecting={setIsInspecting}
           setIsTouchHolding={setIsTouchHolding}
-          setTouchHoldingLongEnough={setIsHoldingLongEnough}
+          setTouchHoldingLongEnough={setTouchHoldingLongEnough}
           inspectionEnabled={inspectionEnabled}
           saveInspectionEnabled={setInspectionEnabled}
           event={event}
@@ -510,7 +544,7 @@ export default function Page() {
 
         {/* Bottom panels */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 p-4 auto-rows-[250px]">
-          <TimesPanel
+        <TimesPanel
             sortedTimes={times}
             formatTime={formatTime}
             setSelectedTime={setSelectedTime}
@@ -518,7 +552,17 @@ export default function Page() {
             deleteTime={deleteTime}
             event={event}
             setEvent={setEvent}
+            sessions={sessions}
+            currentSession={currentSession}
+            onSessionChange={(session) => {
+              setCurrentSessionId(session.id);
+              setEvent(session.event);
+            }}
+            onSessionCreate={addSession}
+            onSessionDelete={deleteSession}
+            onSessionRename={(id, newName) => updateSession(id, { name: newName })}
           />
+
 
           {/* Stats panel */}
           <StatsPanel 
@@ -538,14 +582,41 @@ export default function Page() {
         </div>
 
         <Dialog open={!!selectedTime} onOpenChange={() => setSelectedTime(null)}>
-          <DialogContent className="sm:max-w-[425px]">
+          <DialogContent className="sm:max-w-[650px]">
             <DialogHeader>
               <DialogTitle className="text-xl font-semibold">Solve Details</DialogTitle>
             </DialogHeader>
             <div className="space-y-6 py-4">
               <div className="rounded-lg bg-muted/50 p-4 space-y-4">
                 <div>
-                  <div className="text-sm font-medium text-muted-foreground mb-1">Time</div>
+                  <div className="text-sm font-medium text-muted-foreground mb-1 flex items-center justify-between">
+                    Time
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 hover:bg-muted/50"
+                      onClick={() => {
+                        if (!selectedTime) return;
+                        const date = selectedTime.date.toLocaleString('en-US', {
+                          year: 'numeric',
+                          month: '2-digit',
+                          day: '2-digit',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        });
+                        const timeStr = formatTime(selectedTime.time, selectedTime.penalty);
+                        const text = `Generated by Icecube Timer on ${date}\nTime: ${timeStr}\n\nScramble: ${selectedTime.scramble}`;
+                        navigator.clipboard.writeText(text);
+                        toast("Time copied", {
+                          duration: 2000,
+                          className: "font-mono bg-background text-foreground",
+                          position: "bottom-center",
+                        });
+                      }}
+                    >
+                      <Copy className="h-4 w-4" />
+                    </Button>
+                  </div>
                   <div className="font-mono text-4xl">{selectedTime && formatTime(selectedTime.time, selectedTime.penalty)}</div>
                 </div>
                 <div>
@@ -553,18 +624,18 @@ export default function Page() {
                   <div className="text-lg font-medium">{selectedTime?.date.toLocaleString()}</div>
                 </div>
                 <div>
-                  <div className="text-sm font-medium text-muted-foreground mb-1 flex items-center justify-between">
-                    Scramble
+                  <div className="text-sm font-medium text-muted-foreground mb-1">Scramble</div>
+                  <div className="font-mono text-sm bg-background/50 p-3 rounded-md flex items-center justify-between">
+                    <span className="truncate">{selectedTime?.scramble}</span>
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-6 w-6 hover:bg-muted/50"
+                      className="h-6 w-6 ml-2 hover:bg-muted/50"
                       onClick={() => selectedTime && handleCopyScramble(selectedTime.scramble)}
                     >
                       <Copy className="h-4 w-4" />
                     </Button>
                   </div>
-                  <div className="font-mono text-sm bg-background/50 p-3 rounded-md">{selectedTime?.scramble}</div>
                 </div>
               </div>
               <div className="space-y-2">

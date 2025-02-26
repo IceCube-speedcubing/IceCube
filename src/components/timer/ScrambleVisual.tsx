@@ -1,6 +1,5 @@
 import { DisplayCube, applyScramble, Cube } from 'react-rubiks-cube-utils';
 import { WCAEventId } from '@/types/WCAEvents';
-import { Skeleton } from "@/components/ui/skeleton";
 import { useState, useEffect, Suspense } from 'react';
 
 interface ScrambleVisualProps {

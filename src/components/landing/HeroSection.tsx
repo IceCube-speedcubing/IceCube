@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import { useAnimationReset } from '@/hooks/useAnimationReset';
 
 export function HeroSection() {
-  const animationKey = useAnimationReset();
   const pathname = usePathname();
 
   const containerVariants = {
