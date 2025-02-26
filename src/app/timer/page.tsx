@@ -15,7 +15,7 @@ import { MobileLayout } from "@/components/timer/MobileLayout"
 import { Badge } from "@/components/ui/badge"
 import { ScrambleVisual } from "@/components/timer/ScrambleVisual"
 import { StatsPanel, DEFAULT_STATS } from "@/components/timer/StatsPanel"
-import { WCAEventId, WCA_EVENTS } from "@/types/WCAEvents"
+import { WCAEventId } from "@/types/WCAEvents"
 import { Session } from "@/types/Sessions";
 
 type SolveTime = {

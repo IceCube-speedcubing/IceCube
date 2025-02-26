@@ -4,11 +4,9 @@ import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Copy, Settings2, Check } from "lucide-react";
-import { toast } from "sonner";
+import { Settings2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 
@@ -67,8 +65,6 @@ export function StatsPanel({
   formatTime, 
   setSelectedTime,
   customStats = DEFAULT_STATS.slice(0, 4), // Default to first 4 stats
-  layout = 'grid',
-  showDescriptions = false,
   onCustomize
 }: StatsPanelProps) {
   const [showAverageDialog, setShowAverageDialog] = useState<boolean>(false);
