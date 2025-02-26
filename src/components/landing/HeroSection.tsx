@@ -3,7 +3,6 @@ import { Box, Star, ArrowRight, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
-import { useAnimationReset } from '@/hooks/useAnimationReset';
 
 export function HeroSection() {
   const pathname = usePathname();

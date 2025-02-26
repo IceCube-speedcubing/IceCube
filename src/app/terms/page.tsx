@@ -3,7 +3,6 @@
 import { useAnimationReset } from "@/hooks/useAnimationReset";
 import { motion } from "framer-motion";
 import { Shield, Scale, Lock, FileText, UserX, Edit } from "lucide-react";
-import { useEffect, useState } from "react";
 import { AnimatedBackground } from "@/components/animatedBackground";
 
 const sections = [ // TODO: add Terms of Service

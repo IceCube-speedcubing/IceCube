@@ -3,7 +3,6 @@
 import { useAnimationReset } from "@/hooks/useAnimationReset";
 import { motion } from "framer-motion";
 import { Shield, Lock, Eye, Database, FileCheck, Bell } from "lucide-react";
-import { useEffect, useState } from "react";
 import { AnimatedBackground } from "@/components/animatedBackground";
 
 const sections = [ // TODO: add Privacy Policy

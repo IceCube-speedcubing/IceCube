@@ -8,7 +8,6 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useAnimationReset } from '@/hooks/useAnimationReset';
 import { AnimatedBackground } from "@/components/animatedBackground";
 
 export default function SignInPage() {

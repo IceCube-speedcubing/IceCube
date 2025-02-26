@@ -217,7 +217,7 @@ export function StatsPanel({ times, formatTime, setSelectedTime }: StatsPanelPro
                   </Button>
                 </div>
                 <div className="space-y-2">
-                  {selectedStat && getAverageDetails(selectedStat).map((t, i) => (
+                  {selectedStat && getAverageDetails(selectedStat).map((t) => (
                     <div
                       key={t.date.getTime()}
                       className={cn(

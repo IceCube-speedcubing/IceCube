@@ -31,16 +31,6 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog"
 import { Badge } from "@/components/ui/badge"
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectSeparator,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 
 interface SessionManagerProps {
   sessions: Session[];
@@ -49,7 +39,6 @@ interface SessionManagerProps {
   onSessionCreate: (name: string, event: WCAEventId) => void;
   onSessionDelete: (id: string) => void;
   onSessionRename: (id: string, newName: string) => void;
-  onDialogClose: () => void;
 }
 
 export function SessionManager({
@@ -59,7 +48,6 @@ export function SessionManager({
   onSessionCreate,
   onSessionDelete,
   onSessionRename,
-  onDialogClose
 }: SessionManagerProps) {
   const [isNewSessionDialogOpen, setIsNewSessionDialogOpen] = useState(false);
   const [newSessionName, setNewSessionName] = useState("");

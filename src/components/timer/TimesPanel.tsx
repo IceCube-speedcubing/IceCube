@@ -6,8 +6,6 @@ import { useState, useEffect } from "react";
 import { WCAEventId } from "@/types/WCAEvents";
 import { SessionManager } from "./SessionManager";
 import { Session } from "@/types/Sessions";
-import { Copy } from "lucide-react";
-import { toast } from "sonner";
 
 interface TimesPanelProps {
   sortedTimes: Array<{
@@ -49,7 +47,6 @@ export function TimesPanel({
   onSessionRename
 }: TimesPanelProps) {
   const [isLoading, setIsLoading] = useState(true);
-  const [forceUpdate, setForceUpdate] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 200);
@@ -91,9 +88,6 @@ export function TimesPanel({
           onSessionCreate={onSessionCreate}
           onSessionDelete={onSessionDelete}
           onSessionRename={onSessionRename}
-          onDialogClose={() => {
-            setForceUpdate(prev => !prev);
-          }}
         />
       </div>
       <ScrollArea className="h-48">

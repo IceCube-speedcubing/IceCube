@@ -1,4 +1,4 @@
-export function formatTime(ms: number, penalty?: 'plus2' | 'dnf', showInspection?: boolean): string {
+export function formatTime(ms: number, penalty?: 'plus2' | 'dnf'): string {
   if (penalty === 'dnf') return 'DNF';
   
   const totalMs = penalty === 'plus2' ? ms + 2000 : ms;
