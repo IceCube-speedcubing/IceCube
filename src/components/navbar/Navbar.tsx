@@ -32,11 +32,15 @@ export function Navbar() {
     setIsMobileNavOpen(false);
   }, [pathname]);
 
+  // Pages that should always have navbar background
+  const pagesWithBackground = ["/timer"];
+  const shouldHaveBackground = isScrolled || pagesWithBackground.includes(pathname);
+
   return (
     <nav
       className={cn(
         "fixed top-0 w-full z-[99] transition-all duration-300",
-        isScrolled && "bg-background/80 backdrop-blur-md border-b"
+        shouldHaveBackground && "bg-background/95 backdrop-blur-lg border-b border-border/30 shadow-lg supports-[backdrop-filter]:bg-background/80"
       )}
     >
       <div className="max-w-7xl mx-auto px-4">
@@ -66,8 +70,8 @@ export function Navbar() {
                   className="text-sm font-medium text-foreground hover:text-foreground relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary after:transition-all hover:after:w-full"
                   asChild
                 >
-                  <Link href="/auth/signin">
-                    Sign In
+                  <Link href="/auth/login">
+                    Log In
                   </Link>
                 </Button>
                 <Button

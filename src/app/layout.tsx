@@ -4,6 +4,7 @@ import "./globals.css";
 import { Navbar } from "@/components/navbar/Navbar";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,7 +18,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "IceCube",
-  description: "The modern speedcubing timer you'll actually want to use. Track your times, get better, and have fun solving.",
+  description: "A modern web application for speedcubing.",
 };
 
 export default function RootLayout({
@@ -30,10 +31,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Navbar />
-        {children}
-        <SpeedInsights />
-        <Analytics />
+        <NuqsAdapter>
+          <Navbar />
+          {children}
+          <SpeedInsights />
+          <Analytics />
+        </NuqsAdapter>
       </body>
     </html>
   );

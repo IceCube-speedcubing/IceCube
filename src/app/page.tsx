@@ -7,7 +7,7 @@ import { AnimatedBackground } from "@/components/animatedBackground";
 
 export default function Page() {
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground">
+    <div className="min-h-screen flex flex-col bg-background text-foreground pt-16">
       <AnimatedBackground variant="default" />
       <HeroSection />
       <FeaturesSection />

@@ -14,7 +14,7 @@ export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden z-[1]">
+    <div className="min-h-screen flex items-center justify-center p-4 pt-20 relative overflow-hidden z-[1]">
       <AnimatedBackground variant="primary" />
 
       <div className="relative w-full max-w-md space-y-8">
@@ -29,7 +29,7 @@ export default function SignInPage() {
               Welcome <span className="text-primary">back</span>
             </h1>
             <p className="mt-3 text-muted-foreground text-lg">
-              Sign in to continue your progress
+              Log in to continue your progress
             </p>
           </motion.div>
         </div>
@@ -99,7 +99,7 @@ export default function SignInPage() {
               )}
             >
               <span className="flex items-center gap-2">
-                Sign In
+                Log In
                 <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </span>
             </Button>

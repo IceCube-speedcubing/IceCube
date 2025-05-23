@@ -8,7 +8,7 @@ import { AnimatedBackground } from "@/components/animatedBackground";
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center p-4 pt-20 relative overflow-hidden">
       <AnimatedBackground variant="error" />
       
       <div className="relative z-10 max-w-3xl mx-auto text-center">

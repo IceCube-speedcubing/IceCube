@@ -48,7 +48,7 @@ const LAST_UPDATED = "02.26.2025"; // Manually update this when you change the t
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col pt-16">
       <AnimatedBackground variant="default" />
       <div className="relative py-24 z-10">
         <div className="max-w-6xl mx-auto px-4">

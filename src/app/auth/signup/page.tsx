@@ -14,7 +14,7 @@ export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden z-[1]">
+    <div className="min-h-screen flex items-center justify-center p-4 pt-20 relative overflow-hidden z-[1]">
      <AnimatedBackground variant="primary" />
 
       <div className="relative w-full max-w-md space-y-8">

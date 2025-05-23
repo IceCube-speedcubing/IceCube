@@ -45,7 +45,7 @@ const upcomingFeatures = [
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pt-16">
       {/* Header Section */}
       <div className="relative py-24 bg-gradient-to-b from-background to-card/50">
         <div className="max-w-6xl mx-auto px-4">

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 export const navItems = [
-  // { name: "Algorithms", href: "/algs" },
+  // { name: "Algorithms", href: "/algorithms" },
   { name: "Timer", href: "/timer" },
   { name: "About", href: "/about" },
 ];
